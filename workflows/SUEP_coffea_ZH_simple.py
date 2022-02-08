@@ -314,6 +314,8 @@ class SUEP_cluster(processor.ProcessorABC):
         out["subleadlep_pt"] = leptons.pt[:,1]
         out["leadlep_eta"]   = leptons.eta[:,0]
         out["subleadlep_eta"]= leptons.eta[:,1]
+        out["leadlep_phi"]= leptons.phi[:,0]
+        out["subleadlep_phi"]= leptons.phi[:,1]
 
         # This goes last, convert from awkward array to pandas and save the hdf5
         if not isinstance(out, pd.DataFrame): out = self.ak_to_pandas(out)
