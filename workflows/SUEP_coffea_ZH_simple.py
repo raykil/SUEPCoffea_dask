@@ -195,11 +195,11 @@ class SUEP_cluster(processor.ProcessorABC):
         cutMuons     = (events.Muon.looseId) & (events.Muon.pt >= 10) & (abs(events.Muon.dxy) <= 0.02) & (abs(events.Muon.dz) <= 0.1)
 	cutElectrons = (events.Electron.cutBased >= 2) & (events.Electron.pt >= 15)
 
-	### object selection
+	### event selection
         selMuons     = muons[cutMuons]
         selElectrons = electrons[cutElectrons]
 
-	### global cuts to selected events
+	### cuts to selected events
         cutHasTwoMuons = (ak.num(selMuons, axis=1)==2) & (ak.max(selMuons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selMuons.charge,axis=1) == 0)
         cutHasTwoElecs = (ak.num(selElectrons, axis=1)==2) & (ak.max(selElectrons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selElectrons.charge,axis=1) == 0)
         cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 4)
