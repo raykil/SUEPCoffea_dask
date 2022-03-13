@@ -173,7 +173,8 @@ class SUEP_cluster(processor.ProcessorABC):
         return events, [coll[cutAnyHLT] for coll in extraColls]
 
     def selectByLeptons(self, events, extraColls = []):
-        ### Very basic lepton selection criteria, prepare lepton 4-momenta collection for plotting and so
+    ###lepton selection criteria--4momenta collection for plotting
+
         muons = ak.zip({
             "pt": events.Muon.pt,
             "eta": events.Muon.eta,
@@ -181,6 +182,7 @@ class SUEP_cluster(processor.ProcessorABC):
             "mass": events.Muon.mass,
             "charge": events.Muon.pdgId/(-13),
         }, with_name="Momentum4D")
+	
         electrons = ak.zip({
             "pt": events.Electron.pt,
             "eta": events.Electron.eta,
@@ -188,26 +190,21 @@ class SUEP_cluster(processor.ProcessorABC):
             "mass": events.Electron.mass,
             "charge": events.Electron.pdgId/(-11),
         }, with_name="Momentum4D")
-        ###  Some very simple selections on ID ###
-        ###  Muons: loose ID + dxy dz cuts mimicking the medium prompt ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
-        ###  Electrons: loose ID + dxy dz cuts for promptness https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification
-        cutMuons     = (events.Muon.looseId) & (events.Muon.pt >= 10) & (abs(events.Muon.dxy) <= 0.02) & (abs(events.Muon.dz) <= 0.1) # dxy is impact parameter in transverse plane
-        cutElectrons = (events.Electron.cutBased >= 2) & (events.Electron.pt >= 15)
-        ### Apply the cuts
-        # Object selection. selMuons contain only the events that are filtered by cutMuons criteria.
+
+	### cuts
+        cutMuons     = (events.Muon.looseId) & (events.Muon.pt >= 10) & (abs(events.Muon.dxy) <= 0.02) & (abs(events.Muon.dz) <= 0.1)
+	cutElectrons = (events.Electron.cutBased >= 2) & (events.Electron.pt >= 15)
+
+	### object selection
         selMuons     = muons[cutMuons]
         selElectrons = electrons[cutElectrons]
-        ### Now global cuts to select events. Notice this means exactly two leptons with pT >= 10, and the leading one pT >= 25
-	
-        # cutHasTwoMuons imposes three conditions:
-        #  First, number of muons (axis=1 means column. Each row is an event.) in an event is 2.
-        #  Second, pt of the muons is greater than 25.
-        #  Third, Sum of charge of muons should be 0. (because it originates from Z)
+
+	### global cuts to selected events
         cutHasTwoMuons = (ak.num(selMuons, axis=1)==2) & (ak.max(selMuons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selMuons.charge,axis=1) == 0)
         cutHasTwoElecs = (ak.num(selElectrons, axis=1)==2) & (ak.max(selElectrons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selElectrons.charge,axis=1) == 0)
         cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 4)
         cutHasTwoLeps  = ((cutHasTwoMuons) | (cutHasTwoElecs)) & cutTwoLeps
-        ### Cut the events, also return the selected leptons for operation down the line
+
         events = events[ cutHasTwoLeps]
         return events, selElectrons[cutHasTwoLeps], selMuons[cutHasTwoLeps], [coll[cutHasTwoLeps] for coll in extraColls]
 
