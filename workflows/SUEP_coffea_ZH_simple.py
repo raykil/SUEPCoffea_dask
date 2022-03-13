@@ -375,18 +375,18 @@ class SUEP_cluster(processor.ProcessorABC):
         # Define outputs for plotting
         if debug: print("Saving reco variables")
 	# The variables that I can get are listed above in "SelectByLeptons" function
-        #outlep["leadlep_pt"]    = leptons.pt[:,0]
-        #outlep["subleadlep_pt"] = leptons.pt[:,1]
-        #outlep["leadlep_eta"]   = leptons.eta[:,0]
-        #outlep["subleadlep_eta"]= leptons.eta[:,1]
-        #outlep["leadlep_phi"] = leptons.phi[:,0]
-        #outlep["subleadlep_phi"] = leptons.phi[:,1]
+        outlep["leadlep_pt"]    = leptons.pt[:,0]
+        outlep["subleadlep_pt"] = leptons.pt[:,1]
+        outlep["leadlep_eta"]   = leptons.eta[:,0]
+        outlep["subleadlep_eta"]= leptons.eta[:,1]
+        outlep["leadlep_phi"] = leptons.phi[:,0]
+        outlep["subleadlep_phi"] = leptons.phi[:,1]
 
 	# From here I am working with Z boson reconstruction from the daugther leptons
-        #outlep["Z_pt"] = np.sqrt((leptons.pt[:,0])**2 + (leptons.pt[:,1])**2 + 2*leptons.pt[:,0]*leptons.pt[:,1]*np.cos(leptons.phi[:,0]-leptons.phi[:,1]))
-        #outlep["Z_eta"] = np.arcsinh((leptons.pt[:,0]*np.sinh(leptons.eta[:,0])+leptons.pt[:,1]*np.sinh(leptons.eta[:,1]))/np.sqrt((leptons.pt[:,0])**2 + (leptons.pt[:,1])**2 + 2*leptons.pt[:,0]*leptons.pt[:,1]*np.cos(leptons.phi[:,0]-leptons.phi[:,1])))
-        #outlep["Z_phi"] = np.arcsin((leptons.pt[:,0]*np.sin(leptons.phi[:,0]) + leptons.pt[:,1]*np.sin(leptons.phi[:,1]))/(np.sqrt((leptons.pt[:,0])**2 + (leptons.pt[:,1])**2 + 2*leptons.pt[:,0]*leptons.pt[:,1]*np.cos(leptons.phi[:,0]-leptons.phi[:,1]))))
-        #outlep["Z_m"] = np.sqrt(2*leptons.pt[:,0]*leptons.pt[:,1]*(np.cosh(leptons.eta[:,1]-leptons.eta[:,0])-np.cos(leptons.phi[:,1]-leptons.phi[:,0])))
+        outlep["Z_pt"] = np.sqrt((leptons.pt[:,0])**2 + (leptons.pt[:,1])**2 + 2*leptons.pt[:,0]*leptons.pt[:,1]*np.cos(leptons.phi[:,0]-leptons.phi[:,1]))
+        outlep["Z_eta"] = np.arcsinh((leptons.pt[:,0]*np.sinh(leptons.eta[:,0])+leptons.pt[:,1]*np.sinh(leptons.eta[:,1]))/np.sqrt((leptons.pt[:,0])**2 + (leptons.pt[:,1])**2 + 2*leptons.pt[:,0]*leptons.pt[:,1]*np.cos(leptons.phi[:,0]-leptons.phi[:,1])))
+        outlep["Z_phi"] = np.arcsin((leptons.pt[:,0]*np.sin(leptons.phi[:,0]) + leptons.pt[:,1]*np.sin(leptons.phi[:,1]))/(np.sqrt((leptons.pt[:,0])**2 + (leptons.pt[:,1])**2 + 2*leptons.pt[:,0]*leptons.pt[:,1]*np.cos(leptons.phi[:,0]-leptons.phi[:,1]))))
+        outlep["Z_m"] = np.sqrt(2*leptons.pt[:,0]*leptons.pt[:,1]*(np.cosh(leptons.eta[:,1]-leptons.eta[:,0])-np.cos(leptons.phi[:,1]-leptons.phi[:,0])))
 
         # From here I am working with jets
 	# ak4jets is an array of arrays. 
