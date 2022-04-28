@@ -15,7 +15,7 @@ doSubmit    = sys.argv[5] # Whether to submit or not
 files = [FileFolder + "/" + f for f in os.listdir(FileFolder)] # list with all the files  
 tag=OutputDir
 
-if NumberOfJobs == -1: NumberOfJobs = len(files)
+if NumberOfJobs == "-1": NumberOfJobs = len(files)
 
 ########   customization end   #########
 
@@ -38,13 +38,13 @@ for x in range(int(NumberOfJobs)):
         fout.write("echo 'START---------------'\n")
         fout.write("echo 'WORKDIR ' ${PWD}\n")
         fout.write("cd "+str(path)+"\n")
-        fout.write("source /afs/cern.ch/user/c/cericeci/miniconda3/etc/profile.d/conda.sh\n")
+        fout.write("source /afs/cern.ch/user/j/jkil/miniconda3/etc/profile.d/conda.sh\n")
         fout.write("conda activate coffea\n")
         fout.write("python condor_SUEP_WS.py  --isMC=1 --era=2018 --dataset=DY --analyzer=ZH_simple --infile=%s --outputdir=%s\n"%(files[x], OutputDir)) 
         fout.write("echo 'STOP---------------'\n")
         fout.write("echo\n")
         fout.write("echo\n")
-    os.system("chmod 755 %s/exec/subjob_"%tag+str(x)+".sh")
+    os.system("chmod 755 %s/exec/job_"%tag+str(x)+".sh")
    
 ###### create submit.sub file ####
     
@@ -55,7 +55,6 @@ with open('submit.sub', 'w') as fout:
     fout.write("output                  = %s/batchlogs/$(ClusterId).$(ProcId).out\n"%tag)
     fout.write("error                   = %s/batchlogs/$(ClusterId).$(ProcId).err\n"%tag)
     fout.write("log                     = %s/batchlogs/$(ClusterId).log\n"%tag)
-    fout.write("Proxy_path              = /afs/cern.ch/user/c/cericeci/private/x509up_u88688\n")
     fout.write('+JobFlavour = "%s"\n' %(queue))
     fout.write("\n")
     fout.write("queue filename matching (%s/exec/job_*sh)\n"%tag)
@@ -63,7 +62,7 @@ with open('submit.sub', 'w') as fout:
 ###### sends bjobs ######
 if bool(doSubmit):
   os.system("echo submit.sub")
-  os.system("condor_submit submit.sub")
+  os.system("condor_submit -spool submit.sub")
    
 print()
 print("your jobs:")
