@@ -46,20 +46,20 @@ class SUEP_cluster(processor.ProcessorABC):
 
         norm = np.squeeze(ak.sum(p ** r, axis=1, keepdims=True))
         s = np.array([[
-                        ak.sum(px*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                        ak.sum(px*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                        ak.sum(px*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
-                        ],
-                        [
-                        ak.sum(py*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                        ak.sum(py*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                        ak.sum(py*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
-                        ],
-                        [
-                        ak.sum(pz*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                        ak.sum(pz*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                        ak.sum(pz*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
-                        ]])
+                       ak.sum(px*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
+                       ak.sum(px*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
+                       ak.sum(px*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
+                      ],
+                      [
+                       ak.sum(py*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
+                       ak.sum(py*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
+                       ak.sum(py*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
+                      ],
+                      [
+                       ak.sum(pz*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
+                       ak.sum(pz*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
+                       ak.sum(pz*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
+                       ]])
         s = np.squeeze(np.moveaxis(s, 2, 0),axis=3)
         s = np.nan_to_num(s, copy=False, nan=1., posinf=1., neginf=1.) 
 
@@ -178,14 +178,14 @@ class SUEP_cluster(processor.ProcessorABC):
         ### Apply trigger selection
         ### TODO:: Save a per-event flag that classifies the event (ee or mumu)
         if self.era == 2018:
-            cutAnyHLT = (events.HLT.IsoMu24) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8) | (events.HLT.Ele32_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL) | (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL)
-            return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
+           cutAnyHLT = (events.HLT.IsoMu24) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8) | (events.HLT.Ele32_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL) | (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL)
+           return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
         if self.era == 2017:
-            cutAnyHLT = (events.HLT.IsoMu27) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8) | (events.HLT.Ele35_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL) | (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
-            return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
+           cutAnyHLT = (events.HLT.IsoMu27) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8) | (events.HLT.Ele35_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL) | (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
+           return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
         if self.era == 2016:
-            cutAnyHLT = (events.HLT.IsoMu24) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ) | (events.HLT.Ele27_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ)
-            return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
+           cutAnyHLT = (events.HLT.IsoMu24) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ) | (events.HLT.Ele27_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ)
+           return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
         return events, [coll[cutAnyHLT] for coll in extraColls]
 
     def selectByLeptons(self, events, extraColls = []):
@@ -257,12 +257,13 @@ class SUEP_cluster(processor.ProcessorABC):
             "pt": events.PFCands.trkPt,
             "eta": events.PFCands.trkEta,
             "phi": events.PFCands.trkPhi,
-            "mass": events.PFCands.mass
+            "mass": events.PFCands.mass,
+            "fromPV": events.PFCands.fromPV,
         }, with_name="Momentum4D")
 
-        cutPF = (events.PFCands.fromPV > 1) & \
-            (events.PFCands.trkPt >= 1) & \
-            (abs(events.PFCands.trkEta) <= 2.5) & \
+        cutPF = (events.PFCands.fromPV > 0) & \
+            (events.PFCands.trkPt >= 0.5) & \
+            (abs(events.PFCands.trkEta) <= 5) & \
             (abs(events.PFCands.dz) < 10) & \
             (events.PFCands.dzErr < 0.05)
         Cleaned_cands = ak.packed(Cands[cutPF])
@@ -273,11 +274,12 @@ class SUEP_cluster(processor.ProcessorABC):
             "pt": events.lostTracks.pt,
             "eta": events.lostTracks.eta,
             "phi": events.lostTracks.phi,
-            "mass": 0.0
+            "mass": 0.0,
+            "fromPV": events.lostTracks.fromPV,
         }, with_name="Momentum4D")
 
-        cutLost = (events.lostTracks.fromPV > 1) & \
-            (events.lostTracks.pt >= 1) & \
+        cutLost = (events.lostTracks.fromPV > 0) & \
+            (events.lostTracks.pt >= 0.5) & \
             (abs(events.lostTracks.eta) <= 1.0) \
             & (abs(events.lostTracks.dz) < 10) & \
             (events.lostTracks.dzErr < 0.05)
@@ -309,18 +311,16 @@ class SUEP_cluster(processor.ProcessorABC):
             outdfs  = []
             outcols = []
             for channel in out.keys():
-                outcols.append(channel)
-                if out[channel][0] == {}:   
-                    outdfs = pd.DataFrame(['empty'], columns=['empty'])
-                else:              
-                    if self.isMC:
-                        out[channel][0]["genweight"] = out[channel][1].genWeight[:]
+              outcols.append(channel)
+              if out[channel][0] == {}:   
+                outdfs = pd.DataFrame(['empty'], columns=['empty'])
+              else:              
+                if self.isMC:
+                  out[channel][0]["genweight"] = out[channel][1].genWeight[:]
 
-                    if not isinstance(out[channel][0], pd.DataFrame): 
-                        out[channel][0] = self.ak_to_pandas(out[channel][0])
+              if not isinstance(out[channel][0], pd.DataFrame): 
+                out[channel][0] = self.ak_to_pandas(out[channel][0])
 
-
-            self.save_dfs([out,out],["lepvars","jetvars"])
             return False
         else:
             return True
@@ -332,7 +332,7 @@ class SUEP_cluster(processor.ProcessorABC):
         debug    = True  # If we want some prints in the middle
         chunkTag = "out_%i_%i_%i.hdf5"%(events.event[0], events.luminosityBlock[0], events.run[0]) #Unique tag to get different outputs per tag
         self.doTracks = True  # Make it false, and it will speed things up but not run the tracks
-        self.doGen    = True # In case we want info on the gen level --- MAKE THIS FALSE FOR BG!
+        self.doGen    = True # In case we want info on the gen level 
         # Main processor code
 
 
@@ -343,8 +343,7 @@ class SUEP_cluster(processor.ProcessorABC):
         accumulator    = self.accumulator.identity()
         # Each track is one selection level
         outputs = {
-            "twoleptons":[{},[]], # Has Two Leptons, pT and Trigger requirements
-            "onetrack"  :[{},[]], # + at least one track
+            "twoleptons"  :[{},[]], # Has Two Leptons, pT and Trigger requirements
         }
 
         # Data dependant stuff
@@ -373,7 +372,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         # Now do jet selection, for the moment no jet cuts
         self.events, self.jets = self.selectByJets(self.events, self.leptons)[:2] # Leptons are needed to do jet-lepton cleaning
-	    # Sorting jets by pt.
+	# Sorting jets by pt.
         highpt_jets = ak.argsort(self.jets.pt, axis=1, ascending=False, stable=True)
         self.jets   = self.jets[highpt_jets]
 
@@ -381,14 +380,15 @@ class SUEP_cluster(processor.ProcessorABC):
         if debug: print("%i events pass jet cuts. Selecting tracks..."%len(self.events))
         
         if self.doTracks:
-            self.events, self.tracks = self.selectByTracks(self.events, self.leptons)[:2]
-            if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-            if debug: print("%i events pass track cuts. Doing more stuff..."%len(self.events))
+          # Right now no track cuts, only selecting tracks
+          self.events, self.tracks = self.selectByTracks(self.events, self.leptons)[:2]
+          if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+          if debug: print("%i events pass track cuts. Doing more stuff..."%len(self.events))
 
         if self.doGen:
-            self.events, self.genZ, self.genH, self.genSUEP = self.selectByGEN(self.events)[:4]
-            if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-            if debug: print("%i events pass gen cuts. Doing more stuff..."%len(self.events))
+          self.events, self.genZ, self.genH, self.genSUEP = self.selectByGEN(self.events)[:4]
+          if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+          if debug: print("%i events pass gen cuts. Doing more stuff..."%len(self.events))
 
         # Now deal with the Z candidate
         self.Zcands = self.leptons[:,0] + self.leptons[:,1]
@@ -396,18 +396,11 @@ class SUEP_cluster(processor.ProcessorABC):
         # ------------------------------------------------------------------------------
         # ------------------------------- SELECTION + PLOTTING -------------------------
         # ------------------------------------------------------------------------------
-        self.isSpherable = True # So we don't do sphericity plots
+        self.isSpherable = False # So we don't do sphericity plots
         outputs["twoleptons"] = [self.doAllPlots("twoleptons", debug), self.events]
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass twoleptons cuts. Doing more stuff..."%len(self.events))
 
-        if self.doTracks:
-            cutOneTrack = (ak.num(self.tracks) != 0)
-            self.applyCutToAllCollections(cutOneTrack)
-            self.isSpherable = True # So we do sphericity plots
-            outputs["onetrack"] = [self.doAllPlots("onetrack", debug), self.events]
-            if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-            if debug: print("%i events pass onetrack cuts. Doing more stuff..."%len(self.events))
 
         
 
@@ -437,11 +430,11 @@ class SUEP_cluster(processor.ProcessorABC):
         self.jets      = self.jets[cut]
         self.Zcands    = self.Zcands[cut]
         if self.doTracks:
-            self.tracks  = self.tracks[cut]
+          self.tracks  = self.tracks[cut]
         if self.doGen:
-            self.genZ    = self.genZ[cut]
-            self.genH    = self.genH[cut]
-            self.genSUEP = self.genSUEP[cut]
+          self.genZ    = self.genZ[cut]
+          self.genH    = self.genH[cut]
+          self.genSUEP = self.genSUEP[cut]
 
     def doAllPlots(self, channel, debug=True):
         # ------------------------------------------------------------------------------
@@ -451,141 +444,50 @@ class SUEP_cluster(processor.ProcessorABC):
         # Define outputs for plotting
         if debug: print("Saving reco variables for channel %s"%channel)
 
-        # region Object: leptons
+        # Object: leptons
         out["leadlep_pt"]    = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
         out["leadlep_eta"]   = self.leptons.eta[:,0]
         out["subleadlep_eta"]= self.leptons.eta[:,1]
-        out["leadlep_phi"]   = self.leptons.phi[:,0]
-        out["subleadlep_phi"]= self.leptons.phi[:,1]
         out["nleptons"]      = ak.num(self.leptons, axis=1)[:]
-        out["nmuons"]        = ak.num(self.muons) 
-        out["nelectrons"]    = ak.num(self.electrons)
-        #endregion
 
-        # region Object: reconstructed Z
-        out["Z_px"]  = self.Zcands.px[:]
-        out["Z_py"]  = self.Zcands.py[:]
-        out["Z_pz"]  = self.Zcands.pz[:]
+
+        # Object: reconstructed Z
         out["Z_pt"]  = self.Zcands.pt[:]
-
         out["Z_eta"] = self.Zcands.eta[:]
         out["Z_phi"] = self.Zcands.phi[:]
         out["Z_m"]   = self.Zcands.mass[:]
-        #endregion
         
-        # region Object: jets, a bit tricky as number varies per event!
+        # Object: jets, a bit tricky as number varies per event!
         out["njets"]          = ak.num(self.jets, axis=1)[:]
         out["nBLoose"]        = ak.sum((self.jets.btag >= 0.0490), axis=1)[:]
         out["nBMedium"]       = ak.sum((self.jets.btag >= 0.2783), axis=1)[:]
         out["nBTight"]        = ak.sum((self.jets.btag >= 0.7100), axis=1)[:]
-
-        out["leadjet_pt"]     = ak.fill_none(ak.pad_none(self.jets.pt,  1, axis=1, clip=True), 0.)[:,0] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
-        out["leadjet_eta"]    = ak.fill_none(ak.pad_none(self.jets.eta, 1, axis=1, clip=True), -999)[:,0] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
-        out["leadjet_phi"]    = ak.fill_none(ak.pad_none(self.jets.phi, 1, axis=1, clip=True), -999)[:,0] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
-
-        out["subleadjet_pt"]  = ak.fill_none(ak.pad_none(self.jets.pt,  2, axis=1, clip=True), 0.)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
-        out["subleadjet_eta"] = ak.fill_none(ak.pad_none(self.jets.eta, 2, axis=1, clip=True), -999)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
-        out["subleadjet_phi"] = ak.fill_none(ak.pad_none(self.jets.phi, 2, axis=1, clip=True), -999)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
-
-        out["trailjet_pt"]    = ak.fill_none(ak.pad_none(self.jets.pt,  3, axis=1, clip=True), 0.)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
-        out["trailjet_eta"]   = ak.fill_none(ak.pad_none(self.jets.eta, 3, axis=1, clip=True), -999)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
-        out["trailjet_phi"]   = ak.fill_none(ak.pad_none(self.jets.phi, 3, axis=1, clip=True), -999)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
 
         #### ALL JETS PROPERTIES ####
         ##maxnjets = ak.max(ak.num(self.jets, axis=1)) # We need to know the maximum to do the proper padding
         ##out["alljets_pt"]      = ak.fill_none(ak.pad_none(self.jets.pt,  maxnjets, axis=1, clip=True), 0.)
         ##out["alljets_eta"]     = ak.fill_none(ak.pad_none(self.jets.eta,  maxnjets, axis=1, clip=True), -999.)
         ##out["alljets_phi"]     = ak.fill_none(ak.pad_none(self.jets.phi,  maxnjets, axis=1, clip=True), -999.)
-        #endregion
+
 
         if self.doTracks:
             out["ntracks"]     = ak.num(self.tracks, axis=1)[:]
+            ptScan     = [0.5, 0.75, 1., 1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3.]
+            fromPVScan = [0, 1, 2] # fromPV == 0 not useful
+            etaScan    = [5.0, 2.5, 1.4, 1.0]
+            for ptcut in ptScan:
+              for pvcut in fromPVScan:
+                for etacut in etaScan:
+                  trackscut = (self.tracks.fromPV > pvcut) & (self.tracks.pt > ptcut) & (abs(self.tracks.eta) < etacut)
+                  temptracks = self.tracks[trackscut]
+                  out["ntracks_pv%i_pt%1.2f_eta%1.1f"%(pvcut, ptcut, etacut)] = ak.num(temptracks, axis=1)[:]
             ##maxntracks         = ak.max(ak.num(self.tracks, axis=1))
             ##out["tracks_pt"]   = ak.fill_none(ak.pad_none(self.tracks.pt,  maxntracks, axis=1, clip=True), 0.)
             ##out["tracks_eta"]  = ak.fill_none(ak.pad_none(self.tracks.eta,  maxntracks, axis=1, clip=True), -999.)
             ##out["tracks_phi"]  = ak.fill_none(ak.pad_none(self.tracks.phi,  maxntracks, axis=1, clip=True), -999.)
 
-            if self.isSpherable:
-              
-                # Reconstructing by setting pS = -pZ 
-                boost_Zinv = ak.zip({
-                    "px": self.Zcands.px,
-                    "py": self.Zcands.py,
-                    "pz": self.Zcands.pz,
-                    "mass": self.Zcands.mass
-                }, with_name="Momentum4D") 
-
-                # Reconstructing by summing all tracks
-                boost_tracks = ak.zip({
-                    "px": ak.sum(self.tracks.px, axis=1)*-1,
-                    "py": ak.sum(self.tracks.py, axis=1)*-1,
-                    "pz": ak.sum(self.tracks.pz, axis=1)*-1,
-                    "mass": 125 # Assuming it is a Higgs?
-                }, with_name="Momentum4D")
-
-                tracks_boostedagainstZ      = self.tracks.boost_p4(boost_Zinv)
-                tracks_boostedagainsttracks = self.tracks.boost_p4(boost_tracks)
-
-                evalsL = self.sphericity(self.events, self.tracks, 2) # Gives the sphericity in Lab frame
-                evalsZ = self.sphericity(self.events, tracks_boostedagainstZ, 2) #Gives the sphericity in -Z frame (-pZ = pS)
-                evalsT = self.sphericity(self.events, tracks_boostedagainsttracks, 2) #Gives the sphericity in -Z frame (tracks)
-
-                #region: OUTPUT FOR SPHERICITY
-
-                ### Boosts ###
-                out["boostZ_px"] = boost_Zinv.px
-                out["boostZ_py"] = boost_Zinv.py
-                out["boostZ_pz"] = boost_Zinv.pz
-                out["boostZ_pt"] = boost_Zinv.pt
-                
-                out["boostT_px"] = boost_tracks.px
-                out["boostT_py"] = boost_tracks.py
-                out["boostT_pt"] = boost_tracks.pt
-                out["boostT_pz"] = boost_tracks.pz
-
-                ### Evals themselves ###
-                out["eval_L1"] = evalsL[:,0]
-                out["eval_L2"] = evalsL[:,1]
-                out["eval_L3"] = evalsL[:,2]
-                out["eval_Z1"] = evalsZ[:,0]
-                out["eval_Z2"] = evalsZ[:,1]
-                out["eval_Z3"] = evalsZ[:,2]
-                out["eval_T1"] = evalsT[:,0]
-                out["eval_T2"] = evalsT[:,1]
-                out["eval_T3"] = evalsT[:,2]
-
-                ### Scalar Sphericity ###
-                out["scalarSpher_L"] = 1.5*(evalsL[:,0] + evalsL[:,1])
-                out["scalarSpher_Z"] = 1.5*(evalsZ[:,0] + evalsZ[:,1])
-                out["scalarSpher_T"] = 1.5*(evalsT[:,0] + evalsT[:,1])
-
-                ### Mean Difference ###
-                out["meanDiff_L"] = np.mean(np.stack([evalsL[:,2]-evalsL[:,1], evalsL[:,2]-evalsL[:,0], evalsL[:,1]-evalsL[:,0]]), axis=0)
-                out["meanDiff_Z"] = np.mean(np.stack([evalsZ[:,2]-evalsZ[:,1], evalsZ[:,2]-evalsZ[:,0], evalsZ[:,1]-evalsZ[:,0]]), axis=0)
-                out["meanDiff_T"] = np.mean(np.stack([evalsT[:,2]-evalsT[:,1], evalsT[:,2]-evalsT[:,0], evalsT[:,1]-evalsT[:,0]]), axis=0)
-                #endregion
-
-
-        if self.doGen:
-            if debug: print("Saving gen variables")
-            
-            out["genZpt"]  = self.genZ.pt[:,0]
-            out["genZpz"]  = self.genZ.pz[:,0]
-            out["genZeta"] = self.genZ.eta[:,0]
-            out["genZphi"] = self.genZ.phi[:,0]
-
-            out["genHpx"]  = self.genH.px[:,0]
-            out["genHpy"]  = self.genH.py[:,0]
-            out["genHpz"]  = self.genH.pz[:,0]
-            out["genHpt"]  = self.genH.pt[:,0]
-            
-            out["genHeta"] = self.genH.eta[:,0]
-            out["genHphi"] = self.genH.phi[:,0]
-
         return out
 
     def postprocess(self, accumulator):
         return accumulator
-
-#hello
