@@ -16,9 +16,12 @@ parser.add_argument('--infile', type=str, default=None, help="")
 parser.add_argument('--dataset', type=str, default="X", help="")
 parser.add_argument('--nevt', type=str, default=-1, help="")
 parser.add_argument('--analyzer', type=str, default="GluGlu", help="")
+parser.add_argument('--outputdir', type=str, default=None, help="")
+parser.add_argument('--chunksize', type=int, default=250000, help="")
+parser.add_argument('--test', type=bool, default=False, help="")
 options = parser.parse_args()
 
-out_dir = os.getcwd()
+out_dir = options.outputdir if options.outputdir else os.getcwd()
 
 ## Select analyzer
 
@@ -26,7 +29,8 @@ if options.analyzer == "GluGlu":
   from workflows.SUEP_coffea import *
 elif options.analyzer == "ZH_simple":
   from workflows.SUEP_coffea_ZH_simple import *
-
+elif options.analyzer == "ZH_trackID":
+  from workflows.SUEP_coffea_ZH_trackID import * 
 
 modules_era = []
 #Run the SUEP code. Note the xsection as input. For Data the xsection = 1.0 from above
@@ -42,5 +46,6 @@ for instance in modules_era:
                        'schema': processor.NanoAODSchema,
                        'xrootdtimeout': 10,
         },
-        chunksize=250000
+        chunksize = 100 if options.test else options.chunksize,
+        maxchunks = 1 if options.test else None,
     )
