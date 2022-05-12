@@ -587,5 +587,3 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def postprocess(self, accumulator):
         return accumulator
-
-#hello_2
