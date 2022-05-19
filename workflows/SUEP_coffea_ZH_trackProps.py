@@ -323,14 +323,22 @@ class SUEP_cluster(processor.ProcessorABC):
         GenParts  = ak.zip({ 
             "pdgId"   : events.GenPart.pdgId,
             "motherId": events.GenPart.genPartIdxMother,
+            "status"  : events.GenPart.status,
             "fromSUEP": -1,
         })
-        while(ak.any(GenParts.fromSUEP == -1)):
-          GenParts.fromSUEP = ak.where(GenParts.motherId == -1, 0, GenParts.fromSUEP)
-          GenParts.fromSUEP = ak.where(GenParts.pdgId    ==  999998, 1, GenParts.fromSUEP)
-          GenParts.pdgId    = ak.where(GenParts.fromSUEP == -1, GenParts[GenParts.motherId].pdgId, GenParts.pdgId)
-          GenParts.motherId = ak.where(GenParts.fromSUEP == -1, GenParts[GenParts.motherId].motherId, GenParts.motherId)
-          GenParts.fromSUEP = ak.where(GenParts.pdgId    ==  999998, 1, GenParts.fromSUEP)
+        while(ak.any(GenParts.fromSUEP < 0)):
+          print(ak.sum(GenParts.fromSUEP == -4), ak.sum(GenParts.fromSUEP == -3), ak.sum(GenParts.fromSUEP == -1), ak.sum(GenParts.fromSUEP == -0), ak.sum(GenParts.fromSUEP == 1),ak.sum(GenParts.fromSUEP == 2), ak.sum(GenParts.fromSUEP == 3), ak.sum(GenParts.fromSUEP == 4))
+          GenParts.fromSUEP = ak.where((GenParts.motherId == -1) & (GenParts.fromSUEP==-3) ,   3, GenParts.fromSUEP) # UE
+          GenParts.fromSUEP = ak.where((GenParts.motherId == -1) & (GenParts.fromSUEP==-4) ,   4, GenParts.fromSUEP) # ISR
+          GenParts.fromSUEP = ak.where((GenParts.motherId == -1) & (GenParts.fromSUEP==-1) ,   0, GenParts.fromSUEP)    # 0 means matched to PU
+          GenParts.fromSUEP = ak.where(GenParts.pdgId    ==  999998, 1, GenParts.fromSUEP) # 1 means matched to SUEP
+          GenParts.fromSUEP = ak.where(GenParts.pdgId    ==  23    , 2, GenParts.fromSUEP) # 2 means matched to Z
+          GenParts.fromSUEP = ak.where((GenParts.status   ==  63) & (GenParts.fromSUEP < 0)  , -3, GenParts.fromSUEP) # -3 means UE track
+          GenParts.fromSUEP = ak.where((GenParts.status   ==  61) & (GenParts.fromSUEP < 0)  , -4, GenParts.fromSUEP) # -4 means emission from primary but it can still be H/Z so -1 until chain ends
+          GenParts.pdgId    = ak.where(GenParts.fromSUEP < 0, GenParts[GenParts.motherId].pdgId, GenParts.pdgId)
+          GenParts.motherId = ak.where(GenParts.fromSUEP < 0, GenParts[GenParts.motherId].motherId, GenParts.motherId)
+          GenParts.status = ak.where(GenParts.fromSUEP < 0, GenParts[GenParts.motherId].status, GenParts.status)
+          GenParts.fromSUEP = ak.where(GenParts.pdgId    ==  999998, 1, GenParts.fromSUEP) 
 
         SimTracks.fromSUEP   = ak.where(SimTracks.igen >= 0, GenParts.fromSUEP[SimTracks.igen] == 1, False)
         newtotaltracks, newsimtracks = ak.unzip(ak.cartesian([totalTracks, SimTracks], axis=1, nested=True))
