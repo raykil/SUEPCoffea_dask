@@ -339,8 +339,8 @@ class SUEP_cluster(processor.ProcessorABC):
     
     def striptizeTracks(self, events, tracks):
         # This returns the number of SUEP tracks that lies in between certain eta selection.
-        dEta = 0.1
-        etas = np.linspace(-3,3,100)
+        dEta = 0.8
+        etas = np.linspace(-3,3,10)
         nSUEPtracks = [0] * len(etas)
 
         for i in range(len(etas)):
@@ -349,17 +349,27 @@ class SUEP_cluster(processor.ProcessorABC):
             for j in range(len(stripCut)): 
                 nSUEPtrack[j] = [sum(stripCut[j]),etas[i]]
             nSUEPtracks[i] = nSUEPtrack
-        
-        nSUEPtracks = np.swapaxes(nSUEPtracks,0,1)
-        nSUEPtracks = np.swapaxes(nSUEPtracks,1,2)
 
-        striptizedTracks = [0]*len(events)
+        nSUEPtracksPerEta = np.swapaxes(nSUEPtracks,0,1)
+        nSUEPtracksPerEta = np.swapaxes(nSUEPtracks,1,2)
+        nSUEPtracksPerEta = np.swapaxes(nSUEPtracks,0,2)
 
-        for i in range(len(nSUEPtracks)):
-            maxEta = nSUEPtracks[i][1][np.argmax(nSUEPtracks[i][0])]
-            stripCut = ((maxEta - dEta) < tracks[i].eta) & (tracks[i].eta < (maxEta + dEta))
-            striptizedTrack = tracks[i][stripCut]
-            striptizedTracks[i] = striptizedTrack
+        maxEtaIdx = [np.argmax(i) for i in nSUEPtracksPerEta[0]]
+        etas = nSUEPtracksPerEta[1]
+        maxEtas = [etas[:,i][0] for i in maxEtaIdx]
+
+        maxEta = nSUEPtracks[:][1][np.argmax(nSUEPtracks[:][0])]
+        stripcut = [((np.array(maxEtas)-dEta)[i] < tracks[i].eta) & ((np.array(maxEtas)+dEta)[i] < tracks[i].eta) for i in range(len(tracks.eta))]
+
+        striptizedTracks = tracks[stripcut]
+
+        # Getting the min eta and max eta of the tracks in an event.
+        etaRange = [0] * len(tracks)
+        for i in range(len(tracks)):
+            minEta = np.min(tracks[i].eta)
+            maxEta = np.max(tracks[i].eta)
+            etaRange[i] = maxEta - minEta
+        print(np.mean(etaRange),"meanetarange")
 
         return events, tracks, striptizedTracks
 
@@ -456,8 +466,9 @@ class SUEP_cluster(processor.ProcessorABC):
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass jet cuts. Selecting tracks..."%len(self.events))
         
+        SimTrack = True
+
         if self.doTracks:
-            SimTrack = True
             if SimTrack:
                 self.events, self.tracks, self.suepTracks, self.backTracks = self.selectByTracks(self.events, self.leptons)[:4]
             else:
@@ -470,7 +481,10 @@ class SUEP_cluster(processor.ProcessorABC):
             #each track in self.clusters has form {px: 0.817, py: 0.686, pz: -3.84, E: 3.99}
 
         if self.doStrips:
-            self.suepEvents, self.suepStrips, self.striptizedTracks = self.striptizeTracks(self.events, self.suepTracks)[:3]
+            if SimTrack:
+                self.suepEvents, self.totalSuepTracks, self.striptizedTracks = self.striptizeTracks(self.events, self.suepTracks)[:3]
+            else:
+                self.events, self.strips, self.striptizedTracks = self.striptizeTracks(self.events, self.tracks)[:3]
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
 
         if self.doGen:
@@ -548,16 +562,8 @@ class SUEP_cluster(processor.ProcessorABC):
             if self.doClusters:
                 self.clusters     = self.clusters[cut]
                 self.constituents = self.constituents[cut]
-                print(self.clusters,"self.clusters")
-                print(self.clusters[cut],"self.clusters[cut]")
-                print(cut,"cut")
-            """
             if self.doStrips:
-                print(self.striptizedTracks,"self.striptizedTracks")
-                print(self.striptizedTracks[cut],"self.striptizedTracks[cut]")
-                print(cut,"cut")
                 self.striptizedTracks = self.striptizedTracks[cut]
-            """
         if self.doGen:
             self.genZ    = self.genZ[cut]
             self.genH    = self.genH[cut]
@@ -723,12 +729,11 @@ class SUEP_cluster(processor.ProcessorABC):
                 out["leadclusterSpher_C"] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))
 
         if self.doStrips and self.isStripable:
-
             boost_leadStrip = ak.zip({
-                "px": self.striptizedTracks[:,-1].px*-1,
-                "py": self.striptizedTracks[:,-1].py*-1,
-                "pz": self.striptizedTracks[:,-1].pz*-1,
-                "mass": self.striptizedTracks[:,-1].mass
+                "px": ak.sum(self.striptizedTracks.px, axis=1)*-1,
+                "py": ak.sum(self.striptizedTracks.py, axis=1)*-1,
+                "pz": ak.sum(self.striptizedTracks.pz, axis=1)*-1,
+                "mass": 125 # Assuming it is a Higgs?
             }, with_name="Momentum4D")
 
             out["boostS_px"] = boost_leadStrip.px
