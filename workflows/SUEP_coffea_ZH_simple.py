@@ -738,7 +738,7 @@ class SUEP_cluster(processor.ProcessorABC):
             deltaPhi = maxPhi-minPhi
             for i in range(len(deltaPhi)): 
                 if deltaPhi[i] > np.pi: deltaPhi[i] = abs(2 * np.pi - deltaPhi[i])
-            out["boostS_deltaEta"] = deltaPhi
+            out["boostS_deltaPhi"] = deltaPhi
 
         if self.doGen:
             if debug: print("Saving gen variables")
