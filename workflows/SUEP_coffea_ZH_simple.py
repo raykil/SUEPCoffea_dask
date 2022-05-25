@@ -294,7 +294,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         # region: SIM TRACKS
         # This part tags tracks from signal and those from background.
-        SimTrack = True # Put this true only if dealing with NANOAOD files.
+        SimTrack = False # Put this true only if dealing with NANOAOD files.
         if SimTrack:
             SimTracks = ak.zip({
                 "pt": events.SimTracks.pt,
@@ -324,9 +324,10 @@ class SUEP_cluster(processor.ProcessorABC):
 
             suepTracks = totalTracks[totalTracks.fromSUEP == True]
             backTracks = totalTracks[totalTracks.fromSUEP == False]
+            return events, totalTracks, suepTracks, backTracks, nTracks, [coll for coll in extraColls]
         # endregion
         
-        return events, totalTracks, suepTracks, backTracks, nTracks, [coll for coll in extraColls]
+        return events, totalTracks, [coll for coll in extraColls]
 
     def clusterizeTracks(self, events, tracks):
          # anti-kt, dR=1.5 jets
@@ -341,35 +342,22 @@ class SUEP_cluster(processor.ProcessorABC):
         # This returns the number of SUEP tracks that lies in between certain eta selection.
         dEta = 0.8
         etas = np.linspace(-3,3,10)
-        nSUEPtracks = [0] * len(etas)
+        nSUEPtracksPerEta = [0] * len(etas)
 
         for i in range(len(etas)):
             nSUEPtrack = [0] * len(tracks)
             stripCut = ((etas[i] - dEta) < tracks.eta) & (tracks.eta < (etas[i] + dEta))
             for j in range(len(stripCut)): 
                 nSUEPtrack[j] = [sum(stripCut[j]),etas[i]]
-            nSUEPtracks[i] = nSUEPtrack
+            nSUEPtracksPerEta[i] = nSUEPtrack
 
-        nSUEPtracksPerEta = np.swapaxes(nSUEPtracks,0,1)
-        nSUEPtracksPerEta = np.swapaxes(nSUEPtracks,1,2)
-        nSUEPtracksPerEta = np.swapaxes(nSUEPtracks,0,2)
+        nSUEPtracksPerEta = np.swapaxes(nSUEPtracksPerEta,0,2)
 
         maxEtaIdx = [np.argmax(i) for i in nSUEPtracksPerEta[0]]
         etas = nSUEPtracksPerEta[1]
         maxEtas = [etas[:,i][0] for i in maxEtaIdx]
-
-        maxEta = nSUEPtracks[:][1][np.argmax(nSUEPtracks[:][0])]
         stripcut = [((np.array(maxEtas)-dEta)[i] < tracks[i].eta) & ((np.array(maxEtas)+dEta)[i] < tracks[i].eta) for i in range(len(tracks.eta))]
-
         striptizedTracks = tracks[stripcut]
-
-        # Getting the min eta and max eta of the tracks in an event.
-        etaRange = [0] * len(tracks)
-        for i in range(len(tracks)):
-            minEta = np.min(tracks[i].eta)
-            maxEta = np.max(tracks[i].eta)
-            etaRange[i] = maxEta - minEta
-        print(np.mean(etaRange),"meanetarange")
 
         return events, tracks, striptizedTracks
 
@@ -466,7 +454,7 @@ class SUEP_cluster(processor.ProcessorABC):
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass jet cuts. Selecting tracks..."%len(self.events))
         
-        SimTrack = True
+        SimTrack = False
 
         if self.doTracks:
             if SimTrack:
@@ -740,6 +728,17 @@ class SUEP_cluster(processor.ProcessorABC):
             out["boostS_py"] = boost_leadStrip.py
             out["boostS_pz"] = boost_leadStrip.pz
             out["boostS_pt"] = boost_leadStrip.pt
+
+            maxEta = np.array([ak.max(self.striptizedTracks[i].eta) for i in range(len(self.striptizedTracks))])
+            minEta = np.array([ak.min(self.striptizedTracks[i].eta) for i in range(len(self.striptizedTracks))])
+            out["boostS_deltaEta"] = maxEta - minEta
+
+            maxPhi = np.array([ak.max(self.striptizedTracks[i].phi) for i in range(len(self.striptizedTracks))])
+            minPhi = np.array([ak.min(self.striptizedTracks[i].phi) for i in range(len(self.striptizedTracks))])
+            deltaPhi = maxPhi-minPhi
+            for i in range(len(deltaPhi)): 
+                if deltaPhi[i] > np.pi: deltaPhi[i] = abs(2 * np.pi - deltaPhi[i])
+            out["boostS_deltaEta"] = deltaPhi
 
         if self.doGen:
             if debug: print("Saving gen variables")
