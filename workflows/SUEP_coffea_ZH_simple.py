@@ -294,8 +294,8 @@ class SUEP_cluster(processor.ProcessorABC):
 
         # region: SIM TRACKS
         # This part tags tracks from signal and those from background.
-        SimTrack = False # Put this true only if dealing with NANOAOD files.
-        if SimTrack:
+
+        if self.SimTrack:
             SimTracks = ak.zip({
                 "pt": events.SimTracks.pt,
                 "eta": events.SimTracks.eta,
@@ -337,7 +337,7 @@ class SUEP_cluster(processor.ProcessorABC):
          ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
 
          return events, ak15_jets, ak15_consts
-    
+    """
     def striptizeTracks(self, events, tracks):
         # This returns the number of SUEP tracks that lies in between certain eta selection.
         dEta = 0.8
@@ -360,6 +360,7 @@ class SUEP_cluster(processor.ProcessorABC):
         striptizedTracks = tracks[stripcut]
 
         return events, tracks, striptizedTracks
+    """
 
     def selectByGEN(self, events):
         GenParts = ak.zip({
@@ -418,7 +419,7 @@ class SUEP_cluster(processor.ProcessorABC):
             "twoleptons":[{},[]], # Has Two Leptons, pT and Trigger requirements
             "onetrack"  :[{},[]], # + at least one track
             "onecluster":[{},[]],
-            "onestrip"  :[{},[]]
+        #    "onestrip"  :[{},[]]
         }
 
         # Data dependant stuff
@@ -454,10 +455,10 @@ class SUEP_cluster(processor.ProcessorABC):
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass jet cuts. Selecting tracks..."%len(self.events))
         
-        SimTrack = False
+        self.SimTrack = True
 
         if self.doTracks:
-            if SimTrack:
+            if self.SimTrack:
                 self.events, self.tracks, self.suepTracks, self.backTracks = self.selectByTracks(self.events, self.leptons)[:4]
             else:
                 self.events, self.tracks = self.selectByTracks(self.events, self.leptons)[:2]
@@ -468,12 +469,14 @@ class SUEP_cluster(processor.ProcessorABC):
             self.events, self.clusters, self.constituents = self.clusterizeTracks(self.events, self.tracks)[:3]
             #each track in self.clusters has form {px: 0.817, py: 0.686, pz: -3.84, E: 3.99}
 
+        """
         if self.doStrips:
-            if SimTrack:
+            if self.SimTrack:
                 self.suepEvents, self.totalSuepTracks, self.striptizedTracks = self.striptizeTracks(self.events, self.suepTracks)[:3]
             else:
                 self.events, self.strips, self.striptizedTracks = self.striptizeTracks(self.events, self.tracks)[:3]
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+        """
 
         if self.doGen:
             self.events, self.genZ, self.genH, self.genSUEP = self.selectByGEN(self.events)[:4]
@@ -497,7 +500,7 @@ class SUEP_cluster(processor.ProcessorABC):
         if self.doTracks:
             cutOneTrack = (ak.num(self.tracks) != 0)
             self.applyCutToAllCollections(cutOneTrack)
-            self.isSpherable = True # So we do sphericity plots
+            self.isSpherable = False # So we do sphericity plots
             outputs["onetrack"] = [self.doAllPlots("onetrack", debug), self.events]
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
             if debug: print("%i events pass onetrack cuts. Doing more stuff..."%len(self.events))
@@ -505,18 +508,20 @@ class SUEP_cluster(processor.ProcessorABC):
         if self.doClusters:
             cutOneCluster = (ak.num(self.clusters) != 0)
             self.applyCutToAllCollections(cutOneCluster)
-            self.isClusterable = True # So we do cluster plots
+            self.isClusterable = False # So we do cluster plots
             outputs["onecluster"] = [self.doAllPlots("onecluster", debug), self.events]
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
             if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))
 
+        
         if self.doStrips:
-            cutOneStrip = (ak.num(self.striptizedTracks) != 0)
-            self.applyCutToAllCollections(cutOneStrip)
+            #cutOneStrip = (ak.num(self.striptizedTracks) != 0)
+            #self.applyCutToAllCollections(cutOneStrip)
             self.isStripable = True
-            outputs["onestrip"] = [self.doAllPlots("onestrip", debug), self.events]
-            if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-            if debug: print("%i events pass onestrip cuts. Doing more stuff..."%len(self.events))
+            #outputs["onestrip"] = [self.doAllPlots("onestrip", debug), self.events]
+            #if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+            #if debug: print("%i events pass onestrip cuts. Doing more stuff..."%len(self.events))
+        
 
 
         # ------------------------------------------------------------------------------
@@ -547,11 +552,13 @@ class SUEP_cluster(processor.ProcessorABC):
         self.Zcands    = self.Zcands[cut]
         if self.doTracks:
             self.tracks  = self.tracks[cut]
+            if self.SimTrack:
+                self.suepTracks = self.suepTracks[cut]
             if self.doClusters:
                 self.clusters     = self.clusters[cut]
                 self.constituents = self.constituents[cut]
-            if self.doStrips:
-                self.striptizedTracks = self.striptizedTracks[cut]
+            #if self.doStrips:
+            #    self.striptizedTracks = self.striptizedTracks[cut]
         if self.doGen:
             self.genZ    = self.genZ[cut]
             self.genH    = self.genH[cut]
@@ -564,7 +571,7 @@ class SUEP_cluster(processor.ProcessorABC):
         out = {}
         # Define outputs for plotting
         if debug: print("Saving reco variables for channel %s"%channel)
-
+        """
         # region Object: leptons
         out["leadlep_pt"]    = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
@@ -612,6 +619,7 @@ class SUEP_cluster(processor.ProcessorABC):
         ##out["alljets_eta"]     = ak.fill_none(ak.pad_none(self.jets.eta,  maxnjets, axis=1, clip=True), -999.)
         ##out["alljets_phi"]     = ak.fill_none(ak.pad_none(self.jets.phi,  maxnjets, axis=1, clip=True), -999.)
         #endregion
+        """
 
         if self.doTracks:
             out["ntracks"]     = ak.num(self.tracks, axis=1)[:]
@@ -619,6 +627,18 @@ class SUEP_cluster(processor.ProcessorABC):
             ##out["tracks_pt"]   = ak.fill_none(ak.pad_none(self.tracks.pt,  maxntracks, axis=1, clip=True), 0.)
             ##out["tracks_eta"]  = ak.fill_none(ak.pad_none(self.tracks.eta,  maxntracks, axis=1, clip=True), -999.)
             ##out["tracks_phi"]  = ak.fill_none(ak.pad_none(self.tracks.phi,  maxntracks, axis=1, clip=True), -999.)
+
+            maxEta = ak.max(self.suepTracks.eta, axis=1)
+            minEta = ak.min(self.suepTracks.eta, axis=1)
+            out["boostS_deltaEta"] = (maxEta - minEta)[:]
+
+            phi = ak.where(self.suepTracks.phi < 0,2*np.pi + self.suepTracks.phi, self.suepTracks.phi) #transform phi range to 0:2pi
+            phiCombo = ak.combinations(phi,2,fields=["phi1","phi2"])
+            phiComboDiff = abs(phiCombo.phi1-phiCombo.phi2) #difference in two phi values
+            phiComboDiff = ak.where(phiComboDiff > np.pi, 2*np.pi - phiComboDiff, phiComboDiff)
+            maxPhiComboDiff = ak.max(phiComboDiff,axis=1) #max difference in phi in each event
+            
+            out["boostS_deltaPhi"] = maxPhiComboDiff[:]
 
             if self.isSpherable:
               
@@ -716,7 +736,8 @@ class SUEP_cluster(processor.ProcessorABC):
                 out["leadclusterSpher_T"] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
                 out["leadclusterSpher_C"] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))
 
-        if self.doStrips and self.isStripable:
+        #if self.doStrips and self.isStripable:
+            """
             boost_leadStrip = ak.zip({
                 "px": ak.sum(self.striptizedTracks.px, axis=1)*-1,
                 "py": ak.sum(self.striptizedTracks.py, axis=1)*-1,
@@ -728,17 +749,7 @@ class SUEP_cluster(processor.ProcessorABC):
             out["boostS_py"] = boost_leadStrip.py
             out["boostS_pz"] = boost_leadStrip.pz
             out["boostS_pt"] = boost_leadStrip.pt
-
-            maxEta = np.array([ak.max(self.striptizedTracks[i].eta) for i in range(len(self.striptizedTracks))])
-            minEta = np.array([ak.min(self.striptizedTracks[i].eta) for i in range(len(self.striptizedTracks))])
-            out["boostS_deltaEta"] = maxEta - minEta
-
-            maxPhi = np.array([ak.max(self.striptizedTracks[i].phi) for i in range(len(self.striptizedTracks))])
-            minPhi = np.array([ak.min(self.striptizedTracks[i].phi) for i in range(len(self.striptizedTracks))])
-            deltaPhi = maxPhi-minPhi
-            for i in range(len(deltaPhi)): 
-                if deltaPhi[i] > np.pi: deltaPhi[i] = abs(2 * np.pi - deltaPhi[i])
-            out["boostS_deltaPhi"] = deltaPhi
+            """
 
         if self.doGen:
             if debug: print("Saving gen variables")
