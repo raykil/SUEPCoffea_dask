@@ -1,331 +1,252 @@
+"""
+Plotter for boost properties. Boost are done in L, Z, T, C frames.
+The objective is to reconstruct Higgs momentum.
+Raymond Kil, 2022
+"""
+
 import pandas as pd
 import ROOT
 import os
-
-output = "/eos/user/j/jkil/www"
+import numpy as np
 
 ZH = [pd.HDFStore("../outputZH/"+f, 'r') for f in os.listdir("../outputZH/")]
 
-px = False
-py = False
-pz = False
-pt = True
-boost_px = False
-boost_py = False
-boost_pz = False
-boost_pt = False
-HpxHpy = False
+Zboost_px = True
+Zboost_py = True
+Zboost_pz = True
+Zboost_pt = True
+outputZ = "/eos/user/j/jkil/www/Z-Frame_Property"
 
-if pt:
+Tboost_px = True
+Tboost_py = True
+Tboost_pz = True
+Tboost_pt = True
+outputT = "/eos/user/j/jkil/www/T-Frame_Property"
 
-    Zpt1 = [0]*len(ZH[0]["onetrack"]["Z_pt"])
-    Hpt1 = [0]*len(ZH[0]["onetrack"]["genHpt"])
-    Zpt2 = [0]*len(ZH[1]["onetrack"]["Z_pt"])
-    Hpt2 = [0]*len(ZH[1]["onetrack"]["genHpt"])
+Cboost_px = True
+Cboost_py = True
+Cboost_pz = True
+Cboost_pt = True
+outputC = "/eos/user/j/jkil/www/C-Frame_Property"
 
-    for i, Zpt in enumerate(ZH[0]["onetrack"]["Z_pt"]) :
-        Zpt1[i] = Zpt
-    for i, Zpt in enumerate(ZH[1]["onetrack"]["Z_pt"]) :
-        Zpt2[i] = Zpt
 
-    Zpt = Zpt1 + Zpt2
+###### Z BOOST ######
+if Zboost_px:
 
-    for i, genHpt in enumerate(ZH[0]["onetrack"]["genHpt"]):
-        Hpt1[i] = genHpt
-    for i, genHpt in enumerate(ZH[1]["onetrack"]["genHpt"]):
-        Hpt2[i] = genHpt
+    h_px = ROOT.TH2F("genHpx_vs_recZpx","genHpx vs recZpx",100,0,500,100,0,500)
+    c_px = ROOT.TCanvas("c_px","", 800,600)
 
-    Hpt = Hpt1 + Hpt2
+    for i in range(len(ZH)):
+        Zpx = ZH[i]["onetrack"]["Z_px"]
+        Hpx = ZH[i]["onetrack"]["genHpx"]
+        for j in range(len(Zpx)):
+            h_px.Fill(Zpx[j],Hpx[j])
 
-    h_pt = ROOT.TH2F("genHpt_vs_recZpt","generated Hpt vs reconstructed Zpt",100,0,500,100,0,500)
-    c_pt = ROOT.TCanvas("c_pt", "", 800,600)
+    h_px.Draw()
+    h_px.GetXaxis().SetTitle("px of recZ [GeV]")
+    h_px.GetYaxis().SetTitle("px of genH [GeV]")
+    c_px.SaveAs("%s/%s.pdf"%(outputZ,"genHpx_vs_recZpx"))
+    c_px.SaveAs("%s/%s.png"%(outputZ,"genHpx_vs_recZpx"))
 
-    for i in range(len(Zpt)):
-        h_pt.Fill(Zpt[i],Hpt[i])
+if Zboost_py:
 
-    f = ROOT.TF1("f","[0]*x",0,500)
-    h_pt.Fit("f") # Draws the best fit curve to the plot.
+    h_py = ROOT.TH2F("genHpy_vs_recZpy","genHpy vs recZpy",100,0,500,100,0,500)
+    c_py = ROOT.TCanvas("c_py","", 800,600)
+
+    for i in range(len(ZH)):
+        Zpy = ZH[i]["onetrack"]["Z_py"]
+        Hpy = ZH[i]["onetrack"]["genHpy"]
+        for j in range(len(Zpy)):
+            h_py.Fill(Zpy[j],Hpy[j])
+
+    h_py.Draw()
+    h_py.GetXaxis().SetTitle("py of recZ [GeV]")
+    h_py.GetYaxis().SetTitle("py of genH [GeV]")
+    c_py.SaveAs("%s/%s.pdf"%(outputZ,"genHpy_vs_recZpy"))
+    c_py.SaveAs("%s/%s.png"%(outputZ,"genHpy_vs_recZpy"))
+
+if Zboost_pz:
+
+    h_pz = ROOT.TH2F("genHpz_vs_recZpz","genHpz vs recZpz",100,0,500,100,0,500)
+    c_pz = ROOT.TCanvas("c_pz","", 800,600)
+
+    for i in range(len(ZH)):
+        Zpz = ZH[i]["onetrack"]["Z_pz"]
+        Hpz = ZH[i]["onetrack"]["genHpz"]
+        for j in range(len(Zpz)):
+            h_pz.Fill(Zpz[j],Hpz[j])
+
+    h_pz.Draw()
+    h_pz.GetXaxis().SetTitle("pz of recZ [GeV]")
+    h_pz.GetYaxis().SetTitle("pz of genH [GeV]")
+    c_pz.SaveAs("%s/%s.pdf"%(outputZ,"genHpz_vs_recZpz"))
+    c_pz.SaveAs("%s/%s.png"%(outputZ,"genHpz_vs_recZpz"))
+
+if Zboost_pt:
+
+    h_pt = ROOT.TH2F("genHpt_vs_recZpt","genHpt vs recZpt",100,0,500,100,0,500)
+    c_pt = ROOT.TCanvas("c_pt","", 800,600)
+
+    for i in range(len(ZH)):
+        Zpt = ZH[i]["onetrack"]["Z_pt"]
+        Hpt = ZH[i]["onetrack"]["genHpt"]
+        for j in range(len(Zpt)):
+            h_pt.Fill(Zpt[j],Hpt[j])
+    
+    #f = ROOT.TF1("f","[0]*x",0,500)
+    #h_pt.Fit("f") # Draws the best fit curve to the plot.
+
     correlation = h_pt.GetCorrelationFactor()
-    #var = f.GetParameter(0)
+    print(correlation,"correlation factor")
 
     h_pt.Draw()
-    c_pt.Draw()
-    h_pt.GetXaxis().SetTitle("pt of Z [GeV]")
-    h_pt.GetYaxis().SetTitle("pt of H [GeV]")
-    c_pt.SaveAs("%s/%s.pdf"%(output,"generated Hpt vs reconstructed Zpt"))
-    c_pt.SaveAs("%s/%s.png"%(output,"generated Hpt vs reconstructed Zpt"))
-
-if pz:
-
-    Zpz1 = [0]*len(ZH[0]["onetrack"]["Z_pz"])
-    Hpz1 = [0]*len(ZH[0]["onetrack"]["genHpz"])
-    Zpz2 = [0]*len(ZH[1]["onetrack"]["Z_pz"])
-    Hpz2 = [0]*len(ZH[1]["onetrack"]["genHpz"])
-
-    for i, Zpz in enumerate(ZH[0]["onetrack"]["Z_pz"]) :
-        Zpz1[i] = Zpz
-    for i, Zpz in enumerate(ZH[1]["onetrack"]["Z_pz"]) :
-        Zpz2[i] = Zpz
-
-    Zpz = Zpz1 + Zpz2
-
-    for i, genHpz in enumerate(ZH[0]["onetrack"]["genHpz"]):
-        Hpz1[i] = genHpz
-    for i, genHpz in enumerate(ZH[1]["onetrack"]["genHpz"]):
-        Hpz2[i] = genHpz
-
-    Hpz = Hpz1 + Hpz2
+    h_pt.GetXaxis().SetTitle("pt of recZ [GeV]")
+    h_pt.GetYaxis().SetTitle("pt of genH [GeV]")
+    c_pt.SaveAs("%s/%s.pdf"%(outputZ,"genHpt_vs_recZpt"))
+    c_pt.SaveAs("%s/%s.png"%(outputZ,"genHpt_vs_recZpt"))
 
 
-    h_pz = ROOT.TH2F("genHpz_vs_recZpz","generated Hpz vs reconstructed Zpz",100,-300,300,100,-300,300)
-    c_pz = ROOT.TCanvas("c_pz", "", 800,600)
+###### T BOOST ######
+if Tboost_px:
 
-    for i in range(len(Zpz)):
-        h_pz.Fill(Zpz[i],Hpz[i])
-
-    h_pz.Draw()
-    c_pz.Draw()
-    h_pz.GetXaxis().SetTitle("pz of Z [GeV]")
-    h_pz.GetYaxis().SetTitle("pz of H [GeV]")
-    c_pz.SaveAs("%s/%s.pdf"%(output,"generated Hpz vs reconstructed Zpz"))
-    c_pz.SaveAs("%s/%s.png"%(output,"generated Hpz vs reconstructed Zpz"))
-
-if px:
-
-    Zpx1 = [0]*len(ZH[0]["onetrack"]["Z_px"])
-    Hpx1 = [0]*len(ZH[0]["onetrack"]["genHpx"])
-    Zpx2 = [0]*len(ZH[1]["onetrack"]["Z_px"])
-    Hpx2 = [0]*len(ZH[1]["onetrack"]["genHpx"])
-
-    for i, Zpx in enumerate(ZH[0]["onetrack"]["Z_px"]) :
-        Zpx1[i] = Zpx
-    for i, Zpx in enumerate(ZH[1]["onetrack"]["Z_px"]) :
-        Zpx2[i] = Zpx
-
-    Zpx = Zpx1 + Zpx2
-
-    for i, genHpx in enumerate(ZH[0]["onetrack"]["genHpx"]):
-        Hpx1[i] = genHpx
-    for i, genHpx in enumerate(ZH[1]["onetrack"]["genHpx"]):
-        Hpx2[i] = genHpx
-
-    Hpx = Hpx1 + Hpx2
-
-
-    h_px = ROOT.TH2F("genHpx_vs_recZpx","generated Hpx vs reconstructed Zpx",100,-300,300,100,-300,300)
+    h_px = ROOT.TH2F("genHpx_vs_TboostPx","generated Hpx vs TboostPx",100,-300,300,-300,0,300)
     c_px = ROOT.TCanvas("c_px", "", 800,600)
 
-    for i in range(len(Zpx)):
-        h_px.Fill(Zpx[i],Hpx[i])
+    for i in range(len(ZH)):
+        Tboost_px = ZH[i]["onetrack"]["boostT_px"]
+        Hpx = ZH[i]["onetrack"]["genHpx"]
+        for j in range(len(Tboost_px)):
+            h_px.Fill(Tboost_px[j],Hpx[j])
 
     h_px.Draw()
-    c_px.Draw()
-    h_px.GetXaxis().SetTitle("px of Z [GeV]")
+    h_px.GetXaxis().SetTitle("px of Tboost [GeV]")
     h_px.GetYaxis().SetTitle("px of H [GeV]")
-    c_px.SaveAs("%s/%s.pdf"%(output,"generated Hpx vs reconstructed Zpx"))
-    c_px.SaveAs("%s/%s.png"%(output,"generated Hpx vs reconstructed Zpx"))
+    c_px.SaveAs("%s/%s.pdf"%(outputT,"genHpx_vs_TboostPx"))
+    c_px.SaveAs("%s/%s.png"%(outputT,"genHpx_vs_TboostPx"))
 
-if py:
+if Tboost_py:
 
-    Zpy1 = [0]*len(ZH[0]["onetrack"]["Z_py"])
-    Hpy1 = [0]*len(ZH[0]["onetrack"]["genHpy"])
-    Zpy2 = [0]*len(ZH[1]["onetrack"]["Z_py"])
-    Hpy2 = [0]*len(ZH[1]["onetrack"]["genHpy"])
-
-    for i, Zpy in enumerate(ZH[0]["onetrack"]["Z_py"]) :
-        Zpy1[i] = Zpy
-    for i, Zpy in enumerate(ZH[1]["onetrack"]["Z_py"]) :
-        Zpy2[i] = Zpy
-
-    Zpy = Zpy1 + Zpy2
-
-    for i, genHpy in enumerate(ZH[0]["onetrack"]["genHpy"]):
-        Hpy1[i] = genHpy
-    for i, genHpy in enumerate(ZH[1]["onetrack"]["genHpy"]):
-        Hpy2[i] = genHpy
-
-    Hpy = Hpy1 + Hpy2
-
-
-    h_py = ROOT.TH2F("genHpy_vs_recZpy","generated Hpy vs reconstructed Zpy",100,-300,300,100,-300,300)
+    h_py = ROOT.TH2F("genHpy_vs_Tboostpy","generated Hpy vs Tboostpy",100,-300,300,-300,0,300)
     c_py = ROOT.TCanvas("c_py", "", 800,600)
 
-    for i in range(len(Zpy)):
-        h_py.Fill(Zpy[i],Hpy[i])
+    for i in range(len(ZH)):
+        Tboost_py = ZH[i]["onetrack"]["boostT_py"]
+        Hpy = ZH[i]["onetrack"]["genHpy"]
+        for j in range(len(Tboost_py)):
+            h_py.Fill(Tboost_py[j],Hpy[j])
 
     h_py.Draw()
-    c_py.Draw()
-    h_py.GetXaxis().SetTitle("py of Z [GeV]")
+    h_py.GetXaxis().SetTitle("py of Tboost [GeV]")
     h_py.GetYaxis().SetTitle("py of H [GeV]")
-    c_py.SaveAs("%s/%s.pdf"%(output,"generated Hpy vs reconstructed Zpy"))
-    c_py.SaveAs("%s/%s.png"%(output,"generated Hpy vs reconstructed Zpy"))
+    c_py.SaveAs("%s/%s.pdf"%(outputT,"genHpy_vs_Tboostpy"))
+    c_py.SaveAs("%s/%s.png"%(outputT,"genHpy_vs_Tboostpy"))
 
-if boost_px:
+if Tboost_pz:
 
-    Zboost1 = [0]*len(ZH[0]["onetrack"]["boostT_px"])
-    Hpx1 = [0]*len(ZH[0]["onetrack"]["genHpx"])
-    Zboost2 = [0]*len(ZH[1]["onetrack"]["boostT_px"])
-    Hpx2 = [0]*len(ZH[1]["onetrack"]["genHpx"])
-
-    for i, Zboost in enumerate(ZH[0]["onetrack"]["boostT_px"]) :
-        Zboost1[i] = Zboost
-    for i, Zboost in enumerate(ZH[1]["onetrack"]["boostT_px"]) :
-        Zboost2[i] = Zboost
-
-    Zboost = Zboost1 + Zboost2
-
-    for i, genHpx in enumerate(ZH[0]["onetrack"]["genHpx"]):
-        Hpx1[i] = genHpx
-    for i, genHpx in enumerate(ZH[1]["onetrack"]["genHpx"]):
-        Hpx2[i] = genHpx
-
-    Hpx = Hpx1 + Hpx2
-
-    h_px = ROOT.TH2F("genHpx_vs_boostZpx","generated Hpx vs Tboost Zpx",100,-300,300,-300,0,300)
-    c_px = ROOT.TCanvas("c_px", "", 800,600)
-
-    for i in range(len(Zboost)):
-        h_px.Fill(Zboost[i],Hpx[i])
-
-    h_px.Draw()
-    c_px.Draw()
-    h_px.GetXaxis().SetTitle("px of Z [GeV]")
-    h_px.GetYaxis().SetTitle("px of H [GeV]")
-    c_px.SaveAs("%s/%s.pdf"%(output,"generated Hpx vs Tboost Zpx"))
-    c_px.SaveAs("%s/%s.png"%(output,"generated Hpx vs Tboost Zpx"))
-
-if boost_py:
-
-    Zboost1 = [0]*len(ZH[0]["onetrack"]["boostT_py"])
-    Hpy1 = [0]*len(ZH[0]["onetrack"]["genHpy"])
-    Zboost2 = [0]*len(ZH[1]["onetrack"]["boostT_py"])
-    Hpy2 = [0]*len(ZH[1]["onetrack"]["genHpy"])
-
-    for i, Zboost in enumerate(ZH[0]["onetrack"]["boostT_py"]) :
-        Zboost1[i] = Zboost
-    for i, Zboost in enumerate(ZH[1]["onetrack"]["boostT_py"]) :
-        Zboost2[i] = Zboost
-
-    Zboost = Zboost1 + Zboost2
-
-    for i, genHpy in enumerate(ZH[0]["onetrack"]["genHpy"]):
-        Hpy1[i] = genHpy
-    for i, genHpy in enumerate(ZH[1]["onetrack"]["genHpy"]):
-        Hpy2[i] = genHpy
-
-    Hpy = Hpy1 + Hpy2
-
-    h_py = ROOT.TH2F("genHpy_vs_boostZpy","generated Hpy vs Tboost Zpy",100,-300,300,-300,0,300)
-    c_py = ROOT.TCanvas("c_py", "", 800,600)
-
-    for i in range(len(Zboost)):
-        h_py.Fill(Zboost[i],Hpy[i])
-
-    h_py.Draw()
-    c_py.Draw()
-    h_py.GetXaxis().SetTitle("py of Z [GeV]")
-    h_py.GetYaxis().SetTitle("py of H [GeV]")
-    c_py.SaveAs("%s/%s.pdf"%(output,"generated Hpy vs Tboost Zpy"))
-    c_py.SaveAs("%s/%s.png"%(output,"generated Hpy vs Tboost Zpy"))
-
-if boost_pz:
-
-    Zboost1 = [0]*len(ZH[0]["onetrack"]["boostT_pz"])
-    Hpz1 = [0]*len(ZH[0]["onetrack"]["genHpz"])
-    Zboost2 = [0]*len(ZH[1]["onetrack"]["boostT_pz"])
-    Hpz2 = [0]*len(ZH[1]["onetrack"]["genHpz"])
-
-    for i, Zboost in enumerate(ZH[0]["onetrack"]["boostT_pz"]) :
-        Zboost1[i] = Zboost
-    for i, Zboost in enumerate(ZH[1]["onetrack"]["boostT_pz"]) :
-        Zboost2[i] = Zboost
-
-    Zboost = Zboost1 + Zboost2
-
-    for i, genHpz in enumerate(ZH[0]["onetrack"]["genHpz"]):
-        Hpz1[i] = genHpz
-    for i, genHpz in enumerate(ZH[1]["onetrack"]["genHpz"]):
-        Hpz2[i] = genHpz
-
-    Hpz = Hpz1 + Hpz2
-
-    h_pz = ROOT.TH2F("genHpz_vs_boostZpz","generated Hpz vs Tboost Zpz",100,-300,300,100,-300,300)
+    h_pz = ROOT.TH2F("genHpz_vs_Tboostpz","generated Hpz vs Tboostpz",100,-300,300,-300,0,300)
     c_pz = ROOT.TCanvas("c_pz", "", 800,600)
 
-    for i in range(len(Zboost)):
-        h_pz.Fill(Zboost[i],Hpz[i])
+    for i in range(len(ZH)):
+        Tboost_pz = ZH[i]["onetrack"]["boostT_pz"]
+        Hpz = ZH[i]["onetrack"]["genHpz"]
+        for j in range(len(Tboost_pz)):
+            h_pz.Fill(Tboost_pz[j],Hpz[j])
+
+    correlation = h_pz.GetCorrelationFactor()
+    print(correlation,"correlation factor")
 
     h_pz.Draw()
-    c_pz.Draw()
-    h_pz.GetXaxis().SetTitle("pz of Z [GeV]")
+    h_pz.GetXaxis().SetTitle("pz of Tboost [GeV]")
     h_pz.GetYaxis().SetTitle("pz of H [GeV]")
-    c_pz.SaveAs("%s/%s.pdf"%(output,"generated Hpz vs Tboost Zpz"))
-    c_pz.SaveAs("%s/%s.png"%(output,"generated Hpz vs Tboost Zpz"))
+    c_pz.SaveAs("%s/%s.pdf"%(outputT,"genHpz_vs_Tboostpz"))
+    c_pz.SaveAs("%s/%s.png"%(outputT,"genHpz_vs_Tboostpz"))
 
-if boost_pt:
+if Tboost_pt:
 
-    Zboost1 = [0]*len(ZH[0]["onetrack"]["boostT_pt"])
-    Hpt1 = [0]*len(ZH[0]["onetrack"]["genHpt"])
-    Zboost2 = [0]*len(ZH[1]["onetrack"]["boostT_pt"])
-    Hpt2 = [0]*len(ZH[1]["onetrack"]["genHpt"])
-
-    for i, Zboost in enumerate(ZH[0]["onetrack"]["boostT_pt"]) :
-        Zboost1[i] = Zboost
-    for i, Zboost in enumerate(ZH[1]["onetrack"]["boostT_pt"]) :
-        Zboost2[i] = Zboost
-
-    Zboost = Zboost1 + Zboost2
-
-    for i, genHpt in enumerate(ZH[0]["onetrack"]["genHpt"]):
-        Hpt1[i] = genHpt
-    for i, genHpt in enumerate(ZH[1]["onetrack"]["genHpt"]):
-        Hpt2[i] = genHpt
-
-    Hpt = Hpt1 + Hpt2
-
-    h_pt = ROOT.TH2F("genHpt_vs_boostZpt","generated Hpt vs Tboost Zpt",100,0,500,100,0,500)
+    h_pt = ROOT.TH2F("genHpt_vs_Tboostpt","generated Hpt vs Tboostpt",100,-300,300,-300,0,300)
     c_pt = ROOT.TCanvas("c_pt", "", 800,600)
 
-    for i in range(len(Zboost)):
-        h_pt.Fill(Zboost[i],Hpt[i])
+    for i in range(len(ZH)):
+        Tboost_pt = ZH[i]["onetrack"]["boostT_pt"]
+        Hpt = ZH[i]["onetrack"]["genHpt"]
+        for j in range(len(Tboost_pt)):
+            h_pt.Fill(Tboost_pt[j],Hpt[j])
 
     h_pt.Draw()
-    c_pt.Draw()
-    h_pt.GetXaxis().SetTitle("pt of Z [GeV]")
+    h_pt.GetXaxis().SetTitle("pt of Tboost [GeV]")
     h_pt.GetYaxis().SetTitle("pt of H [GeV]")
-    c_pt.SaveAs("%s/%s.pdf"%(output,"generated Hpt vs Tboost Zpt"))
-    c_pt.SaveAs("%s/%s.png"%(output,"generated Hpt vs Tboost Zpt"))
+    c_pt.SaveAs("%s/%s.pdf"%(outputT,"genHpt_vs_Tboostpt"))
+    c_pt.SaveAs("%s/%s.png"%(outputT,"genHpt_vs_Tboostpt"))
 
-if HpxHpy:
 
-    Hpx1 = [0]*len(ZH[0]["onetrack"]["genHpx"])
-    Hpy1 = [0]*len(ZH[0]["onetrack"]["genHpy"])
-    Hpx2 = [0]*len(ZH[1]["onetrack"]["genHpx"])
-    Hpy2 = [0]*len(ZH[1]["onetrack"]["genHpy"])
+###### C BOOST ######
+if Cboost_px:
 
-    for i, px in enumerate(ZH[0]["onetrack"]["genHpx"]) :
-        Hpx1[i] = px
-    for i, px in enumerate(ZH[1]["onetrack"]["genHpx"]) :
-        Hpx2[i] = px
+    h_px = ROOT.TH2F("genHpx_vs_CboostPx","generated Hpx vs CboostPx",100,-300,300,100,-300,300)
+    c_px = ROOT.TCanvas("c_px", "", 800,600)
 
-    Hpx = Hpx1 + Hpx2
+    for i in range(len(ZH)):
+        Cboost_px = ZH[i]["onecluster"]["boostC_px"]
+        Hpx = ZH[i]["onecluster"]["genHpx"]
+        for j in range(len(Cboost_px)):
+            h_px.Fill(Cboost_px[j],Hpx[j])
 
-    for i, py in enumerate(ZH[0]["onetrack"]["genHpy"]):
-        Hpy1[i] = py
-    for i, py in enumerate(ZH[1]["onetrack"]["genHpy"]):
-        Hpy2[i] = py
+    h_px.Draw()
+    h_px.GetXaxis().SetTitle("px of Cboost [GeV]")
+    h_px.GetYaxis().SetTitle("px of genH [GeV]")
+    c_px.SaveAs("%s/%s.pdf"%(outputC,"genHpx_vs_CboostPx"))
+    c_px.SaveAs("%s/%s.png"%(outputC,"genHpx_vs_CboostPx"))
 
-    Hpy = Hpy1 + Hpy2
+if Cboost_py:
 
-    h_pxpy = ROOT.TH2F("genHpx_vs_genHpy","generated Hpx vs generated Hpy",100,-300,300,100,-300,300)
-    c_pxpy = ROOT.TCanvas("c_pxpy", "", 800,600)
+    h_py = ROOT.TH2F("genHpy_vs_Cboostpy","generated Hpy vs Cboostpy",100,-300,300,100,-300,300)
+    c_py = ROOT.TCanvas("c_py", "", 800,600)
 
-    for i in range(len(Hpx)):
-        h_pxpy.Fill(Hpx[i],Hpy[i])
+    for i in range(len(ZH)):
+        Cboost_py = ZH[i]["onecluster"]["boostC_py"]
+        Hpy = ZH[i]["onecluster"]["genHpy"]
+        for j in range(len(Cboost_py)):
+            h_py.Fill(Cboost_py[j],Hpy[j])
 
-    h_pxpy.Draw()
-    c_pxpy.Draw()
-    h_pxpy.GetXaxis().SetTitle("px of H [GeV]")
-    h_pxpy.GetYaxis().SetTitle("py of H [GeV]")
-    c_pxpy.SaveAs("%s/%s.pdf"%(output,"generated Hpx vs generated Hpy"))
-    c_pxpy.SaveAs("%s/%s.png"%(output,"generated Hpx vs generated Hpy"))
+    h_py.Draw()
+    h_py.GetXaxis().SetTitle("py of Cboost [GeV]")
+    h_py.GetYaxis().SetTitle("py of genH [GeV]")
+    c_py.SaveAs("%s/%s.pdf"%(outputC,"genHpy_vs_Cboostpy"))
+    c_py.SaveAs("%s/%s.png"%(outputC,"genHpy_vs_Cboostpy"))
+
+if Cboost_pz:
+
+    h_pz = ROOT.TH2F("genHpz_vs_Cboostpz","generated Hpz vs Cboostpz (scaleFactor = 2.23)",100,-300,300,100,-300,300)
+    c_pz = ROOT.TCanvas("c_pz", "", 800,600)
+
+    for i in range(len(ZH)):
+        Cboost_pz = ZH[i]["onecluster"]["boostC_pz"]
+        Hpz = ZH[i]["onecluster"]["genHpz"]
+        for j in range(len(Cboost_pz)):
+            h_pz.Fill(2.23*Cboost_pz[j],Hpz[j]) # Scaling by 2.23 gives greatest correlation factor
+
+    correlation = h_pz.GetCorrelationFactor()
+    print(correlation,"correlation factor")
+
+    h_pz.Draw()
+    h_pz.GetXaxis().SetTitle("pz of Cboost [GeV]")
+    h_pz.GetYaxis().SetTitle("pz of genH [GeV]")
+    c_pz.SaveAs("%s/%s.pdf"%(outputC,"genHpz_vs_Cboostpz (scaleFactor = 2.23)"))
+    c_pz.SaveAs("%s/%s.png"%(outputC,"genHpz_vs_Cboostpz (scaleFactor = 2.23)"))
+    
+if Cboost_pt:
+
+    h_pt = ROOT.TH2F("genHpt_vs_Cboostpt","generated Hpt vs Cboostpt",100,-300,300,100,-300,300)
+    c_pt = ROOT.TCanvas("c_pt", "", 800,600)
+
+    for i in range(len(ZH)):
+        Cboost_pt = ZH[i]["onecluster"]["boostC_pt"]
+        Hpt = ZH[i]["onecluster"]["genHpt"]
+        for j in range(len(Cboost_pt)):
+            h_pt.Fill(Cboost_pt[j],Hpt[j])
+
+    h_pt.Draw()
+    h_pt.GetXaxis().SetTitle("pt of Cboost [GeV]")
+    h_pt.GetYaxis().SetTitle("pt of genH [GeV]")
+    c_pt.SaveAs("%s/%s.pdf"%(outputC,"genHpt_vs_Cboostpt"))
+    c_pt.SaveAs("%s/%s.png"%(outputC,"genHpt_vs_Cboostpt"))

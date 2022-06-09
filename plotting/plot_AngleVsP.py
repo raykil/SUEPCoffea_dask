@@ -24,7 +24,7 @@ PhiPt = True
 
 if EtaPz:
     #delta Eta vs pz
-    h = ROOT.TH2F("deltaEta_vs_Hpz","deltaEta vs pz of Mediator",100,0,1500,100,0,4)
+    h = ROOT.TH2F("deltaEta_vs_Hpz","#Delta#eta vs p_{z} of H",30,0,1500,100,0,4)
     c = ROOT.TCanvas("c", "", 800,600)
     
     for i in range(len(ZH)):
@@ -34,16 +34,16 @@ if EtaPz:
             h.Fill(Hpz[j],deltaEta[j])
 
     h.Draw("colz")
-    c.Draw()
-    h.GetXaxis().SetTitle("pz of genH [GeV]")
-    h.GetYaxis().SetTitle("deltaEta")
+    h.Draw("CANDLE SAME")
+    h.GetXaxis().SetTitle("p_{z} of genH [GeV]")
+    h.GetYaxis().SetTitle("#Delta#eta")
     h.SetMarkerStyle(7)
     c.SaveAs("%s/%s.pdf"%(output,"deltaEta_vs_Hpz"))
     c.SaveAs("%s/%s.png"%(output,"deltaEta_vs_Hpz"))
 
 if EtaPt:
     #delta Eta vs pt
-    h = ROOT.TH2F("deltaEta_vs_Hptt","deltaEta vs pt of Mediator",100,0,1500,100,0,4)
+    h = ROOT.TH2F("deltaEta_vs_Hptt","#Delta#eta vs p_{t} of H",30,0,1500,100,0,4)
     c = ROOT.TCanvas("c", "", 800,600)
     
     for i in range(len(ZH)):
@@ -53,16 +53,16 @@ if EtaPt:
             h.Fill(Hpt[j],deltaEta[j])
 
     h.Draw("colz")
-    c.Draw()
-    h.GetXaxis().SetTitle("pt of genH [GeV]")
-    h.GetYaxis().SetTitle("deltaEta")
+    h.Draw("CANDLE SAME")
+    h.GetXaxis().SetTitle("p_{t} of genH [GeV]")
+    h.GetYaxis().SetTitle("#Delta#eta")
     h.SetMarkerStyle(7)
     c.SaveAs("%s/%s.pdf"%(output,"deltaEta_vs_Hpt"))
     c.SaveAs("%s/%s.png"%(output,"deltaEta_vs_Hpt"))
 
 if PhiPz:
     #delta Phi vs pz
-    h = ROOT.TH2F("deltaPhi_vs_Hpz","deltaPhi vs pz of Mediator",100,0,1500,100,0,4)
+    h = ROOT.TH2F("deltaPhi_vs_Hpz","#Delta#phi vs p_{z} of H",30,0,1500,100,0,4)
     c = ROOT.TCanvas("c", "", 800,600)
     
     for i in range(len(ZH)):
@@ -72,16 +72,16 @@ if PhiPz:
             h.Fill(Hpz[j],deltaPhi[j])
 
     h.Draw("colz")
-    c.Draw()
-    h.GetXaxis().SetTitle("pz of genH [GeV]")
-    h.GetYaxis().SetTitle("deltaPhi")
+    h.Draw("CANDLE SAME")
+    h.GetXaxis().SetTitle("p_{z} of genH [GeV]")
+    h.GetYaxis().SetTitle("#Delta#phi")
     h.SetMarkerStyle(7)
     c.SaveAs("%s/%s.pdf"%(output,"deltaPhi_vs_Hpz"))
     c.SaveAs("%s/%s.png"%(output,"deltaPhi_vs_Hpz"))
 
 if PhiPt:
     #delta Phi vs pt
-    h = ROOT.TH2F("deltaPhi_vs_Hpt","deltaPhi vs pt of Mediator",100,0,1500,100,0,4)
+    h = ROOT.TH2F("deltaPhi_vs_Hpt","#Delta#phi vs p_{t} of H",30,0,1500,100,0,4)
     c = ROOT.TCanvas("c", "", 800,600)
     
     for i in range(len(ZH)):
@@ -91,9 +91,9 @@ if PhiPt:
             h.Fill(Hpt[j],deltaPhi[j])
 
     h.Draw("colz")
-    c.Draw()
-    h.GetXaxis().SetTitle("pt of genH [GeV]")
-    h.GetYaxis().SetTitle("deltaPhi")
+    h.Draw("CANDLE SAME")
+    h.GetXaxis().SetTitle("p_{t} of genH [GeV]")
+    h.GetYaxis().SetTitle("#Delta#phi")
     h.SetMarkerStyle(7)
     c.SaveAs("%s/%s.pdf"%(output,"deltaPhi_vs_Hpt"))
     c.SaveAs("%s/%s.png"%(output,"deltaPhi_vs_Hpt"))

@@ -455,7 +455,7 @@ class SUEP_cluster(processor.ProcessorABC):
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass jet cuts. Selecting tracks..."%len(self.events))
         
-        self.SimTrack = True
+        self.SimTrack = False
 
         if self.doTracks:
             if self.SimTrack:
@@ -490,7 +490,7 @@ class SUEP_cluster(processor.ProcessorABC):
         # ------------------------------- SELECTION + PLOTTING -------------------------
         # ------------------------------------------------------------------------------
         self.isSpherable   = True # So we don't do sphericity plots
-        self.isClusterable = False # So we don't do cluster plots without clusters
+        self.isClusterable = True # So we don't do cluster plots without clusters
         self.isStripable   = False
 
         outputs["twoleptons"] = [self.doAllPlots("twoleptons", debug), self.events]
@@ -500,7 +500,7 @@ class SUEP_cluster(processor.ProcessorABC):
         if self.doTracks:
             cutOneTrack = (ak.num(self.tracks) != 0)
             self.applyCutToAllCollections(cutOneTrack)
-            self.isSpherable = False # So we do sphericity plots
+            self.isSpherable = True # So we do sphericity plots
             outputs["onetrack"] = [self.doAllPlots("onetrack", debug), self.events]
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
             if debug: print("%i events pass onetrack cuts. Doing more stuff..."%len(self.events))
@@ -508,7 +508,7 @@ class SUEP_cluster(processor.ProcessorABC):
         if self.doClusters:
             cutOneCluster = (ak.num(self.clusters) != 0)
             self.applyCutToAllCollections(cutOneCluster)
-            self.isClusterable = False # So we do cluster plots
+            self.isClusterable = True # So we do cluster plots
             outputs["onecluster"] = [self.doAllPlots("onecluster", debug), self.events]
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
             if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))
@@ -571,7 +571,7 @@ class SUEP_cluster(processor.ProcessorABC):
         out = {}
         # Define outputs for plotting
         if debug: print("Saving reco variables for channel %s"%channel)
-        """
+        
         # region Object: leptons
         out["leadlep_pt"]    = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
@@ -619,7 +619,6 @@ class SUEP_cluster(processor.ProcessorABC):
         ##out["alljets_eta"]     = ak.fill_none(ak.pad_none(self.jets.eta,  maxnjets, axis=1, clip=True), -999.)
         ##out["alljets_phi"]     = ak.fill_none(ak.pad_none(self.jets.phi,  maxnjets, axis=1, clip=True), -999.)
         #endregion
-        """
 
         if self.doTracks:
             out["ntracks"]     = ak.num(self.tracks, axis=1)[:]
@@ -628,17 +627,19 @@ class SUEP_cluster(processor.ProcessorABC):
             ##out["tracks_eta"]  = ak.fill_none(ak.pad_none(self.tracks.eta,  maxntracks, axis=1, clip=True), -999.)
             ##out["tracks_phi"]  = ak.fill_none(ak.pad_none(self.tracks.phi,  maxntracks, axis=1, clip=True), -999.)
 
-            maxEta = ak.max(self.suepTracks.eta, axis=1)
-            minEta = ak.min(self.suepTracks.eta, axis=1)
-            out["boostS_deltaEta"] = (maxEta - minEta)[:]
+            if self.SimTrack:
 
-            phi = ak.where(self.suepTracks.phi < 0,2*np.pi + self.suepTracks.phi, self.suepTracks.phi) #transform phi range to 0:2pi
-            phiCombo = ak.combinations(phi,2,fields=["phi1","phi2"])
-            phiComboDiff = abs(phiCombo.phi1-phiCombo.phi2) #difference in two phi values
-            phiComboDiff = ak.where(phiComboDiff > np.pi, 2*np.pi - phiComboDiff, phiComboDiff)
-            maxPhiComboDiff = ak.max(phiComboDiff,axis=1) #max difference in phi in each event
-            
-            out["boostS_deltaPhi"] = maxPhiComboDiff[:]
+                maxEta = ak.max(self.suepTracks.eta, axis=1)
+                minEta = ak.min(self.suepTracks.eta, axis=1)
+                out["boostS_deltaEta"] = (maxEta - minEta)[:]
+
+                phi = ak.where(self.suepTracks.phi < 0,2*np.pi + self.suepTracks.phi, self.suepTracks.phi) #transform phi range to 0:2pi
+                phiCombo = ak.combinations(phi,2,fields=["phi1","phi2"])
+                phiComboDiff = abs(phiCombo.phi1-phiCombo.phi2) #difference in two phi values
+                phiComboDiff = ak.where(phiComboDiff > np.pi, 2*np.pi - phiComboDiff, phiComboDiff)
+                maxPhiComboDiff = ak.max(phiComboDiff,axis=1) #max difference in phi in each event
+                
+                out["boostS_deltaPhi"] = maxPhiComboDiff[:]
 
             if self.isSpherable:
               
