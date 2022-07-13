@@ -24,12 +24,20 @@ class sample(object):
     self.nnorms = {}
     self.norms  = {}
     self.isData = ("data" in self.name) or ("Data" in self.name)
-    iF = 0
+    self.histos  = {}
+    self.plots   = {}
+    self.channels= []
+    self.plotsinchannel = {}
+    self.varstoload = {}
+    self.yields     = {}
+
+  def initAll(self, options):
     if options.queue: print("Loading sample %s"%self.name)
-    for f in sampledict["files"]:
+    iF = 0
+    for f in self.config["files"]:
       iF +=1
       #if options.queue:
-      print("Checking files %i/%i"%(iF, len(sampledict["files"])))
+      print("Checking files %i/%i"%(iF, len(self.config["files"])))
       try:
         filename = f.split("/")[-1].replace("out_","").replace(".hdf5","")
         if options.toSave: 
@@ -61,20 +69,39 @@ class sample(object):
           a.close()
         self.safefiles.append(f)
         #print("File %s loaded succesfully"%f)
-      except Exception, e:
+      except Exception as e:
         print("File %s broken, will skip loading it"%f)
         print(str(e))
 
     print(self.name, self.safefiles)
-    if "skim" in sampledict and not(self.isData):
+    if "skim" in self.config and not(self.isData):
       self.unskimmedyields, self.norm = self.getUnskimmedYields()
-      
-    self.histos  = {}
-    self.plots   = {}
-    self.channels= []
-    self.plotsinchannel = {}
-    self.varstoload = {}
-    self.yields     = {}
+
+  def initAllForQueue(self, options): # Here don't load the whole hdf5 as it would break memory
+    if options.queue: print("Loading sample %s"%self.name)
+    iF = 0
+    for f in self.config["files"]:
+      iF +=1
+      #if options.queue:
+      print("Checking files %i/%i"%(iF, len(self.config["files"])))
+      try:
+        filename = f.split("/")[-1].replace("out_","").replace(".hdf5","")
+        if options.toSave:
+          fullfilename = options.toSave + "/" + self.name + "_" + filename + ".root"
+        if options.toLoad:
+          fullfilename = options.toLoad + "/" + self.name + "_" + filename + ".root"
+
+        if options.resubmit:
+          if os.path.isfile(fullfilename):
+            if os.path.getsize(fullfilename) > 1000: #I.e., non corrupted
+              print("Corrupted!")
+              continue
+        self.safefiles.append(f)
+        #print("File %s loaded succesfully"%f)
+      except Exception as e:
+        print("File %s broken, will skip loading it"%f)
+        print(str(e))
+  
 
   def getUnskimmedYields(self):
     rf = ROOT.TFile(self.config["skim"])
@@ -113,6 +140,13 @@ class sample(object):
       elif p["bins"][0] == "limits":
         self.histos[plotName] = {}
         self.histos[plotName]["total"] = ROOT.TH1F(plotName + "_" + self.name, plotName + "_" + self.name, array.array('f', p["bins"][1])) 
+      elif p["bins"][0] == "2Duniform": 
+        self.histos[plotName] = {}
+        self.histos[plotName]["total"] = ROOT.TH2F(plotName + "_" + self.name, plotName + "_" + self.name, p["bins"][1], p["bins"][2], p["bins"][3], p["bins"][4], p["bins"][5], p["bins"][6])
+      elif p["bins"][0] == "2Dlimits":
+        self.histos[plotName] = {}
+        self.histos[plotName]["total"] = ROOT.TH2F(plotName + "_" + self.name, plotName + "_" + self.name, array.array('f', p["bins"][1]), array.array('f', p["bins"][2]))
+
       if not(self.isData): self.norms[plotName] = 0 if not("skim" in self.config) else self.norm
 
     print(self.name, "Pre-load")
@@ -172,21 +206,26 @@ class sample(object):
           weights = np.ones(len(f[c]))
         if "extraWeights" in self.config: 
           extraweights = self.config["extraWeights"](f[c])
-          print(extraweights)
         for plotName in self.plotsinchannel[c]:
           print("...%s"%plotName)
           p = self.plots[plotName]
           if not("skim" in self.config) and not(self.isData):
             self.norms[plotName] += self.nnorms[safefile]
-          values, weightsHere = p["value"](f[c], weights)
+          if "2D" in p["bins"][0]:
+            values, values2, weightsHere = p["value"](f[c], weights)
+          else:
+            values, weightsHere = p["value"](f[c], weights)
           if "extraWeights" in self.config: weightsHere = weightsHere*extraweights
           #print(p["value"])
           for idx in range(len(values)):
             if (idx+1)%100000 == 0: print("%i/%i"%(idx, len(values)))
-            self.histos[p["name"]][filename].Fill(values[idx], weightsHere[idx])
+            if "2D" in p["bins"][0]:
+              self.histos[p["name"]][filename].Fill(values[idx], values2[idx], weightsHere[idx])
+            else:
+              self.histos[p["name"]][filename].Fill(values[idx], weightsHere[idx])
           if options.toSave:
-             rf.cd()
-             self.histos[p["name"]][filename].Write()
+            rf.cd()
+            self.histos[p["name"]][filename].Write()
       if options.toSave: rf.Close() 
     else:
       rf = ROOT.TFile(options.toLoad + "/" + self.name + "_" + filename + ".root", "READ")
@@ -229,6 +268,8 @@ class plotter(object):
   def createJobs(self, options, command):
     iJob = 0
     for s in self.samples:
+      s.initAllForQueue(options)
+      if len(s.safefiles) == 0: continue
       sname = s.name
       nfiles = len(s.safefiles)
       options.batchsize = int(options.batchsize)
@@ -270,6 +311,9 @@ class plotter(object):
         iJob += 1
     return iJob
   def doPlots(self, options):
+    for s in self.samples:
+      s.initAll(options)
+
     self.getRawHistogramsAndNorms(options)
     if not options.toSave: self.doStackPlots(options)
 
@@ -281,14 +325,84 @@ class plotter(object):
 
   def doStackPlots(self, options):
     for plotName in self.plots:
+     try:
       print("...Plotting %s"%plotName)
       mode = "stack"
       if "mode" in self.plots[plotName]: mode = self.plots[plotName]["mode"]
-
       if mode == "stack": self.doStackPlot(plotName, options)
+      if mode == "colz": self.doColZPlots(plotName, options)
       ## More to be implemented
+     except:
+      print("Something went wrong with %s"%plotName)
 
+  def doColZPlots(self, pname, options):
+
+    theIndivs= []
+    theData  = []
+    # Background go into the stack
+    stacksize = 0
+    back = False
+    if options.ordered:
+      self.samples.sort(key= lambda x: x.yields[pname], reverse=False)
+    nbins = self.samples[0].histos[pname]["total"].GetNbinsX()
+    for s in self.samples:
+      if s.isBackground():
+        if not(back): back = s.histos[pname]["total"].Clone("total_background")
+        else: back.Add(s.histos[pname]["total"])
+        self.draw2DColZ(pname, s.histos[pname]["total"], s.name, options)
+
+      elif s.isData:
+        theData.append(s.histos[pname]["total"])
+        self.draw2DColZ(pname, s.histos[pname]["total"], s.name, options)
+      else:
+        theIndivs.append(s.histos[pname]["total"])
+        self.draw2DColZ(pname, s.histos[pname]["total"], s.name, options)
+
+    self.draw2DColZ(pname, back, "background", options)
+
+  def draw2DColZ(self, pname, histo, sname, options):
+    p = self.plots[pname]
+    c = ROOT.TCanvas(pname,pname, 900,600)
+    p1 = ROOT.TPad("mainpad", "mainpad", 0, 0, 1, 1)
+    p1.SetBottomMargin(0.1)
+    p1.SetTopMargin(0.1)
+    p1.SetLeftMargin(0.12)
+    p1.SetRightMargin(0.1)
+    if "margins" in p:
+      p1.SetBottomMargin(p["margins"][0])
+      p1.SetTopMargin(p["margins"][1])
+      p1.SetLeftMargin(p["margins"][2])
+      p1.SetRightMargin(p["margins"][3])
+    p1.SetLogz(True)
+    p1.Draw()
+    p1.cd()
+    histo.SetTitle("")
+    histo.Draw("colz")
+    histo.GetXaxis().SetLabelSize(0.03)
+    histo.GetYaxis().SetLabelSize(0.03)
+    #histo.GetYaxis().SetTitleSize(0.08)
+    histo.GetYaxis().SetTitleOffset(0.72)
+    histo.GetZaxis().SetTitle("Events")
+    histo.GetYaxis().SetTitle(p["ylabel"])
+    histo.GetXaxis().SetTitle(p["xlabel"]) # Empty, as it goes into the ratio plot
+
+    CMS_lumi.writeExtraText = True
+    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity
+    CMS_lumi.extraText  = "Preliminary"
+    CMS_lumi.lumi_sqrtS = "13"
+    CMS_lumi.CMS_lumi(c, 4, 0, 0.122)
+
+    c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".pdf")
+    c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".png")
+    # Also save as TH1 in root file 
+    tf = ROOT.TFile(options.plotdir + "/" + p["plotname"] + ".root", "UPDATE")
+    histo.Write()
+    tf.Close()
+
+
+    
   def doStackPlot(self, pname, options):
+   try:
     p = self.plots[pname]
     c = ROOT.TCanvas(pname,pname, 800,1050)
     # Set pads
@@ -319,7 +433,6 @@ class plotter(object):
     tl = ROOT.TLegend(0.5,0.55,0.9,0.85)
     if "legendPosition" in p:
       tl = ROOT.TLegend(p["legendPosition"][0], p["legendPosition"][1], p["legendPosition"][2], p["legendPosition"][3])  
-
     # Now get the histograms and build the stack
     theStack = ROOT.THStack(pname+"_stack", pname)
     theIndivs= []
@@ -329,10 +442,10 @@ class plotter(object):
     back = False
     if options.ordered:
       self.samples.sort(key= lambda x: x.yields[pname], reverse=False)
-
+    nbins = self.samples[0].histos[pname]["total"].GetNbinsX()
     for s in self.samples:
       if s.isBackground():
-        if options.rebin: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
+        if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
         theStack.Add(s.histos[pname]["total"])
         tl.AddEntry(s.histos[pname]["total"], s.config["label"], "f")
         if not(back): back = s.histos[pname]["total"].Clone("total_background")
@@ -341,17 +454,16 @@ class plotter(object):
         #s.histos[pname]["total"].Print("all")
         stacksize += s.histos[pname]["total"].Integral()
       elif s.isData:
-        if options.rebin: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
+        if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
         tl.AddEntry(s.histos[pname]["total"], s.config["label"], "pl")
         theData.append(s.histos[pname]["total"])
       else:
-        if options.rebin: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
+        if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
         s.histos[pname]["total"].SetFillStyle(0)
         s.histos[pname]["total"].SetLineWidth(3)
         s.histos[pname]["total"].SetLineStyle(1)
         theIndivs.append(s.histos[pname]["total"])
         tl.AddEntry(s.histos[pname]["total"], s.config["label"], "l")
-
     if p["normalize"]:
       for index in range(len(theIndivs)):
         theIndivs[index].Scale(1./theIndivs[index].Integral())
@@ -360,7 +472,6 @@ class plotter(object):
         if s.isBackground():
           s.histos[pname]["total"].Scale(1./stacksize)
           theStack.Add(s.histos[pname]["total"])
-        
     # Now plotting stuff
     theStack.SetTitle("") 
     theStack.Draw("hist")
@@ -390,8 +501,13 @@ class plotter(object):
 
     # By default S/B, TODO: add more options
     den  = back.Clone("back_ratio")
-    nums = [ind.Clone(ind.GetName()+ "_ratio") for ind in  theIndivs + theData]
-    #den.Divide(den)
+    nums = []
+    for ind in  theIndivs + theData:
+      try:
+        nums.append(ind.Clone(ind.GetName()+ "_ratio"))
+      except:
+        print("Something went wrong in the ratio...")
+    #nums = [ind.Clone(ind.GetName()+ "_ratio") for ind in  theIndivs + theData]
     for num in nums: 
       num.Divide(den)
     den.Divide(den)
@@ -404,7 +520,6 @@ class plotter(object):
     den.GetXaxis().SetTitleSize(0.12)
     den.GetXaxis().SetLabelSize(0.1)
     den.GetYaxis().SetLabelSize(0.06)
-
     if "ratiomaxY" in p:
       den.SetMaximum(p["ratiomaxY"])
     if "ratiominY" in p:
@@ -432,7 +547,8 @@ class plotter(object):
         s.histos[pname]["total"].Write()
     theStack.Write()
     tf.Close()
-
+   except:
+    print("Something went wrong, skipping plot...")
 
 if __name__ == "__main__":
   print("Starting plotting script...")
@@ -444,7 +560,7 @@ if __name__ == "__main__":
   parser.add_option("--toLoad", dest="toLoad", type="str", default=None, help="If active, instead of reading hdf5 load per file histograms from this folder")
   parser.add_option("-p","--plotdir", dest="plotdir", type="string", default="./", help="Where to put the plots")
   parser.add_option("--strict-order", dest="ordered", action="store_true", default=False, help="If true, will stack samples in the order of yields")
-
+  parser.add_option("--blind", dest="blind", action="store_true", default=False, help="Activate for blinding (no data)")
   parser.add_option("--sample", dest ="sample", default=None, help="If not none, process only this specific sample")
   parser.add_option("--files", dest="files", default=None, help="If not none, process only these set of comma separated files")
   parser.add_option("--queue", dest="queue", default=None, help="If not none, submit jobs to this queue")
@@ -453,6 +569,7 @@ if __name__ == "__main__":
   parser.add_option("--resubmit", dest="resubmit", default=False, action="store_true", help="If true, only run jobs that failed before (missing root files)")
   parser.add_option("--rebin", dest="rebin", default=None, type="int", help="Collapse bins by this factor")
   parser.add_option("--ratioylabel", dest="ratioylabel", type="string", default="S/B", help="Title of the Y axis of the ratio plot")
+  parser.add_option("--sP", dest="singleplot", action="append", default=[], help="Run only these plots")
 
   (options, args) = parser.parse_args()
   samplesFile = imp.load_source("samples",args[0])
@@ -463,20 +580,26 @@ if __name__ == "__main__":
     os.system("mkdir %s"%options.toSave)
   os.system("cp %s %s %s"%(args[0], args[1], options.plotdir))
   samples = samplesFile.samples
+  plots   = plotsFile.plots
   if options.sample:
     newsamples = {}
     newsamples[options.sample] = samples[options.sample]
     samples = newsamples
+  if options.blind:
+    del samples["data"]
+  if len(options.singleplot) > 0:
+    newplots = {p: plots[p] for p in options.singleplot}
+    plots = newplots
+
   if options.files:
     for s in samples:
       newfiles = []
       for f in samples[s]["files"]:
-        print(f)
         if f in options.files:
+          print(f)
           newfiles.append(f)
       samples[s]["files"] = newfiles
 
-  plots   = plotsFile.plots
   thePlotter = plotter(plots, samples, options)
   if options.queue:
     print(options.jobname, os.path.isdir(options.jobname))
