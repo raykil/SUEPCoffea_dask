@@ -12,7 +12,39 @@ FileFolder  = sys.argv[2] # File folder with all the files
 OutputDir   = sys.argv[3] # Where to put the stuff
 queue       = sys.argv[4] # Which queue to use: expresso (20min), microcentury (1h), longlunch (2h), workday (8h), tomorrow (1d), testmatch (3d), nextweek (1w)
 doSubmit    = sys.argv[5] # Whether to submit or not
+analyzer    = sys.argv[6]
+isData      = bool(int(sys.argv[7]))
+interval    = int(sys.argv[8])
+filt = None
+resubmission = False
+if len(sys.argv) > 9:
+  filt = sys.argv[9]
 files = [FileFolder + "/" + f for f in os.listdir(FileFolder)] # list with all the files  
+if filt:
+  newfiles = []
+  for f in files:
+    if filt in f: newfiles.append(f)
+  print("Filtered files to %i/%i"%(len(newfiles), len(files)))
+  files =  newfiles
+if resubmission:
+  newfiles = []
+  import ROOT
+  for iff, f in enumerate(files):
+    print("%i/%i"%(iff, len(files)))
+    tf = ROOT.TFile(f,"READ")
+    tt = tf.Get("Events")
+    run, lum, eve = 0, 0, 0
+    for ev in tt:
+      run = ev.run
+      lum = ev.luminosityBlock
+      eve = ev.event
+      break
+    tf.Close()
+    testout = "out_%i_%i_%i.hdf5"%(eve, lum, run)
+    if not(os.path.isfile(OutputDir +"/" + testout)):
+      newfiles.append(f)
+  files = newfiles
+
 tag=OutputDir
 
 if NumberOfJobs == "-1": NumberOfJobs = len(files)
@@ -31,21 +63,27 @@ os.system("mkdir %s/exec"%tag)
 print()
 
 ##### loop for creating and sending jobs #####
-for x in range(int(NumberOfJobs)):
+ifile = 0
+ijob  = 1
+while ifile < NumberOfJobs:
     ##### creates jobs #######
-    with open('%s/exec/job_'%tag+str(x)+'.sh', 'w') as fout:
+    with open('%s/exec/job_'%tag+str(ijob)+'.sh', 'w') as fout:
         fout.write("#!/bin/bash\n")
         fout.write("echo 'START---------------'\n")
         fout.write("echo 'WORKDIR ' ${PWD}\n")
         fout.write("cd "+str(path)+"\n")
-        fout.write("source /afs/cern.ch/user/j/jkil/miniconda3/etc/profile.d/conda.sh\n")
+        fout.write("source /afs/cern.ch/user/c/cericeci/miniconda3/etc/profile.d/conda.sh\n\n")
         fout.write("conda activate coffea\n")
-        fout.write("python condor_SUEP_WS.py  --isMC=1 --era=2018 --dataset=DY --analyzer=ZH_simple --infile=%s --outputdir=%s\n"%(files[x], OutputDir)) 
+        for i in range(interval):
+          if ifile == NumberOfJobs: continue # Last one will have less
+          fout.write("python condor_SUEP_WS.py  --isMC=%i --era=2018 --dataset=DY --analyzer=%s --infile=%s --outputdir=%s --isDY\n"%(0 if isData else 1, analyzer, files[ifile], OutputDir)) 
+          ifile += 1
         fout.write("echo 'STOP---------------'\n")
         fout.write("echo\n")
         fout.write("echo\n")
-    os.system("chmod 755 %s/exec/job_"%tag+str(x)+".sh")
-   
+    os.system("chmod 755 %s/exec/job_"%tag+str(ijob)+".sh")
+    ijob += 1
+
 ###### create submit.sub file ####
     
 os.mkdir("%s/batchlogs"%tag)
@@ -60,7 +98,7 @@ with open('submit.sub', 'w') as fout:
     fout.write("queue filename matching (%s/exec/job_*sh)\n"%tag)
     
 ###### sends bjobs ######
-if bool(doSubmit):
+if int(doSubmit) > 0:
   os.system("echo submit.sub")
   os.system("condor_submit -spool submit.sub")
    
