@@ -31,10 +31,10 @@ if options.analyzer == "GluGlu":
   modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , flag=False, output_location=out_dir))
 elif options.analyzer == "ZH_simple":
   from workflows.SUEP_coffea_ZH_simple import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , flag=False, output_location=out_dir, doOF=False, isDY=options.isDY))
+  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=False, output_location=out_dir, doOF=False, isDY=options.isDY))
 elif options.analyzer == "ZH_simple_OF":
   from workflows.SUEP_coffea_ZH_simple import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , flag=False, output_location=out_dir, doOF=True))
+  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=False, output_location=out_dir, doOF=True))
 elif options.analyzer == "ZH_trackID":
   from workflows.SUEP_coffea_ZH_trackID import * 
   modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , flag=False, output_location=out_dir))
