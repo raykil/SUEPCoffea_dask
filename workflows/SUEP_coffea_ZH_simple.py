@@ -593,7 +593,8 @@ class SUEP_cluster(processor.ProcessorABC):
         out["trailjet_pt"]    = ak.fill_none(ak.pad_none(self.jets.pt,  3, axis=1, clip=True), 0.)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
         out["trailjet_eta"]   = ak.fill_none(ak.pad_none(self.jets.eta, 3, axis=1, clip=True), -999)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["trailjet_phi"]   = ak.fill_none(ak.pad_none(self.jets.phi, 3, axis=1, clip=True), -999)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
-
+        out["H_T"]            = ak.sum(self.jets.pt, axis=1)[:]
+        out["L_T"]            = ak.sum(self.leptons.pt, axis=1)[:]
         #### ALL JETS PROPERTIES ####
         ##maxnjets = ak.max(ak.num(self.jets, axis=1)) # We need to know the maximum to do the proper padding
         ##out["alljets_pt"]      = ak.fill_none(ak.pad_none(self.jets.pt,  maxnjets, axis=1, clip=True), 0.)
@@ -634,18 +635,6 @@ class SUEP_cluster(processor.ProcessorABC):
                 evalsT = self.sphericity(self.events, tracks_boostedagainsttracks, 2) #Gives the sphericity in -Z frame (tracks)
 
                 #region: OUTPUT FOR SPHERICITY
-
-                ### Evals themselves ###
-                out["eval_L1"] = evalsL[:,0]
-                out["eval_L2"] = evalsL[:,1]
-                out["eval_L3"] = evalsL[:,2]
-                out["eval_Z1"] = evalsZ[:,0]
-                out["eval_Z2"] = evalsZ[:,1]
-                out["eval_Z3"] = evalsZ[:,2]
-                out["eval_T1"] = evalsT[:,0]
-                out["eval_T2"] = evalsT[:,1]
-                out["eval_T3"] = evalsT[:,2]
-
                 ### Scalar Sphericity ###
                 out["scalarSpher_L"] = 1.5*(evalsL[:,0] + evalsL[:,1])
                 out["scalarSpher_Z"] = 1.5*(evalsZ[:,0] + evalsZ[:,1])
