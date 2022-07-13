@@ -18,8 +18,8 @@ from typing import List, Optional
 vector.register_awkward()
 
 class SUEP_cluster(processor.ProcessorABC):
-    def __init__(self, isMC: int, era: int, sample: str,  do_syst: bool, syst_var: str, weight_syst: bool, flag: bool, output_location: Optional[str], doOF: Optional[bool], isDY: Optional[bool]) -> None:
-        self._flag = flag
+    def __init__(self, isMC: int, era: int, sample: str,  do_syst: bool, syst_var: str, weight_syst: bool, SRonly: bool, output_location: Optional[str], doOF: Optional[bool], isDY: Optional[bool]) -> None:
+        self.SRonly = SRonly
         self.output_location = output_location
         self.doOF = doOF
         self.isDY = isDY # We need to save this to remove the overlap between the inclusive DY sample and the pT binned ones
@@ -407,9 +407,9 @@ class SUEP_cluster(processor.ProcessorABC):
         accumulator    = self.accumulator.identity()
         # Each track is one selection level
         outputs = {
-            "twoleptons"  :[{},[]], # Has Two Leptons, pT and Trigger requirements
-            #"onetrack"  :[{},[]], # + at least one track
-            "onecluster":[{},[]],
+            "twoleptons"  :[{},[]],   # Has Two Leptons, pT and Trigger requirements
+            "onecluster"  :[{},[]],   # At least one cluster is found
+            "SR"          :[{},[]],   # Only the SR
         }
 
         # Data dependant stuff
@@ -482,7 +482,6 @@ class SUEP_cluster(processor.ProcessorABC):
           cutOneTrack = (ak.num(self.tracks) != 0)
           self.applyCutToAllCollections(cutOneTrack)
           self.isSpherable = True # So we do sphericity plots
-          #outputs["onetrack"] = [self.doAllPlots("onetrack", debug), self.events]
           if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
           if debug: print("%i events pass onetrack cuts. Doing more stuff..."%len(self.events))
           
@@ -494,10 +493,24 @@ class SUEP_cluster(processor.ProcessorABC):
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
             if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))        
 
+            cutZm  = abs(self.Zcands.mass - 90) > 30
+            self.applyCutToAllCollections(cutZm)
+            cutZpt = (self.Zcands.pt > 25)
+            self.applyCutToAllCollections(cutZpt)
+            cut0tag =  (ak.sum((self.jets.btag >= 0.0490), axis=1) == 0)
+            self.applyCutToAllCollections(cut0tag)
+            cutclusterpt60 = (ak.max(self.clusters.pt) >= 60)
+            self.applyCutToAllCollections(cutclusterpt60)
+            outputs["SR"] = [self.doAllPlots("SR", debug), self.events]
+
         # ------------------------------------------------------------------------------
         # -------------------------------- SAVING --------------------------------------
         # ------------------------------------------------------------------------------
-
+        if self.SRonly: # Lightweight, save only SR stuff
+            for out in outputs:
+                if not("SR"==out): 
+                    del outputs[out]
+ 
         for out in outputs:
             if self.isMC:
                 outputs[out][0]["genweight"] = outputs[out][1].genWeight[:]
