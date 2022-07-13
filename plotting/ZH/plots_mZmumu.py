@@ -2,7 +2,7 @@ import ROOT
 
 
 def cut(x):
-  return (x["njets"] >= 0)
+  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["nmuons"] == 2)
 
 plots = {
   "njets": {
@@ -14,8 +14,8 @@ plots = {
              "normalize": False, 
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "njets",
              "xlabel"   : "N_{jets}",
              "vars"     : ["njets"]
@@ -29,8 +29,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "nBLoose",
              "xlabel"   : "N_{b}(loose)",
              "vars"     : ["nBLoose"]
@@ -44,8 +44,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "nBMedium",
              "xlabel"   : "N_{b}(Medium)",
              "vars"     : ["nBMedium"]
@@ -59,8 +59,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "nBTight",
              "xlabel"   : "N_{b}(Tight)",
              "vars"     : ["nBTight"]
@@ -75,8 +75,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "jet1pt",
              "xlabel"   : "p_{T}^{jet1}",
              "vars"     : ["leadjet_pt"]
@@ -91,8 +91,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "jet2pt",
              "xlabel"   : "p_{T}^{jet2}",
              "vars"     : ["subleadjet_pt"]
@@ -106,8 +106,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "jet3pt",
              "xlabel"   : "p_{T}^{jet3}",
              "vars"     : ["trailjet_pt"]
@@ -121,8 +121,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "mZ",
              "xlabel"   : "m(l1,l2) [GeV]",
              "vars"     : ["Z_m"]
@@ -136,8 +136,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "leadlep_pt",
              "xlabel"   : "p_{T}^{l1}",
              "vars"     : ["leadlep_pt"]
@@ -152,8 +152,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "subleadlep_pt",
              "xlabel"   : "p_{T}^{l2}",
              "vars"     : ["subleadlep_pt"]
@@ -169,8 +169,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "ntracks",
              "xlabel"   : "N_{tracks}",
              "vars"     : ["ntracks"]
@@ -185,8 +185,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "Zpt",
              "xlabel"   : "p_{T}^{Z} [GeV]",
              "vars"     : ["Z_pt"]
@@ -200,8 +200,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "Zeta",
              "xlabel"   : "#eta^{Z}",
              "vars"     : ["Z_eta"]
@@ -215,8 +215,8 @@ plots = {
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
-             "ratiomaxY": 1.,
-             "ratiominY": 0.,
+             "ratiomaxY": 1.5,
+             "ratiominY": 0.5,
              "plotname" : "Zphi",
              "xlabel"   : "#phi^{Z}",
              "vars"     : ["Z_phi"]
