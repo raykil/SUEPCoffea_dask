@@ -2,6 +2,8 @@
 import os
 import sys
 
+conda_source = "/afs/cern.ch/user/%s/%s/miniconda3/etc/profile.d/conda.sh"%(os.getlogin()[0], os.getlogin())
+
 print()
 print('START')
 print()
@@ -76,7 +78,7 @@ while ifile < NumberOfJobs:
         fout.write("echo 'START---------------'\n")
         fout.write("echo 'WORKDIR ' ${PWD}\n")
         fout.write("cd "+str(path)+"\n")
-        fout.write("source /afs/cern.ch/user/c/cericeci/miniconda3/etc/profile.d/conda.sh\n\n")
+        fout.write("source %s\n\n"%conda_source)
         fout.write("conda activate coffea\n")
         for i in range(interval):
           if ifile == NumberOfJobs: continue # Last one will have less

@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import sys
 
-signal     = pd.HDFStore("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/plotting/../signal/out_1_1_1001.hdf5","r") 
-background = pd.HDFStore("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/plotting/../background/out_256441424_94909_1.hdf5","r")
+signal     = pd.HDFStore(sys.argv[1],"r") 
+background = pd.HDFStore(sys.argv[2],"r")
 signal = signal["onecluster"]
 background = background["onecluster"]
 #theVars = ["leadclusterSpher_C", "leadstripSpher_C_dEta0.6", "leadstripSpher_C_dEta0.2", "leadstripSpher_C_dEta1.0", 
@@ -44,6 +45,6 @@ plt.ylabel("Signal efficiency")
 plt.legend(loc="best")
 plt.axis([0., 1., 0., 1.1])
 
-plt.savefig("/eos/user/c/cericeci/www/roc.pdf")
+plt.savefig("/eos/user/%s/%s/www/roc.pdf"%(os.getlogin()[0], os.getlogin()))
 plt.clf()
 

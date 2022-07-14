@@ -1,25 +1,27 @@
 import ROOT
 import numpy as np
+import os
 
 ##### SF files #####
 #####  -UL18-  #####
+SUEP_BASE = os.path.dirname(os.path.realpath(__file__).replace("/plotting",""))
 
-muIDfile = ROOT.TFile("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/MuUL18/MuID.root","READ")
+muIDfile = ROOT.TFile(SUEP_BASE + "/data/MuUL18/MuID.root","READ")
 muID = muIDfile.Get("NUM_LooseID_DEN_TrackerMuons_abseta_pt")
 maxmidx = muID.GetNbinsX()
 maxmidy = muID.GetNbinsY()
 
-muTrkfile = ROOT.TFile("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/MuUL18/MuTracking.root","READ")
+muTrkfile = ROOT.TFile(SUEP_BASE + "/data/MuUL18/MuTracking.root","READ")
 muTrk = muTrkfile.Get("NUM_TrackerMuons_DEN_genTracks")
 maxmtx = muTrk.GetNbinsX()
 maxmty = muTrk.GetNbinsY()
 
-eIDfile = ROOT.TFile("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/EGammaUL18/EGamma_Loose.root","READ")
+eIDfile = ROOT.TFile(SUEP_BASE + "/data/EGammaUL18/EGamma_Loose.root","READ")
 eID = eIDfile.Get("EGamma_SF2D").Clone("eID") #Clone just in case pyroot does its thing
 maxeidx = eID.GetNbinsX()
 maxeidy = eID.GetNbinsY()
 
-eRECOfile = ROOT.TFile("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/EGammaUL18/EGamma_recohighpt.root", "READ")
+eRECOfile = ROOT.TFile(SUEP_BASE + "/data/EGammaUL18/EGamma_recohighpt.root", "READ")
 eRECO = eRECOfile.Get("EGamma_SF2D").Clone("eRECO") #Clone just in case pyroot does its thing
 maxerex = eRECO.GetNbinsX()
 maxerey = eRECO.GetNbinsY()
@@ -58,7 +60,7 @@ def SF(x):
   return w
 
 
-Zptfile = ROOT.TFile("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/ZptUL18/Zpt_corr.root","READ")
+Zptfile = ROOT.TFile(SUEP_BASE + "/data/ZptUL18/Zpt_corr.root","READ")
 ZptHist = Zptfile.Get("Zpt_SF")
 maxZx   = ZptHist.GetNbinsX()
 maxZy   = ZptHist.GetNbinsY()

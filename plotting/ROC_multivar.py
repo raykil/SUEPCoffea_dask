@@ -13,7 +13,7 @@ del samples["data"] # Not needed
 
 def getROC(p):
   print("Getting ROC for %s..."%p["name"])
-  fil = ROOT.TFile("/eos/user/c/cericeci/www/SUEP/stack_clusterpt60/%s.root"%p["name"],"READ") 
+  fil = ROOT.TFile("/eos/user/%s/%s/www/SUEP/stack_clusterpt60/%s.root"%(os.getlogin()[0], os.getlogin(), p["name"]),"READ") 
   backs = []
   totback = False
   for s in samples:
@@ -83,5 +83,5 @@ plt.ylabel("Signal efficiency")
 plt.legend(loc="best")
 plt.axis([0., 1., 0., 1.1])
 
-plt.savefig("/eos/user/c/cericeci/www/roc.pdf")
+plt.savefig("/eos/user/%s/%s/www/roc.pdf"%(os.getlogin()[0], os.getlogin())
 plt.clf()

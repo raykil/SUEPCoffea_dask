@@ -276,14 +276,14 @@ class plotter(object):
       chunks = int(math.ceil(nfiles*1./(options.batchsize)))
       jobfile = open("%s/exec/_%i.sh"%(options.jobname, iJob),"w")
       jobfile.write("#!/bin/bash\n")
-      jobfile.write("cd /eos/home-c/cericeci/SUEP/SUEPCoffea_dask/plotting/\n")
+      jobfile.write("cd %s\n"%os.getcwd())
       if chunks == 1:
         jobfile = open("%s/exec/_%i.sh"%(options.jobname, iJob),"w")
         jobfile.write("#!/bin/bash\n")
         jobfile.write("source /afs/cern.ch/cms/cmsset_default.sh\n")
         jobfile.write("cd /eos/user/c/cericeci/CMSSW_10_6_29/src/\n")
         jobfile.write("cmsenv\n")
-        jobfile.write("cd /eos/home-c/cericeci/SUEP/SUEPCoffea_dask/plotting/\n")
+        jobfile.write("cd %s\n"%os.getcwd())
         jobfile.write(command + " --sample %s --files %s"%(sname, ",".join(s.safefiles)))
         jobfile.close()
         iJob += 1
@@ -305,7 +305,7 @@ class plotter(object):
         jobfile.write("source /afs/cern.ch/cms/cmsset_default.sh\n")
         jobfile.write("cd /eos/user/c/cericeci/CMSSW_10_6_29/src/\n")
         jobfile.write("cmsenv\n")
-        jobfile.write("cd /eos/home-c/cericeci/SUEP/SUEPCoffea_dask/plotting/\n")
+        jobfile.write("cd %s\n"%os.getcwd())
         jobfile.write(command + " --sample %s --files %s"%(sname, ",".join(s.safefiles[(chunks-1)*options.batchsize:])))
         jobfile.close()
         iJob += 1
