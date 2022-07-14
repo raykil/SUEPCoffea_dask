@@ -12,6 +12,8 @@ parser.add_option("-o","--output", dest="output", type="string", default=os.getc
 parser.add_option("-q","--queue", dest="queue", type="string", default="longlunch", help="Which condor queue to use, the default is longlunch (2h)")
 parser.add_option("-i","--interval", dest="interval", type="int", default=20, help="When submitting jobs, each one runs this many samples")
 parser.add_option("--SR", dest="SR", action="store_true", help="If activated, the analyzer only saves yields up to SR to save space")
+parser.add_option("--submit", dest="submit", action="store_true", help="If activated, do submission of jobs on top of printing the commands")
+parser.add_option("--unblind", dest="unblind", action="store_true", help="Unless you activate this, data won't appear")
 (options, args) = parser.parse_args()
 
 doWhat = args[0]
@@ -29,9 +31,12 @@ if doWhat == "all" or doWhat == "dataframes":
   samples = open(os.getcwd() +  "/data/samples_%i.json"%options.year)
   samplesjson = json.loads(samples.read())
   for sample in samplesjson:
+    if (samplesjson[sample]["isData"] > 0) and not(options.unblind): continue
     if len(options.samples) == 0:
       print("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+      if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
     else:
       for filt in options.samples:
         if re.match(filt, sample):
           print("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+          if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
