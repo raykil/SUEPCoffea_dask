@@ -63,14 +63,13 @@ class datacardMaker(object):
   def collectYieldsShapes(self):
     print("Collecting shape histograms...")
     self.isShape = True
-    tf = ROOT.TFile(self.systs["yields"]["file"],"READ")
+    tf = ROOT.TFile(self.systs["yields"]["file"].replace("[ROOTFILE]", self.options.rootfile),"READ")
     self.th1s   = {}
     self.yields = {}
     toDelete = []
     for s in self.samples:
       print("....%s"%s)
-      print(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]))
-      newth1 = tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]))
+      newth1 = tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", options.var))
       self.th1s[s]   = copy.deepcopy("data_obs" if s=="data" else newth1.Clone(s))
       self.yields[s] = newth1.Integral()
       if self.yields[s] == 0: 
@@ -105,7 +104,8 @@ if __name__ == "__main__":
   parser = OptionParser(usage="%prog [options] samples.py systs.py output") 
   parser.add_option("--ms", dest="multisignal", action="store_true", default=False, help="Activate to have all signals in same card (default is different cards)")
   parser.add_option("--blind", dest="blind", action="store_true", default=False, help="Activate for blinding (no data)")
-
+  parser.add_option("--rootfile", dest="rootfile", default="", help="ROOT file with the input shapes")
+  parser.add_option("--var", dest="var", default="", help="Variable name in the plots file used to produce the rootfile")
   (options, args) = parser.parse_args()
   samplesFile   = imp.load_source("samples",args[0])
   systsFile     = imp.load_source("systematicsAndShapes", args[1])

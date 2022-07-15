@@ -2,8 +2,8 @@ systematicsAndShapes = {
  "yields": { # This always needs to be defined
            "name": "yields",
            "type": "yieldsWithShapes",
-           "file": "/eos/user/c/cericeci/www/SUEP/stack_ncltracks40_eta1p5/jet1pt_5rebinned.root",
-           "match": "jet1pt_$PROCESS"
+           "file": "[ROOTFILE]",
+           "match": "[VAR]_$PROCESS"
   },
  "DYnorm": {
            "name" : "DYnorm",

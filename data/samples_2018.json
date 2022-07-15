@@ -54,13 +54,13 @@
     "isDYinclusive":0
   },
   "QCD":{
-    "path":"/eos/cms/store/user/cericeci/SUEPS/UL18/SUEPS/UL18/QCD/",
+    "path":"/eos/cms/store/user/cericeci/SUEPS/UL18/QCD/",
     "isData":0,
     "filter":0,
     "isDYinclusive":0
   },
   "TTTo1L1Nu2Q":{
-    "path":"/eos/cms/store/user/cericeci/SUEPS/UL18/SUEPS/UL18/TTTo1L1Nu2Q/  ",
+    "path":"/eos/cms/store/user/cericeci/SUEPS/UL18/TTTo1L1Nu2Q/  ",
     "isData":0,
     "filter":0,
     "isDYinclusive":0
@@ -159,6 +159,6 @@
     "path":"/eos/user/c/cericeci/SUEP_signals/UL18_withgeninfo/ZHleptonicpythia_generic_M125_MD2_T2_HT0.0_new_propergen/NANOAOD/",
     "isData":0,
     "filter":"total",
-    "isDYinclusve":0
+    "isDYinclusive":0
   }
 }
