@@ -337,9 +337,11 @@ class SUEP_cluster(processor.ProcessorABC):
          ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
 
          return events, ak15_jets, ak15_consts
-    """
+
     def striptizeTracks(self, events, tracks):
         # This returns the number of SUEP tracks that lies in between certain eta selection.
+        print(tracks)
+        """
         dEta = 0.8
         etas = np.linspace(-3,3,10)
         nSUEPtracksPerEta = [0] * len(etas)
@@ -358,9 +360,9 @@ class SUEP_cluster(processor.ProcessorABC):
         maxEtas = [etas[:,i][0] for i in maxEtaIdx]
         stripcut = [((np.array(maxEtas)-dEta)[i] < tracks[i].eta) & ((np.array(maxEtas)+dEta)[i] < tracks[i].eta) for i in range(len(tracks.eta))]
         striptizedTracks = tracks[stripcut]
+        """
 
-        return events, tracks, striptizedTracks
-    """
+        return events, tracks, #striptizedTracks
 
     def selectByGEN(self, events):
         GenParts = ak.zip({
@@ -402,10 +404,12 @@ class SUEP_cluster(processor.ProcessorABC):
         #if not(events.event[0]==255955082 and events.luminosityBlock[0]==94729 and events.run[0]==1): return self.accumulator.identity()
         debug    = True  # If we want some prints in the middle
         chunkTag = "out_%i_%i_%i.hdf5"%(events.event[0], events.luminosityBlock[0], events.run[0]) #Unique tag to get different outputs per tag
+        
         self.doTracks = True  # Make it false, and it will speed things up but not run the tracks
         self.doClusters = True
         self.doStrips = True
         self.doGen    = True # In case we want info on the gen level --- MAKE THIS FALSE FOR BG!
+        self.SimTrack = False
         # Main processor code
 
 
@@ -435,6 +439,7 @@ class SUEP_cluster(processor.ProcessorABC):
         if debug: print("Applying lepton requirements.... %i events in"%len(events))
         self.events, self.electrons, self.muons = self.selectByLeptons(events)[:3]
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator # If we have no events, we simply stop
+        
         # Trigger selection
         if debug: print("%i events pass lepton cuts. Applying trigger requirements...."%len(self.events))
         self.events, [self.electrons, self.muons] = self.selectByTrigger(self.events,[self.electrons, self.muons])
@@ -454,8 +459,6 @@ class SUEP_cluster(processor.ProcessorABC):
 
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass jet cuts. Selecting tracks..."%len(self.events))
-        
-        self.SimTrack = False
 
         if self.doTracks:
             if self.SimTrack:
@@ -572,6 +575,8 @@ class SUEP_cluster(processor.ProcessorABC):
         # Define outputs for plotting
         if debug: print("Saving reco variables for channel %s"%channel)
         
+        """
+
         # region Object: leptons
         out["leadlep_pt"]    = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
@@ -620,6 +625,8 @@ class SUEP_cluster(processor.ProcessorABC):
         ##out["alljets_phi"]     = ak.fill_none(ak.pad_none(self.jets.phi,  maxnjets, axis=1, clip=True), -999.)
         #endregion
 
+        """
+
         if self.doTracks:
             out["ntracks"]     = ak.num(self.tracks, axis=1)[:]
             ##maxntracks         = ak.max(ak.num(self.tracks, axis=1))
@@ -667,6 +674,8 @@ class SUEP_cluster(processor.ProcessorABC):
                 evalsT = self.sphericity(self.events, tracks_boostedagainsttracks, 2) #Gives the sphericity in -Z frame (tracks)
 
                 #region: OUTPUT FOR SPHERICITY
+
+                """
 
                 ### Boosts ###
                 out["boostZ_px"] = boost_Zinv.px
@@ -736,6 +745,8 @@ class SUEP_cluster(processor.ProcessorABC):
                 out["leadclusterSpher_Z"] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
                 out["leadclusterSpher_T"] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
                 out["leadclusterSpher_C"] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))
+
+                """
 
         #if self.doStrips and self.isStripable:
             """
