@@ -6,21 +6,25 @@
 """
 
 #from this import d
+from tkinter import Y
 import pandas as pd
 import ROOT
 import os
 import numpy as np
 
 output = "/eos/user/j/jkil/www/S-Frame_Property"
-ZH = [pd.HDFStore("../outputZH/"+f, 'r') for f in os.listdir("../outputZH/")]
+ZH = [pd.HDFStore("../outputSimTracks/"+f, 'r') for f in os.listdir("../outputSimTracks/")]
 
 # Command for accessing the hdf5 files
-# print(ZH[1]["onetrack"])
+# print(ZH[0]["onetrack"]["genHpz"], "genHpz")
+# print(ZH[0]["onetrack"]["ntracks"], "ntracks")
 
 EtaPz = True
-EtaPt = True
-PhiPz = True
-PhiPt = True
+EtaPt = False
+PhiPz = False
+PhiPt = False
+
+genHpzgenHpt = False
 
 if EtaPz:
     #delta Eta vs pz
@@ -32,6 +36,8 @@ if EtaPz:
         Hpz = ZH[i]["onetrack"]["genHpz"]
         for j in range(len(deltaEta)):
             h.Fill(Hpz[j],deltaEta[j])
+
+    h.Fit("pol1")
 
     h.Draw("colz")
     h.Draw("CANDLE SAME")
@@ -97,3 +103,24 @@ if PhiPt:
     h.SetMarkerStyle(7)
     c.SaveAs("%s/%s.pdf"%(output,"deltaPhi_vs_Hpt"))
     c.SaveAs("%s/%s.png"%(output,"deltaPhi_vs_Hpt"))
+
+
+if genHpzgenHpt:
+    #pz vs pt of Higgs. Purpose is to see if high pt implies low pz
+    h = ROOT.TH2F("genHpz_vs_genHpt","p_{z} vs p_{t} of H",100,0,600,100,-300,300)
+    c = ROOT.TCanvas("c", "", 800,600)
+    
+    for i in range(len(ZH)):
+        x = ZH[i]["onetrack"]["genHpt"]
+        y = ZH[i]["onetrack"]["genHpz"]
+        for j in range(len(y)):
+            h.Fill(x[j],y[j])
+
+    #h.Draw("colz")
+    #h.Draw("CANDLE SAME")
+    h.Draw()
+    h.GetXaxis().SetTitle("p_{t} of genH [GeV]")
+    h.GetYaxis().SetTitle("p_{z} of genH [GeV]")
+    h.SetMarkerStyle(7)
+    c.SaveAs("%s/%s.pdf"%(output,"genHpz_vs_genHpt"))
+    c.SaveAs("%s/%s.png"%(output,"genHpz_vs_genHpt"))
