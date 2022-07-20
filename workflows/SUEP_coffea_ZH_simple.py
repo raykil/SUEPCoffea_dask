@@ -38,7 +38,7 @@ class SUEP_cluster(processor.ProcessorABC):
     def accumulator(self):
         return self._accumulator
 
-    def sphericity(self, events, particles, r):
+    def sphericity(self, particles, r):
         # In principle here we already have ak.num(particles) != 0
         # Some sanity replacements just in case the boosting broke
         px = ak.nan_to_num(particles.px, 0)
@@ -355,9 +355,12 @@ class SUEP_cluster(processor.ProcessorABC):
         return events, ak15_jets, ak15_consts
 
     def striptizeTracks(self, events, tracks, etaWidth=0.75):
-        etaCenters = np.linspace(-2.5, 2.50, 50) # Scan 50 eta values
+        # This function returns the following:
+        # band = sum of four-momenta of tracks lying within optimal strip (strip that most tracks lie)
+        # tracksinBand = Tracks selected by the optimal strip
+        etaCenters = np.linspace(-2.50, 2.50, 50)
         tracksinBand = tracks
-        nInBand      = ak.num(tracks) * -1 # So we always get towards better stuff
+        nInBand      = ak.num(tracks) * -1
         
         for etaC in etaCenters:
             #print("Striptizing... %1.1f/%1.1f"%(etaC,etaWidth))
@@ -374,7 +377,9 @@ class SUEP_cluster(processor.ProcessorABC):
             "E": ak.sum(tracksinBand.E, axis=1)
         }, with_name="Momentum4D")
 
-        return events, band, tracksinBand
+        band_consts = tracksinBand # These are the constituents (individual tracks) in a band
+
+        return events, band, band_consts
 
     def selectByGEN(self, events):
         GenParts = ak.zip({
@@ -424,22 +429,21 @@ class SUEP_cluster(processor.ProcessorABC):
 
 
     def process(self, events):
+        #print(events.event[0], events.luminosityBlock[0], events.run[0])
+        # 255955082 94729 1
+        #if not(events.event[0]==255955082 and events.luminosityBlock[0]==94729 and events.run[0]==1): return self.accumulator.identity()
 
+        debug    = True
+        chunkTag = "out_%i_%i_%i.hdf5"%(events.event[0], events.luminosityBlock[0], events.run[0])
         fullFile = self.output_location + "/" + chunkTag
+
         print("Check file %s"%fullFile)
         if os.path.isfile(fullFile): 
             print("SKIP")
             return self.accumulator.identity()
 
-        #print(events.event[0], events.luminosityBlock[0], events.run[0])
-        # 255955082 94729 1
-        #if not(events.event[0]==255955082 and events.luminosityBlock[0]==94729 and events.run[0]==1): return self.accumulator.identity()
-        debug    = True  # If we want some prints in the middle
-        chunkTag = "out_%i_%i_%i.hdf5"%(events.event[0], events.luminosityBlock[0], events.run[0]) #Unique tag to get different outputs per tag
-        
         self.doTracks   = True  # Make it false, and it will speed things up but not run the tracks
         self.doClusters = True
-        self.doStrips   = True
         self.doGen      = False if not(self.isDY) else True # In case we want info on the gen level 
         self.SimTrack   = False
         # Main processor code
@@ -507,7 +511,7 @@ class SUEP_cluster(processor.ProcessorABC):
                 self.strips = {}
                 self.sconstituents = {}
                 for etaw in self.etaWidths:
-                  self.events, self.strips[etaw], self.sconstituents[etaw] = self.striptizeTracks(self.events, self.tracks, etaw)[:3]
+                    self.events, self.strips[etaw], self.sconstituents[etaw] = self.striptizeTracks(self.events, self.tracks, etaw)[:3]
 
         if self.doGen:
             print("Do gen!")
@@ -524,7 +528,6 @@ class SUEP_cluster(processor.ProcessorABC):
         # ------------------------------------------------------------------------------
         self.isSpherable   = True # So we don't do sphericity plots
         self.isClusterable = True # So we don't do cluster plots without clusters
-        self.isStripable   = False
 
         outputs["twoleptons"] = [self.doAllPlots("twoleptons", debug), self.events]
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
@@ -549,18 +552,22 @@ class SUEP_cluster(processor.ProcessorABC):
                 self.applyCutToAllCollections(cutZm)
                 if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                 if debug: print("%i events pass Zm cuts. Doing more stuff..."%len(self.events))
+                
                 cutZpt = (self.Zcands.pt > 25)
                 self.applyCutToAllCollections(cutZpt)
                 if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                 if debug: print("%i events pass Zpt cuts. Doing more stuff..."%len(self.events))
+                
                 cut0tag =  (ak.sum((self.jets.btag >= 0.0490), axis=1) == 0)
                 self.applyCutToAllCollections(cut0tag)
                 if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                 if debug: print("%i events pass 1tag cuts. Doing more stuff..."%len(self.events))
+                
                 cutclusterpt60 = (self.clusters.pt[:,0] >= 60)
                 self.applyCutToAllCollections(cutclusterpt60)
                 if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                 if debug: print("%i events pass clusterpt cuts. Doing more stuff..."%len(self.events))
+                
                 outputs["SR"] = [self.doAllPlots("SR", debug), self.events]
 
         # ------------------------------------------------------------------------------
@@ -602,9 +609,9 @@ class SUEP_cluster(processor.ProcessorABC):
             if self.doClusters:
                 self.clusters     = self.clusters[cut]
                 self.constituents = self.constituents[cut]
-                """for etaw in self.etaWidths:
-                  self.strips[etaw]        = self.strips[etaw][cut]
-                  self.sconstituents[etaw] = self.sconstituents[etaw][cut]"""
+                for etaw in self.etaWidths:
+                    self.strips[etaw]        = self.strips[etaw][cut]
+                    self.sconstituents[etaw] = self.sconstituents[etaw][cut]
 
         if self.doGen:
             if self.isDY:
@@ -623,7 +630,6 @@ class SUEP_cluster(processor.ProcessorABC):
         if debug: print("Saving reco variables for channel %s"%channel)
         
         """
-
         # region Object: leptons
         out["leadlep_pt"]    = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
@@ -696,7 +702,6 @@ class SUEP_cluster(processor.ProcessorABC):
 
             if self.isSpherable:
               
-                # Reconstructing by setting pS = -pZ 
                 boost_Zinv = ak.zip({
                     "px": self.Zcands.px,
                     "py": self.Zcands.py,
@@ -704,7 +709,6 @@ class SUEP_cluster(processor.ProcessorABC):
                     "mass": self.Zcands.mass
                 }, with_name="Momentum4D") 
 
-                # Reconstructing by summing all tracks
                 boost_tracks = ak.zip({
                     "px": ak.sum(self.tracks.px, axis=1)*-1,
                     "py": ak.sum(self.tracks.py, axis=1)*-1,
@@ -712,131 +716,101 @@ class SUEP_cluster(processor.ProcessorABC):
                     "mass": 125 # Assuming it is a Higgs?
                 }, with_name="Momentum4D")
 
+                tracks_boostedagainstnone   = self.tracks
                 tracks_boostedagainstZ      = self.tracks.boost_p4(boost_Zinv)
                 tracks_boostedagainsttracks = self.tracks.boost_p4(boost_tracks)
 
-                ### Scalar Sphericity ###
-                out["scalarSpher_L"] = 1.5*(evalsL[:,0] + evalsL[:,1])
-                out["scalarSpher_Z"] = 1.5*(evalsZ[:,0] + evalsZ[:,1])
-                out["scalarSpher_T"] = 1.5*(evalsT[:,0] + evalsT[:,1])
+                evalsL = self.sphericity(tracks_boostedagainstnone, 2) 
+                evalsZ = self.sphericity(tracks_boostedagainstZ, 2)
+                evalsT = self.sphericity(tracks_boostedagainsttracks, 2)
 
+                # Scalar Sphericity with all tracks
+                out["ScalarSpher_L"] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
+                out["ScalarSpher_Z"] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
+                out["ScalarSpher_T"] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
+
+                """
                 ### Mean Difference ###
                 out["meanDiff_L"] = np.mean(np.stack([evalsL[:,2]-evalsL[:,1], evalsL[:,2]-evalsL[:,0], evalsL[:,1]-evalsL[:,0]]), axis=0)
                 out["meanDiff_Z"] = np.mean(np.stack([evalsZ[:,2]-evalsZ[:,1], evalsZ[:,2]-evalsZ[:,0], evalsZ[:,1]-evalsZ[:,0]]), axis=0)
                 out["meanDiff_T"] = np.mean(np.stack([evalsT[:,2]-evalsT[:,1], evalsT[:,2]-evalsT[:,0], evalsT[:,1]-evalsT[:,0]]), axis=0)
+                """
 
                 if self.doClusters and self.isClusterable:
                     out["nclusters"]           = ak.num(self.clusters, axis=1)[:]
                     #maxnclusters              = ak.max(ak.num(self.clusters, axis=1))
+
+                    cutOneCluster = (ak.num(self.clusters) != 0)
+                    self.clusters = self.clusters[cutOneCluster]
+                    self.constituents = self.constituents[cutOneCluster]
+
                     out["leadcluster_pt"]      = self.clusters.pt[:,0]
                     out["leadcluster_eta"]     = self.clusters.eta[:,0]
                     out["leadcluster_phi"]     = self.clusters.phi[:,0]
                     out["leadcluster_ntracks"] = ak.num(self.constituents[:,0], axis = 1)
                     
-                    boost_leading = ak.zip({
-                      "px": self.clusters[:,0].px*-1,
-                      "py": self.clusters[:,0].py*-1,
-                      "pz": self.clusters[:,0].pz*-1,
-                      "mass": self.clusters[:,0].mass
+                    boost_leadCluster = ak.zip({
+                        "px": self.clusters[:,0].px*-1,
+                        "py": self.clusters[:,0].py*-1,
+                        "pz": self.clusters[:,0].pz*-1,
+                        "mass": self.clusters[:,0].mass
                     }, with_name="Momentum4D")
 
+                    out["boostC_px"] = boost_leadCluster.px
+                    out["boostC_py"] = boost_leadCluster.py
+                    out["boostC_pz"] = boost_leadCluster.pz
+                    out["boostC_pt"] = boost_leadCluster.pt
 
                     leadingclustertracks = self.constituents[:,0]
                     leadingclustertracks_boostedagainstZ      = leadingclustertracks.boost_p4(boost_Zinv)
                     leadingclustertracks_boostedagainsttracks = leadingclustertracks.boost_p4(boost_tracks)
-                    leadingclustertracks_boostedagainstSUEP   = leadingclustertracks.boost_p4(boost_leading)
+                    leadingclustertracks_boostedagainstSUEP   = leadingclustertracks.boost_p4(boost_leadCluster)
 
-                    evalsL = self.sphericity(self.events, leadingclustertracks, 2) 
-                    evalsZ = self.sphericity(self.events, leadingclustertracks_boostedagainstZ, 2)
-                    evalsT = self.sphericity(self.events, leadingclustertracks_boostedagainsttracks, 2)
-                    evalsC = self.sphericity(self.events, leadingclustertracks_boostedagainstSUEP, 2)
+                    evalsL = self.sphericity(leadingclustertracks, 2) 
+                    evalsZ = self.sphericity(leadingclustertracks_boostedagainstZ, 2)
+                    evalsT = self.sphericity(leadingclustertracks_boostedagainsttracks, 2)
+                    evalsC = self.sphericity(leadingclustertracks_boostedagainstSUEP, 2)
 
-                    out["leadclusterSpher_L"] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
-                    out["leadclusterSpher_Z"] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
-                    out["leadclusterSpher_T"] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
-                    out["leadclusterSpher_C"] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))
+                    # Scalar Sphericity with cluster selection
+                    out["leadclusterScalarSpher_L"] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
+                    out["leadclusterScalarSpher_Z"] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
+                    out["leadclusterScalarSpher_T"] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
+                    out["leadclusterScalarSpher_C"] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))
                     
-                    """for etaw in self.etaWidths:
+                    for etaw in self.etaWidths:
 
-                    out["leadstrip_pt" + "_dEta%1.1f"%etaw ]      = self.strips[etaw].pt[:]
-                    out["leadstrip_eta" + "_dEta%1.1f"%etaw]     = self.strips[etaw].eta[:]
-                    out["leadstrip_phi" + "_dEta%1.1f"%etaw]     = self.strips[etaw].phi[:]
-                    out["leadstrip_ntracks" + "_dEta%1.1f"%etaw] = ak.num(self.sconstituents[etaw], axis = 1)[:]
+                        out["leadstrip_pt" + "_dEta%1.1f"%etaw ]      = self.strips[etaw].pt[:]
+                        out["leadstrip_eta" + "_dEta%1.1f"%etaw]     = self.strips[etaw].eta[:]
+                        out["leadstrip_phi" + "_dEta%1.1f"%etaw]     = self.strips[etaw].phi[:]
+                        out["leadstrip_ntracks" + "_dEta%1.1f"%etaw] = ak.num(self.sconstituents[etaw], axis = 1)[:]
 
-                    boost_leading = ak.zip({
-                      "px": self.strips[etaw][:].px*-1,
-                      "py": self.strips[etaw][:].py*-1,
-                      "pz": self.strips[etaw][:].pz*-1,
-                      "mass": self.strips[etaw][:].mass
-                    }, with_name="Momentum4D")
-  
+                        boost_leadStrip = ak.zip({
+                            "px": self.strips[etaw][:].px*-1,
+                            "py": self.strips[etaw][:].py*-1,
+                            "pz": self.strips[etaw][:].pz*-1,
+                            "mass": self.strips[etaw][:].mass
+                        }, with_name="Momentum4D")
 
-                    leadingstriptracks = self.sconstituents[etaw]
-                    leadingstriptracks_boostedagainstZ      = leadingstriptracks.boost_p4(boost_Zinv)
-                    leadingstriptracks_boostedagainsttracks = leadingstriptracks.boost_p4(boost_tracks)
-                    leadingstriptracks_boostedagainstSUEP   = leadingstriptracks.boost_p4(boost_leading)
+                        out["boostS_px"] = boost_leadStrip.px
+                        out["boostS_py"] = boost_leadStrip.py
+                        out["boostS_pz"] = boost_leadStrip.pz
+                        out["boostS_pt"] = boost_leadStrip.pt
+    
+                        leadingstriptracks = self.sconstituents[etaw]
+                        leadingstriptracks_boostedagainstZ      = leadingstriptracks.boost_p4(boost_Zinv)
+                        leadingstriptracks_boostedagainsttracks = leadingstriptracks.boost_p4(boost_tracks)
+                        leadingstriptracks_boostedagainstSUEP   = leadingstriptracks.boost_p4(boost_leadStrip)
 
-                    evalsL = self.sphericity(self.events, leadingstriptracks, 2)
-                    evalsZ = self.sphericity(self.events, leadingstriptracks_boostedagainstZ, 2)
-                    evalsT = self.sphericity(self.events, leadingstriptracks_boostedagainsttracks, 2)
-                    evalsC = self.sphericity(self.events, leadingstriptracks_boostedagainstSUEP, 2)
+                        evalsL = self.sphericity(leadingstriptracks, 2)
+                        evalsZ = self.sphericity(leadingstriptracks_boostedagainstZ, 2)
+                        evalsT = self.sphericity(leadingstriptracks_boostedagainsttracks, 2)
+                        evalsS = self.sphericity(leadingstriptracks_boostedagainstSUEP, 2)
 
-                    out["leadstripSpher_L" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
-                    out["leadstripSpher_Z" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
-                    out["leadstripSpher_T" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
-                    out["leadstripSpher_C" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))"""
-
-            if self.doClusters and self.isClusterable:
-
-                out["nclusters"]           = ak.num(self.clusters, axis=1)[:]
-                #maxnclusters              = ak.max(ak.num(self.clusters, axis=1))
-                out["leadcluster_pt"]      = self.clusters.pt[:,-1]
-                out["leadcluster_eta"]     = self.clusters.eta[:,-1]
-                out["leadcluster_phi"]     = self.clusters.phi[:,-1]
-                out["leadcluster_ntracks"] = ak.num(self.constituents[:,-1], axis = 1)
-                
-                boost_leading = ak.zip({
-                    "px": self.clusters[:,-1].px*-1,
-                    "py": self.clusters[:,-1].py*-1,
-                    "pz": self.clusters[:,-1].pz*-1,
-                    "mass": self.clusters[:,-1].mass
-                }, with_name="Momentum4D")
-
-                leadingclustertracks = self.constituents[:,-1]
-                leadingclustertracks_boostedagainstZ      = leadingclustertracks.boost_p4(boost_Zinv)
-                leadingclustertracks_boostedagainsttracks = leadingclustertracks.boost_p4(boost_tracks)
-                leadingclustertracks_boostedagainstSUEP   = leadingclustertracks.boost_p4(boost_leading)
-
-                evalsL = self.sphericity(self.events, leadingclustertracks, 2) 
-                evalsZ = self.sphericity(self.events, leadingclustertracks_boostedagainstZ, 2)
-                evalsT = self.sphericity(self.events, leadingclustertracks_boostedagainsttracks, 2)
-                evalsC = self.sphericity(self.events, leadingclustertracks_boostedagainstSUEP, 2)
-
-                out["boostC_px"] = boost_leading.px
-                out["boostC_py"] = boost_leading.py
-                out["boostC_pz"] = boost_leading.pz
-                out["boostC_pt"] = boost_leading.pt
-
-                out["leadclusterSpher_L"] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
-                out["leadclusterSpher_Z"] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
-                out["leadclusterSpher_T"] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
-                out["leadclusterSpher_C"] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))
-
-                """
-
-        #if self.doStrips and self.isStripable:
-            """
-            boost_leadStrip = ak.zip({
-                "px": ak.sum(self.striptizedTracks.px, axis=1)*-1,
-                "py": ak.sum(self.striptizedTracks.py, axis=1)*-1,
-                "pz": ak.sum(self.striptizedTracks.pz, axis=1)*-1,
-                "mass": 125 # Assuming it is a Higgs?
-            }, with_name="Momentum4D")
-
-            out["boostS_px"] = boost_leadStrip.px
-            out["boostS_py"] = boost_leadStrip.py
-            out["boostS_pz"] = boost_leadStrip.pz
-            out["boostS_pt"] = boost_leadStrip.pt
+                        # Scalar Sphericity with strip selection
+                        out["leadstripScalarSpher_L" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
+                        out["leadstripScalarSpher_Z" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
+                        out["leadstripScalarSpher_T" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
+                        out["leadstripScalarSpher_S" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsS[:,0] + evalsS[:,1]))
 
         if self.doGen:
             if debug: print("Saving gen variables")
