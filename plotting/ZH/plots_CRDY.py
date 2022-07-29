@@ -2,24 +2,54 @@ import ROOT
 
 
 def cut(x):
-  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] >= 60) & (x["Z_pt"] <= 25)
+  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["Z_pt"] < 25) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] >= 60)
 
 plots = {
-  #"njets": {
-  #           "name"     : "njets",
-  #           "bins"     : ["uniform", 20, 0, 20],
-  #           "channel"  : "onecluster",
-  #           "value"    : lambda x, y : (x["njets"], y*cut(x)),
-  #           "logY"     : True,
-  #           "normalize": False, 
-  #           "maxY"     : 1e9,
-  #           "minY"     : 1e0,
-  #           "ratiomaxY": 2.,
-  #           "ratiominY": 0.,
-  #           "plotname" : "njets",
-  #           "xlabel"   : "N_{jets}",
-  #           "vars"     : ["njets"]
-  #},
+  "njets": {
+             "name"     : "njets",
+             "bins"     : ["uniform", 20, 0, 20],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["njets"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False, 
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "njets",
+             "xlabel"   : "N_{jets}",
+             "vars"     : ["njets"]
+  },
+  "HT": {
+             "name"     : "HT",
+             "bins"     : ["uniform", 40, 0, 400],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["H_T"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "HT",
+             "xlabel"   : "H_{T}(p_{T}^{jet} > 30 GeV)",
+             "vars"     : ["leadjet_pt", "subleadjet_pt", "trailjet_pt"]
+  },
+  "LHT":{
+             "name"     : "LHT",
+             "bins"     : ["uniform", 40, 0, 800],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["H_T"]+x["L_T"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "LHT",
+             "xlabel"   : "H_{T}(p_{T}^{jet} > 30 GeV) + L_{T}",
+             "vars"     : ["leadjet_pt", "subleadjet_pt", "trailjet_pt", "leadlep_pt","subleadlep_pt"]
+  },
   "nBLoose": {
              "name"     : "nBLoose",
              "bins"     : ["uniform", 6, 0, 6],
@@ -112,21 +142,68 @@ plots = {
              "xlabel"   : "p_{T}^{jet3}",
              "vars"     : ["trailjet_pt"]
   },
-  "mz": {
-             "name"     : "mz",
-             "bins"     : ["uniform", 60, 0, 300],
+  #"mZ": {
+  #           "name"     : "mZ",
+  #           "bins"     : ["uniform", 60, 0, 300],
+  #           "channel"  : "onecluster",
+  #           "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
+  #           "logY"     : True,
+  #           "normalize": False,
+  #           "maxY"     : 1e9,
+  #           "minY"     : 1e0,
+  #           "ratiomaxY": 2.,
+  #           "ratiominY": 0.,
+  #           "plotname" : "mZ",
+  #           "xlabel"   : "m(l1,l2) [GeV]",
+  #           "vars"     : ["Z_m"]
+  #},
+  "jet1_eta": {
+             "name"     : "jet1_eta",
+             "bins"     : ["uniform", 40, -5, 5],
              "channel"  : "onecluster",
-             "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
+             "value"    : lambda x, y : (x["leadjet_eta"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
              "maxY"     : 1e9,
              "minY"     : 1e0,
              "ratiomaxY": 2.,
              "ratiominY": 0.,
-             "plotname" : "mZ",
-             "xlabel"   : "m(l1,l2) [GeV]",
-             "vars"     : ["Z_m"]
+             "plotname" : "jet1_eta",
+             "xlabel"   : "#eta^{j1}",
+             "vars"     : ["leadjet_eta"]
   },
+
+  "jet2_eta": {
+             "name"     : "jet2_eta",
+             "bins"     : ["uniform", 40, -5, 5],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["subleadjet_eta"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "jet2_eta",
+             "xlabel"   : "#eta^{j2}",
+             "vars"     : ["subleadjet_eta"]
+  },
+  "jet3_eta": {
+             "name"     : "jet3_eta",
+             "bins"     : ["uniform", 40, -5, 5],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["trailjet_eta"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "jet3_eta",
+             "xlabel"   : "#eta^{j3}",
+             "vars"     : ["trailjet_eta"]
+  },
+
   "leadlep_pt": {
              "name"     : "leadlep_pt",
              "bins"     : ["uniform", 100, 0, 200],
@@ -159,6 +236,68 @@ plots = {
              "vars"     : ["subleadlep_pt"]
   },
 
+  "leadlep_eta": {
+             "name"     : "leadlep_eta",
+             "bins"     : ["uniform", 20, -2.5, 2.5],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["leadlep_eta"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "leadlep_eta",
+             "xlabel"   : "#eta^{l1}",
+             "vars"     : ["leadlep_eta"]
+  },
+
+  "subleadlep_eta": {
+             "name"     : "subleadlep_eta",
+             "bins"     : ["uniform", 20, -2.5, 2.5],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["subleadlep_eta"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "subleadlep_eta",
+             "xlabel"   : "#eta^{l2}",
+             "vars"     : ["subleadlep_eta"]
+  },
+  "leplep_deta": {
+             "name"     : "leplep_deta",
+             "bins"     : ["uniform", 20, 0, 5],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (abs(x["leadlep_eta"]-x["subleadlep_eta"]), y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "leplep_deta",
+             "xlabel"   : "|#eta^{l1}-#eta^{l2}|",
+             "vars"     : ["leadlep_eta", "subleadlep_eta"]
+  },
+
+  "leplep_dphi": {
+             "name"     : "leplep_dphi",
+             "bins"     : ["uniform", 20, 0, 5],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (abs(x["leadlep_phi"]-x["subleadlep_phi"]), y*cut(x)),
+             "logY"     : True,
+             "normalize": False, 
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "leplep_dphi",
+             "xlabel"   : "|#phi^{l1}-#phi^{l2}|",
+             "vars"     : ["leadlep_phi", "subleadlep_phi"]
+  },
 
   "ntracks": {
              "name"     : "ntracks",
@@ -191,6 +330,7 @@ plots = {
              "xlabel"   : "p_{T}^{Z} [GeV]",
              "vars"     : ["Z_pt"]
   },
+
   "Zeta": {
              "name"     : "Zeta",
              "bins"     : ["uniform", 40, -5, 5],

@@ -2,7 +2,7 @@ import ROOT
 
 
 def cut(x):
-  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] < 60)
+  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] > 60) & (x["Z_pt"] > 25)
 
 plots = {
 }
@@ -13,6 +13,7 @@ var = {
 "Zeta": ["Z_eta", "#eta^{Z}", 20, -5, 5],
 "Zpt": ["Z_pt", "p_{T}^{Z}", 20, 0, 200],
 "jet1pt":["leadjet_pt", "p_{T}^{jet1}", 20, 0, 200],
+"H_T": ["H_T", "H_T", 20,0,500],
 }
 
 for v1 in var:
@@ -21,7 +22,7 @@ for v1 in var:
     plots[name] = {}
     plots[name]["name"]    = name
     plots[name]["bins"]    = ["2Duniform", var[v1][2], var[v1][3], var[v1][4], var[v2][2], var[v2][3], var[v2][4]]
-    plots[name]["channel"] = "onecluster"
+    plots[name]["channel"] = "SR"
     plots[name]["value"]   = lambda x, y: (x[var[v1][0]], x[var[v2][0]], y*cut(x))
     plots[name]["logY"     ]= True
     plots[name]["normalize"]= False
