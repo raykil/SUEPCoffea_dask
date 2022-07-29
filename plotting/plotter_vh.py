@@ -55,7 +55,7 @@ class sample(object):
 
           if not("skim" in self.config) and not(self.isData):
             #print(a.get_storer("twoleptons").attrs.metadata)
-            self.nnorms[f] = a.get_storer("SR").attrs.metadata["gensumweight"]
+            self.nnorms[f] = a.get_storer("twoleptons").attrs.metadata["gensumweight"]
           b = {}
           if len(a.keys()) == 0: #Empty file
             a.close()
@@ -200,7 +200,8 @@ class sample(object):
         self.histos[plotName][filename]  = self.histos[plotName]["total"].Clone(self.histos[plotName]["total"].GetName() + "_" + filename)
       for c in self.channels:
         #print(f, safefile)
-        if not(self.isData): 
+        if not(self.isData):
+          print(self.name, c, "genweight", self.channels) 
           weights = f[c]["genweight"]
         else: 
           weights = np.ones(len(f[c]))
@@ -387,7 +388,7 @@ class plotter(object):
     histo.GetXaxis().SetTitle(p["xlabel"]) # Empty, as it goes into the ratio plot
 
     CMS_lumi.writeExtraText = True
-    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity
+    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.3f fb^{-1}" % options.luminosity
     CMS_lumi.extraText  = "Preliminary"
     CMS_lumi.lumi_sqrtS = "13"
     CMS_lumi.CMS_lumi(c, 4, 0, 0.122)
@@ -447,13 +448,14 @@ class plotter(object):
     for s in self.samples:
       if s.isBackground():
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
-        theStack.Add(s.histos[pname]["total"])
-        tl.AddEntry(s.histos[pname]["total"], s.config["label"], "f")
         if not(back): back = s.histos[pname]["total"].Clone("total_background")
         else: back.Add(s.histos[pname]["total"])
         #print(pname, s.name)
         #s.histos[pname]["total"].Print("all")
-        stacksize += s.histos[pname]["total"].Integral()
+        if not(s.config["label"] in thePlotGroups):
+          thePlotGroups[s.config["label"]] = s.histos[pname]["total"].Clone(s.histos[pname]["total"].GetName().replace(s.name, s.config["label"]))
+        else:
+          thePlotGroups[s.config["label"]].Add(s.histos[pname]["total"])
       elif s.isData:
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
         tl.AddEntry(s.histos[pname]["total"], s.config["label"], "pl")
@@ -465,6 +467,11 @@ class plotter(object):
         s.histos[pname]["total"].SetLineStyle(1)
         theIndivs.append(s.histos[pname]["total"])
         tl.AddEntry(s.histos[pname]["total"], s.config["label"], "l")
+    for plotgroup in thePlotGroups:
+      theStack.Add(thePlotGroups[plotgroup])
+      tl.AddEntry(thePlotGroups[plotgroup], plotgroup, "f")
+      stacksize += thePlotGroups[plotgroup].Integral()
+ 
     if p["normalize"]:
       for index in range(len(theIndivs)):
         theIndivs[index].Scale(1./theIndivs[index].Integral())
@@ -529,7 +536,7 @@ class plotter(object):
     for num in nums:
       num.Draw("same") if not("data" in num.GetName()) else num.Draw("Psame")
     CMS_lumi.writeExtraText = True
-    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity
+    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.0f pb^{-1}" % (options.luminosity*1000)
     CMS_lumi.extraText  = "Preliminary"
     CMS_lumi.lumi_sqrtS = "13"
     CMS_lumi.CMS_lumi(c, 4, 0, 0.122)
