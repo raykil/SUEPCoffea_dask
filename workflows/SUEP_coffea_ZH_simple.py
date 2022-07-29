@@ -176,9 +176,17 @@ class SUEP_cluster(processor.ProcessorABC):
         pathlib.Path(local_file).unlink()
 
 
+    def selectByFilters(self, events):
+        ### Apply MET filter selection (see https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2)
+        if self.era == 2018 or self.era == 2017:
+           cutAnyFilter = (events.Flag.goodVertices) | (events.Flag.globalSuperTightHalo2016Filter) | (events.Flag.HBHENoiseFilter) | (events.Flag.HBHENoiseIsoFilter) | (events.Flag.EcalDeadCellTriggerPrimitiveFilter) | (events.Flag.BadPFMuonFilter) | (events.Flag.BadPFMuonDzFilter) | (events.Flag.eeBadScFilter) | (events.Flag.ecalBadCalibFilter)
+        if self.era == 2016:
+           cutAnyFilter = (events.Flag.goodVertices) | (events.Flag.globalSuperTightHalo2016Filter) | (events.Flag.HBHENoiseFilter) | (events.Flag.HBHENoiseIsoFilter) | (events.Flag.EcalDeadCellTriggerPrimitiveFilter) | (events.Flag.BadPFMuonFilter) | (events.Flag.BadPFMuonDzFilter) | (events.Flag.eeBadScFilter)
+        return events[cutAnyFilter]
+
+
     def selectByTrigger(self, events, extraColls = []):
         ### Apply trigger selection
-        ### TODO:: Save a per-event flag that classifies the event (ee or mumu)
         if self.era == 2018:
            cutAnyHLT = (events.HLT.IsoMu24) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8) | (events.HLT.Ele32_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL) | (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL)
            return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
@@ -422,15 +430,19 @@ class SUEP_cluster(processor.ProcessorABC):
         # ------------------------------------------------------------------------------------
         # ------------------------------- OBJECT LOADING -------------------------------------
         # ------------------------------------------------------------------------------------
+        # MET filters
+        if debug: print("Applying MET requirements.... %i events in"%len(events))
+        self.events = self.selectByFilters(events)
+        if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator # If we have no events, we simply stop
+        if debug: print("%i events pass METFilter cuts. Applying lepton requirements...."%len(self.events))
 
         # Lepton selection
-        if debug: print("Applying lepton requirements.... %i events in"%len(events))
-        self.events, self.electrons, self.muons = self.selectByLeptons(events)[:3]
+        self.events, self.electrons, self.muons = self.selectByLeptons(self.events)[:3]
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator # If we have no events, we simply stop
+
         # Trigger selection
         if debug: print("%i events pass lepton cuts. Applying trigger requirements...."%len(self.events))
         self.events, [self.electrons, self.muons] = self.selectByTrigger(self.events,[self.electrons, self.muons])
-
         # Here we join muons and electrons into leptons and sort them by pT
         self.leptons = ak.concatenate([self.electrons, self.muons], axis=1)
         highpt_leptons = ak.argsort(self.leptons.pt, axis=1, ascending=False, stable=True)
@@ -438,20 +450,19 @@ class SUEP_cluster(processor.ProcessorABC):
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass trigger cuts. Selecting jets..."%len(self.events))
 
-        # Now do jet selection, for the moment no jet cuts
+        # Jet selection
         self.events, self.jets = self.selectByJets(self.events, self.leptons)[:2] # Leptons are needed to do jet-lepton cleaning
 	# Sorting jets by pt.
         highpt_jets = ak.argsort(self.jets.pt, axis=1, ascending=False, stable=True)
         self.jets   = self.jets[highpt_jets]
-
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass jet cuts. Selecting tracks..."%len(self.events))
         
         if self.doTracks:
             # Right now no track cuts, only selecting tracks
-            self.events, self.tracks = self.selectByTracks(self.events, self.leptons)[:2]
+            self.events, self.tracks = self.selectByTracks(self.events, self.leptons)[:2] # Again, we need leptons to clean the tracks
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-            if debug: print("%i events pass track cuts. Doing more stuff..."%len(self.events))
+            if debug: print("%i events pass track cuts. Doing track clustering..."%len(self.events))
             if self.doClusters:
                 self.events, self.clusters, self.constituents  = self.clusterizeTracks(self.events, self.tracks)[:3]
                 highpt_clusters = ak.argsort(self.clusters.pt, axis=1, ascending=False, stable=True)
@@ -470,14 +481,15 @@ class SUEP_cluster(processor.ProcessorABC):
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
             if debug: print("%i events pass gen cuts. Doing more stuff..."%len(self.events))
 
-        # Now deal with the Z candidate
+        ##### Finally, build additional composite objects
+        # First the Z candidates
         self.Zcands = self.leptons[:,0] + self.leptons[:,1]
         
         # ------------------------------------------------------------------------------
         # ------------------------------- SELECTION + PLOTTING -------------------------
         # ------------------------------------------------------------------------------
-        self.isSpherable   = False # So we don't do sphericity plots
-        self.isClusterable = False # So we don't do cluster plots without clusters
+        self.isSpherable   = False # So we don't do sphericity plots until we have clusters
+        self.isClusterable = False # So we don't try to compute sphericity if clusters are empty
         outputs["twoleptons"] = [self.doAllPlots("twoleptons", debug), self.events]
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass twoleptons cuts. Doing more stuff..."%len(self.events))
