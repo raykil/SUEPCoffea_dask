@@ -28,10 +28,10 @@ for f in os.listdir(ddir):
    fullThing = pd.HDFStore(ddir + "/" + f, "r")
  except:
    continue
- dic       = fullThing["onecluster"]
+ dic       = fullThing["SR"]
  for i in range(len(dic)):
   #print(i, len(dic))
-  if filt and (dic["leadcluster_ntracks"][i] < 20): continue
+  #if filt and (dic["leadcluster_ntracks"][i] < 20): continue
   #print(dic[var1][i], dic[var2][i])
   if var1eval(dic[var1][i]):
     if var2eval(dic[var2][i]):
