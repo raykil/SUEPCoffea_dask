@@ -317,7 +317,7 @@ class SUEP_cluster(processor.ProcessorABC):
         return events, ak15_jets, ak15_consts
 
     def striptizeTracks(self, events, tracks, etaWidth=0.75):
-        etaCenters = np.linspace(-2.5, 2.50, 50) # Scan 50 eta values
+        etaCenters = np.linspace(-2.5, 2.5, 50) # Scan 50 eta values
         tracksinBand = tracks
         nInBand      = ak.num(tracks) * -1 # So we always get towards better stuff
         for etaC in etaCenters:
@@ -497,7 +497,7 @@ class SUEP_cluster(processor.ProcessorABC):
                 if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                 if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))        
 
-                cutZm  = (abs(self.Zcands.mass - 90) > 30)
+                cutZm  = (abs(self.Zcands.mass - 90) < 30)
                 self.applyCutToAllCollections(cutZm)
                 if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                 if debug: print("%i events pass Zm cuts. Doing more stuff..."%len(self.events))

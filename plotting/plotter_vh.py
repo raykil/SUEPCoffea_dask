@@ -55,7 +55,7 @@ class sample(object):
 
           if not("skim" in self.config) and not(self.isData):
             #print(a.get_storer("twoleptons").attrs.metadata)
-            self.nnorms[f] = a.get_storer("twoleptons").attrs.metadata["gensumweight"]
+            self.nnorms[f] = a.get_storer("SR").attrs.metadata["gensumweight"]
           b = {}
           if len(a.keys()) == 0: #Empty file
             a.close()
@@ -443,6 +443,7 @@ class plotter(object):
     if options.ordered:
       self.samples.sort(key= lambda x: x.yields[pname], reverse=False)
     nbins = self.samples[0].histos[pname]["total"].GetNbinsX()
+    thePlotGroups = {}
     for s in self.samples:
       if s.isBackground():
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
@@ -585,7 +586,7 @@ if __name__ == "__main__":
     newsamples = {}
     newsamples[options.sample] = samples[options.sample]
     samples = newsamples
-  if options.blind:
+  if options.blind and "data" in samples:
     del samples["data"]
   if len(options.singleplot) > 0:
     newplots = {p: plots[p] for p in options.singleplot}
