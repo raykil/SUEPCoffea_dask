@@ -40,8 +40,8 @@ if doWhat == "all" or doWhat == "dataframes":
   for sample in samplesjson:
     if (samplesjson[sample]["isData"] > 0) and not(options.unblind): continue
     if len(options.samples) == 0:
-      print("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
-      if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+      print("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+      if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
     else:
       for filt in options.samples:
         if re.match(filt, sample):
