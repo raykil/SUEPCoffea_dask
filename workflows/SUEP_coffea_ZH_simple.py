@@ -769,10 +769,10 @@ class SUEP_cluster(processor.ProcessorABC):
                     out["boostC_pz"] = boost_leadCluster.pz
                     out["boostC_pt"] = boost_leadCluster.pt
 
-                    #ptScaleC = 1/(1-0.21794653)
-                    #pzscaleC = 1/(1-(2-1.34223482))
-                    ptScaleC = 1
-                    pzscaleC = 1
+                    ptScaleC = 1/(1-0.21794653)
+                    pzscaleC = 1/(1-(2-1.34223482))
+                    #ptScaleC = 1
+                    #pzscaleC = 1
                     scaledBoost_leadCluster = ak.zip({
                         "px": ptScaleC*self.clusters[:,0].px*-1,
                         "py": ptScaleC*self.clusters[:,0].py*-1,
@@ -786,10 +786,10 @@ class SUEP_cluster(processor.ProcessorABC):
                     out["scaledBoostC_pz"] = scaledBoost_leadCluster.pz
                     out["scaledBoostC_pt"] = scaledBoost_leadCluster.pt
 
-                    #ptScaleT = 1/(1-0.39824469)
-                    #pzscaleT = 1/(1-(2-1.36628093))
-                    ptScaleT = 1
-                    pzscaleT = 1
+                    ptScaleT = 1/(1-0.39824469)
+                    pzscaleT = 1/(1-(2-1.36628093))
+                    #ptScaleT = 1
+                    #pzscaleT = 1
                     scaledBoost_tracks = ak.zip({
                         "px": ptScaleT*ak.sum(self.tracks.px, axis=1)*-1,
                         "py": ptScaleT*ak.sum(self.tracks.py, axis=1)*-1,
@@ -844,10 +844,10 @@ class SUEP_cluster(processor.ProcessorABC):
                         out["boostS_pz"] = boost_leadStrip.pz
                         out["boostS_pt"] = boost_leadStrip.pt
 
-                        #ptScaleS = 1/(1-0.43627173)
-                        #pzScaleS = 1/(1-(2-1.42508492))
-                        ptScaleS = 1
-                        pzScaleS = 1
+                        ptScaleS = 1/(1-0.43627173)
+                        pzScaleS = 1/(1-(2-1.42508492))
+                        #ptScaleS = 1
+                        #pzScaleS = 1
                         scaledBoost_leadStrip = ak.zip({
                             "px": ptScaleS*self.strips[etaw][:].px*-1,
                             "py": ptScaleS*self.strips[etaw][:].py*-1,
