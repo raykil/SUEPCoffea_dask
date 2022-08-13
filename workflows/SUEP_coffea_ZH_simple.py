@@ -267,7 +267,7 @@ class SUEP_cluster(processor.ProcessorABC):
         return events, jets, [coll for coll in extraColls]
 
     def selectByTracks(self, events, leptons, extraColls = []):
-        # region : PARTICLE FLOW CANDIDATES
+        # PARTICLE FLOW CANDIDATES
         # Every particle in particle flow (clean PFCand matched to tracks collection)
         Cands = ak.zip({
             "pt": events.PFCands.trkPt,
@@ -282,9 +282,8 @@ class SUEP_cluster(processor.ProcessorABC):
             (abs(events.PFCands.dz) < 10) & \
             (events.PFCands.dzErr < 0.05)
         Cleaned_cands = ak.packed(Cands[cutPF])
-        # endregion
 
-	    # region: LOST TRACKS
+	    # LOST TRACKS
         # Unidentified tracks, usually SUEP Particles
         LostTracks = ak.zip({
             "pt": events.lostTracks.pt,
@@ -306,9 +305,8 @@ class SUEP_cluster(processor.ProcessorABC):
         # Sorting out the tracks that overlap with leptons
         totalTracks = totalTracks[(totalTracks.deltaR(leptons[:,0])>= 0.4) & (totalTracks.deltaR(leptons[:,1])>= 0.4)]
         nTracks = ak.num(totalTracks,axis=1)
-        # endregion
 
-        # region: SIM TRACKS
+        # SIM TRACKS
         # This part tags tracks from signal and those from background.
 
         if self.SimTrack:
@@ -341,7 +339,6 @@ class SUEP_cluster(processor.ProcessorABC):
             suepTracks = totalTracks[totalTracks.fromSUEP == True]
             backTracks = totalTracks[totalTracks.fromSUEP == False]
             return events, totalTracks, suepTracks, backTracks, nTracks, [coll for coll in extraColls]
-        # endregion
         
         return events, totalTracks, [coll for coll in extraColls]
 
@@ -372,6 +369,9 @@ class SUEP_cluster(processor.ProcessorABC):
             optimalEtaC = ak.where(ntest >= nInBand, etaC, optimalEtaC)
             nInBand = ak.where(ntest >= nInBand, ntest, nInBand)
 
+        nTracks = ak.num(tracks)
+        nOutBand = nTracks - nInBand
+
         band = ak.zip({
             "px": ak.sum(tracksinBand.px, axis=1),
             "py": ak.sum(tracksinBand.py, axis=1),
@@ -381,7 +381,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         band_consts = tracksinBand # These are the constituents (individual tracks) in a band
 
-        return events, band, band_consts
+        return events, band, band_consts, optimalEtaC, nTracks, nInBand, nOutBand
 
     def selectByGEN(self, events):
         GenParts = ak.zip({
@@ -446,9 +446,9 @@ class SUEP_cluster(processor.ProcessorABC):
 
         self.doTracks   = True  # Make it false, and it will speed things up but not run the tracks
         self.doClusters = True
-        self.doGen      = False if not(self.isDY) else True # In case we want info on the gen level 
-        #self.doGen      = True #ZH
-        self.SimTrack   = False
+        #self.doGen      = False if not(self.isDY) else True # In case we want info on the gen level 
+        self.doGen      = True #ZH
+        self.SimTrack   = True
         # Main processor code
 
 
@@ -459,17 +459,17 @@ class SUEP_cluster(processor.ProcessorABC):
         accumulator    = self.accumulator.identity()
         # Each track is one selection level
         outputs = {
-            "twoleptons"  :[{},[]],   # Has Two Leptons, pT and Trigger requirements
+            #"twoleptons"  :[{},[]],   # Has Two Leptons, pT and Trigger requirements
             "onecluster"  :[{},[]],   # At least one cluster is found
-            "SR"          :[{},[]],   # Only the SR
+            #"SR"          :[{},[]],   # Only the SR
         }
 
         # Data dependent stuff
         dataset = events.metadata['dataset']
         if self.isMC: self.gensumweight = ak.sum(events.genWeight)
 
-        if not(self.isMC): doGen = False #DY
-        #if not(self.isMC): doGen = True #ZH
+        #if not(self.isMC): doGen = False #DY
+        if not(self.isMC): doGen = True #ZH
 
         # ------------------------------------------------------------------------------------
         # ------------------------------- OBJECT LOADING -------------------------------------
@@ -502,7 +502,10 @@ class SUEP_cluster(processor.ProcessorABC):
 
         if self.doTracks:
             # Right now no track cuts, only selecting tracks
-            self.events, self.tracks = self.selectByTracks(self.events, self.leptons)[:2]
+            if self.SimTrack:
+                self.events, self.tracks, self.suepTracks, self.backTracks= self.selectByTracks(self.events, self.leptons)[:4]
+            else:
+                self.events, self.tracks = self.selectByTracks(self.events, self.leptons)[:2]
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
             if debug: print("%i events pass track cuts. Doing more stuff..."%len(self.events))
             if self.doClusters:
@@ -511,12 +514,12 @@ class SUEP_cluster(processor.ProcessorABC):
                 self.clusters   = self.clusters[highpt_clusters]
                 self.constituents = self.constituents[highpt_clusters]
                 
-                #self.etaWidths = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-                self.etaWidths = [0.6, 0.7, 0.8]
+                self.etaWidths = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+                #self.etaWidths = [0.6, 0.7, 0.8]
                 self.strips = {}
                 self.sconstituents = {}
                 for etaw in self.etaWidths:
-                    self.events, self.strips[etaw], self.sconstituents[etaw] = self.striptizeTracks(self.events, self.tracks, etaw)[:3]
+                    self.events, self.strips[etaw], self.sconstituents[etaw] = self.striptizeTracks(self.events, self.tracks,etaw)[:3]
 
         if self.doGen:
             print("Do gen!")
@@ -534,7 +537,7 @@ class SUEP_cluster(processor.ProcessorABC):
         self.isSpherable   = False # So we don't do sphericity plots
         self.isClusterable = False # So we don't do cluster plots without clusters
 
-        outputs["twoleptons"] = [self.doAllPlots("twoleptons", debug), self.events]
+        #outputs["twoleptons"] = [self.doAllPlots("twoleptons", debug), self.events]
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass twoleptons cuts. Doing more stuff..."%len(self.events))
 
@@ -573,7 +576,7 @@ class SUEP_cluster(processor.ProcessorABC):
                 if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                 if debug: print("%i events pass clusterpt cuts. Doing more stuff..."%len(self.events))
                 
-                outputs["SR"] = [self.doAllPlots("SR", debug), self.events]
+                #outputs["SR"] = [self.doAllPlots("SR", debug), self.events]
 
         # ------------------------------------------------------------------------------
         # -------------------------------- SAVING --------------------------------------
@@ -611,6 +614,9 @@ class SUEP_cluster(processor.ProcessorABC):
         self.Zcands    = self.Zcands[cut]
         if self.doTracks:
             self.tracks  = self.tracks[cut]
+            if self.SimTrack:
+                self.suepTracks = self.suepTracks[cut]
+                self.backTracks = self.backTracks[cut]
             if self.doClusters:
                 self.clusters     = self.clusters[cut]
                 self.constituents = self.constituents[cut]
@@ -635,7 +641,6 @@ class SUEP_cluster(processor.ProcessorABC):
         if debug: print("Saving reco variables for channel %s"%channel)
         
         """
-        # region Object: leptons
         out["leadlep_pt"]    = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
         out["leadlep_eta"]   = self.leptons.eta[:,0]
@@ -645,10 +650,8 @@ class SUEP_cluster(processor.ProcessorABC):
         out["nleptons"]      = ak.num(self.leptons, axis=1)[:]
         out["nmuons"]        = ak.num(self.muons) 
         out["nelectrons"]    = ak.num(self.electrons)
-        #endregion
         """
 
-        # region Object: reconstructed Z
         out["Z_px"]  = self.Zcands.px[:]
         out["Z_py"]  = self.Zcands.py[:]
         out["Z_pz"]  = self.Zcands.pz[:]
@@ -657,9 +660,9 @@ class SUEP_cluster(processor.ProcessorABC):
         out["Z_eta"] = self.Zcands.eta[:]
         out["Z_phi"] = self.Zcands.phi[:]
         out["Z_m"]   = self.Zcands.mass[:]
-        #endregion
+
         """
-        # region Object: jets, a bit tricky as number varies per event!
+        # Object: jets, a bit tricky as number varies per event!
         out["njets"]          = ak.num(self.jets, axis=1)[:]
         out["nBLoose"]        = ak.sum((self.jets.btag >= 0.0490), axis=1)[:]
         out["nBMedium"]       = ak.sum((self.jets.btag >= 0.2783), axis=1)[:]
@@ -681,8 +684,6 @@ class SUEP_cluster(processor.ProcessorABC):
         ##out["alljets_pt"]      = ak.fill_none(ak.pad_none(self.jets.pt,  maxnjets, axis=1, clip=True), 0.)
         ##out["alljets_eta"]     = ak.fill_none(ak.pad_none(self.jets.eta,  maxnjets, axis=1, clip=True), -999.)
         ##out["alljets_phi"]     = ak.fill_none(ak.pad_none(self.jets.phi,  maxnjets, axis=1, clip=True), -999.)
-        #endregion
-
         """
 
         if self.doTracks:
@@ -693,6 +694,40 @@ class SUEP_cluster(processor.ProcessorABC):
             ##out["tracks_phi"]  = ak.fill_none(ak.pad_none(self.tracks.phi,  maxntracks, axis=1, clip=True), -999.)
 
             if self.SimTrack:
+
+                EtaWidths = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+
+                for etaw in EtaWidths:
+                    self.optimalEtaC, self.nTracks, self.nInBand, self.nOutBand = self.striptizeTracks(self.events, self.tracks, etaw)[-4:]
+
+                    backTrackCut = (self.backTracks.eta >= (self.optimalEtaC - etaw)) & (self.backTracks.eta < (self.optimalEtaC + etaw))
+                    cutBackTracks = self.backTracks[backTrackCut]
+                    nBACKinBand = ak.num(cutBackTracks)
+                    nBACKoutBand = ak.num(self.backTracks) - ak.num(cutBackTracks)
+
+                    suepTrackCut = (self.suepTracks.eta >= (self.optimalEtaC - etaw)) & (self.suepTracks.eta < (self.optimalEtaC + etaw))
+                    cutSuepTracks = self.suepTracks[suepTrackCut]
+                    nSUEPinBand = ak.num(cutSuepTracks)
+                    nSUEPoutBand = ak.num(self.suepTracks) - ak.num(cutSuepTracks)
+
+                    out["nTracks{}".format(etaw)] = self.nTracks
+                    out["nInBand{}".format(etaw)] = self.nInBand
+                    out["nOutBand{}".format(etaw)] = self.nOutBand
+                    out["nBACKinBand{}".format(etaw)] = nBACKinBand
+                    out["nBACKoutBand{}".format(etaw)] = nBACKoutBand
+                    out["nSUEPinBand{}".format(etaw)] = nSUEPinBand
+                    out["nSUEPoutBand{}".format(etaw)] = nSUEPoutBand
+
+                #out["nSUEPtracks"] = ak.num(self.suepTracks)
+                #out["nBACKtracks"] = ak.num(self.backTracks)
+
+                #maxnSUEPtracks = ak.max(ak.num(self.suepTracks, axis=1))
+                #maxnBACKtracks = ak.max(ak.num(self.backTracks, axis=1))
+
+                #out["suepTracks_eta"] = ak.fill_none(ak.pad_none(self.suepTracks.eta, maxnSUEPtracks, axis=1, clip=True),-999.)
+                #out["backTracks_eta"] = ak.fill_none(ak.pad_none(self.backTracks.eta, maxnBACKtracks, axis=1, clip=True),-999.)
+                #out["suepTracks_phi"] = ak.fill_none(ak.pad_none(self.suepTracks.phi, maxnSUEPtracks, axis=1, clip=True),-999.)
+                #out["backTracks_phi"] = ak.fill_none(ak.pad_none(self.backTracks.phi, maxnBACKtracks, axis=1, clip=True),-999.)
 
                 maxEta = ak.max(self.suepTracks.eta, axis=1)
                 minEta = ak.min(self.suepTracks.eta, axis=1)
