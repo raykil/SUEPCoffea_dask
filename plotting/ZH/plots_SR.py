@@ -142,21 +142,21 @@ plots = {
              "xlabel"   : "p_{T}^{jet3}",
              "vars"     : ["trailjet_pt"]
   },
-  #"mZ": {
-  #           "name"     : "mZ",
-  #           "bins"     : ["uniform", 60, 0, 300],
-  #           "channel"  : "SR",
-  #           "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
-  #           "logY"     : True,
-  #           "normalize": False,
-  #           "maxY"     : 1e9,
-  #           "minY"     : 1e0,
-  #           "ratiomaxY": 2.,
-  #           "ratiominY": 0.,
-  #           "plotname" : "mZ",
-  #           "xlabel"   : "m(l1,l2) [GeV]",
-  #           "vars"     : ["Z_m"]
-  #},
+  "mZ": {
+             "name"     : "mZ",
+             "bins"     : ["uniform", 60, 0, 300],
+             "channel"  : "SR",
+             "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "mZ",
+             "xlabel"   : "m(l1,l2) [GeV]",
+             "vars"     : ["Z_m"]
+  },
   "jet1_eta": {
              "name"     : "jet1_eta",
              "bins"     : ["uniform", 40, -5, 5],

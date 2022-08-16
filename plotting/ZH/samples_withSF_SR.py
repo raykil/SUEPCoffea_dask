@@ -143,6 +143,7 @@ samples = {
          "fillcolor": 5, # Yellow
          "isSig"    : False,
          "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022_SRonly/TTTo1L1Nu2Q/"),
+         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/TTTo1L1Nu2Q/skims.root",
          "extraWeights": lambda x: SF(x),
   },
 """  "Wjets": {
@@ -237,7 +238,7 @@ samples = {
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZZTo4L/skims.root"
   },
 
-  "ZG": {
+ "ZG": {
          "name"     : "ZG", #Here plain text
          "label"    : "VV", #Here we can use weird glyphs
          "xsec"     : 51.1*1000, # in fb
@@ -284,7 +285,7 @@ samples = {
   "ttWlnu": {
          "name"     : "ttWlnu", #Here plain text
          "label"    : "t#bar{t}X", #Here we can use weird glyphs
-         "xsec"     : 0.2161*1000*0.4, # in fb
+         "xsec"     : 0.2161*1000, # in fb
          "linecolor": ROOT.kBlack,
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
@@ -295,7 +296,7 @@ samples = {
   "ttWqq": {
          "name"     : "ttWqq", #Here plain text
          "label"    : "t#bar{t}X", #Here we can use weird glyphs
-         "xsec"     : 0.4377*1000*0.4, # in fb
+         "xsec"     : 0.4377*1000, # in fb
          "linecolor": ROOT.kBlack,
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
