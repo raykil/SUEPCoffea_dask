@@ -339,17 +339,36 @@ class SUEP_cluster(processor.ProcessorABC):
             suepTracks = totalTracks[totalTracks.fromSUEP == True]
             backTracks = totalTracks[totalTracks.fromSUEP == False]
             return events, totalTracks, suepTracks, backTracks, nTracks, [coll for coll in extraColls]
-        
         return events, totalTracks, [coll for coll in extraColls]
 
     def clusterizeTracks(self, events, tracks):
         # anti-kt, dR=1.5 jets
-        jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)     
+        jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)
         cluster = fastjet.ClusterSequence(tracks, jetdef)
         ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
         ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
+        #when it becomes ak15_consts, fromSUEP value disappears.
+        nTracks = ak.num(tracks)
 
-        return events, ak15_jets, ak15_consts
+        suepCut = (tracks.fromSUEP == True)
+        backCut = (tracks.fromSUEP == False)
+        suepTracks = tracks[suepCut]
+        backTracks = tracks[backCut]
+
+        flat_ak15_consts = ak.flatten(ak15_consts,axis=2)
+        nSUEPinCluster = [0]*len(events)
+        nBACKinCluster = [0]*len(events)
+        for event in range(len(events)):
+            SUEPcounter = 0
+            BACKcounter = 0
+            for i in range(len(flat_ak15_consts[event])):
+                if (flat_ak15_consts.eta[event][i] in suepTracks.eta) & (flat_ak15_consts.phi[event][i] in suepTracks.phi) & (flat_ak15_consts.pt[event][i] in suepTracks.pt):
+                    SUEPcounter += 1
+                else: BACKcounter += 1
+            nSUEPinCluster[event] = SUEPcounter
+            nBACKinCluster[event] = BACKcounter
+
+        return events, ak15_jets, ak15_consts, nTracks, nSUEPinCluster, nBACKinCluster
 
     def striptizeTracks(self, events, tracks, etaWidth=0.75):
         # This function returns the following:
@@ -652,6 +671,7 @@ class SUEP_cluster(processor.ProcessorABC):
         out["nelectrons"]    = ak.num(self.electrons)
         """
 
+        """
         out["Z_px"]  = self.Zcands.px[:]
         out["Z_py"]  = self.Zcands.py[:]
         out["Z_pz"]  = self.Zcands.pz[:]
@@ -660,6 +680,7 @@ class SUEP_cluster(processor.ProcessorABC):
         out["Z_eta"] = self.Zcands.eta[:]
         out["Z_phi"] = self.Zcands.phi[:]
         out["Z_m"]   = self.Zcands.mass[:]
+        """
 
         """
         # Object: jets, a bit tricky as number varies per event!
@@ -688,14 +709,36 @@ class SUEP_cluster(processor.ProcessorABC):
 
         if self.doTracks:
             out["ntracks"]     = ak.num(self.tracks, axis=1)[:]
-            ##maxntracks         = ak.max(ak.num(self.tracks, axis=1))
+            ##maxntracks         = ak.max(ak.num(self.tracks, axis=1)), 
             ##out["tracks_pt"]   = ak.fill_none(ak.pad_none(self.tracks.pt,  maxntracks, axis=1, clip=True), 0.)
             ##out["tracks_eta"]  = ak.fill_none(ak.pad_none(self.tracks.eta,  maxntracks, axis=1, clip=True), -999.)
             ##out["tracks_phi"]  = ak.fill_none(ak.pad_none(self.tracks.phi,  maxntracks, axis=1, clip=True), -999.)
 
             if self.SimTrack:
 
+                print(self.tracks.fromSUEP,"should work here too")
+                self.events, self.clusters, self.constituents, self.nTracks, self.nSUEPinCluster, self.nBACKinCluster  = self.clusterizeTracks(self.events, self.tracks)[:6]
+
+                print(self.nTracks,"nTracks")
+                print(ak.num(self.constituents),"nInCluster")
+                print(self.nTracks - ak.num(self.constituents), "nOutCluster")
+                print(self.nSUEPinCluster,"nSUEPinCluster")
+                print(self.constituents - self.nSUEPinCluster, "nSUEPoutCluster")
+                print(self.nBACKinCluster, "nBACKinCluster")
+                print(self.constituents - self.nBACKinCluster, "nBACKoutCluster\n")
+
+                """
+                out["nTracks"] = self.nTracks
+                out["nInCluster"] = ak.num(self.constituents)
+                out["nOutCluster"] = self.nTracks - ak.num(self.constituents)
+                out["nSUEPinCluster"] = 
+                out["nSUEPoutCluster"]
+                out["nBACKinCluster"] = 
+                out["nBACKoutCluster"] = 
+                """
+
                 EtaWidths = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+                #EtaWidths = [0.1]
 
                 for etaw in EtaWidths:
                     self.optimalEtaC, self.nTracks, self.nInBand, self.nOutBand = self.striptizeTracks(self.events, self.tracks, etaw)[-4:]
@@ -718,17 +761,7 @@ class SUEP_cluster(processor.ProcessorABC):
                     out["nSUEPinBand{}".format(etaw)] = nSUEPinBand
                     out["nSUEPoutBand{}".format(etaw)] = nSUEPoutBand
 
-                #out["nSUEPtracks"] = ak.num(self.suepTracks)
-                #out["nBACKtracks"] = ak.num(self.backTracks)
-
-                #maxnSUEPtracks = ak.max(ak.num(self.suepTracks, axis=1))
-                #maxnBACKtracks = ak.max(ak.num(self.backTracks, axis=1))
-
-                #out["suepTracks_eta"] = ak.fill_none(ak.pad_none(self.suepTracks.eta, maxnSUEPtracks, axis=1, clip=True),-999.)
-                #out["backTracks_eta"] = ak.fill_none(ak.pad_none(self.backTracks.eta, maxnBACKtracks, axis=1, clip=True),-999.)
-                #out["suepTracks_phi"] = ak.fill_none(ak.pad_none(self.suepTracks.phi, maxnSUEPtracks, axis=1, clip=True),-999.)
-                #out["backTracks_phi"] = ak.fill_none(ak.pad_none(self.backTracks.phi, maxnBACKtracks, axis=1, clip=True),-999.)
-
+                """
                 maxEta = ak.max(self.suepTracks.eta, axis=1)
                 minEta = ak.min(self.suepTracks.eta, axis=1)
                 out["boostS_deltaEta"] = (maxEta - minEta)[:]
@@ -740,9 +773,10 @@ class SUEP_cluster(processor.ProcessorABC):
                 maxPhiComboDiff = ak.max(phiComboDiff,axis=1) #max difference in phi in each event
                 
                 out["boostS_deltaPhi"] = maxPhiComboDiff[:]
+                """
 
             if self.isSpherable:
-              
+                """
                 boost_Zinv = ak.zip({
                     "px": self.Zcands.px,
                     "py": self.Zcands.py,
@@ -774,6 +808,7 @@ class SUEP_cluster(processor.ProcessorABC):
                 out["ScalarSpher_L"] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
                 out["ScalarSpher_Z"] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
                 out["ScalarSpher_T"] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
+                """
 
                 """
                 ### Mean Difference ###
@@ -783,6 +818,7 @@ class SUEP_cluster(processor.ProcessorABC):
                 """
 
                 if self.doClusters and self.isClusterable:
+                    """
                     out["nclusters"]           = ak.num(self.clusters, axis=1)[:]
                     #maxnclusters              = ak.max(ak.num(self.clusters, axis=1))
 
@@ -858,9 +894,11 @@ class SUEP_cluster(processor.ProcessorABC):
                     out["leadclusterScalarSpher_C"] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))
                     out["scaledLeadclusterScalarSpher_T"] =  np.real(1.5*(scaledEvalsT[:,0] + scaledEvalsT[:,1]))
                     out["scaledLeadclusterScalarSpher_C"] =  np.real(1.5*(scaledEvalsC[:,0] + scaledEvalsC[:,1]))
+                    """
                     
                     for etaw in self.etaWidths:
 
+                        """
                         out["leadstrip_pt" + "_dEta%1.1f"%etaw ]     = self.strips[etaw].pt[:]
                         out["leadstrip_eta" + "_dEta%1.1f"%etaw]     = self.strips[etaw].eta[:]
                         out["leadstrip_phi" + "_dEta%1.1f"%etaw]     = self.strips[etaw].phi[:]
@@ -917,6 +955,7 @@ class SUEP_cluster(processor.ProcessorABC):
                         out["leadstripScalarSpher_S" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsS[:,0] + evalsS[:,1]))
                         out["scaledLeadstripScalarSpher_T" + "_dEta%1.1f"%etaw] =  np.real(1.5*(scaledEvalsT[:,0] + scaledEvalsT[:,1]))
                         out["scaledLeadstripScalarSpher_S" + "_dEta%1.1f"%etaw] =  np.real(1.5*(scaledEvalsS[:,0] + scaledEvalsS[:,1]))
+                        """
 
         if self.doGen:
             if debug: print("Saving gen variables")
