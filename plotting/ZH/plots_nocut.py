@@ -142,21 +142,21 @@ plots = {
              "xlabel"   : "p_{T}^{jet3}",
              "vars"     : ["trailjet_pt"]
   },
-  #"mZ": {
-  #           "name"     : "mZ",
-  #           "bins"     : ["uniform", 60, 0, 300],
-  #           "channel"  : "twoleptons",
-  #           "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
-  #           "logY"     : True,
-  #           "normalize": False,
-  #           "maxY"     : 1e9,
-  #           "minY"     : 1e0,
-  #           "ratiomaxY": 2.,
-  #           "ratiominY": 0.,
-  #           "plotname" : "mZ",
-  #           "xlabel"   : "m(l1,l2) [GeV]",
-  #           "vars"     : ["Z_m"]
-  #},
+  "mZ": {
+             "name"     : "mZ",
+             "bins"     : ["uniform", 60, 0, 300],
+             "channel"  : "twoleptons",
+             "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "mZ",
+             "xlabel"   : "m(l1,l2) [GeV]",
+             "vars"     : ["Z_m"]
+  },
   "jet1_eta": {
              "name"     : "jet1_eta",
              "bins"     : ["uniform", 40, -5, 5],
@@ -365,7 +365,7 @@ plots = {
   "leadclusterpt": {
              "name"     : "leadclusterpt",
              "bins"     : ["uniform", 200, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadcluster_pt"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -380,7 +380,7 @@ plots = {
   "leadclustereta": {
              "name"     : "leadclustereta",
              "bins"     : ["uniform", 40, -5, 5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadcluster_eta"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -395,7 +395,7 @@ plots = {
   "leadclusterphi": {
              "name"     : "leadclusterphi",
              "bins"     : ["uniform", 40, -3.14, 3.14],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadcluster_phi"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -410,7 +410,7 @@ plots = {
   "leadclustertracks": {
              "name"     : "leadclustertracks",
              "bins"     : ["uniform", 200, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadcluster_ntracks"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -425,22 +425,7 @@ plots = {
   "leadclusterspher": {
              "name"     : "leadclusterspher",
              "bins"     : ["uniform", 50, 0, 1],
-             "channel"  : "twoleptons",
-             "value"    : lambda x, y : (x["leadclusterSpher_C"], y*cut(x)),
-             "logY"     : True,
-             "normalize": False,
-             "maxY"     : 1e9,
-             "minY"     : 1e0,
-             "ratiomaxY": 2.,
-             "ratiominY": 0.,
-             "plotname" : "leadclusterspher",
-             "xlabel"   : "S^{leadcluster}",
-             "vars"     : ["leadclusterSpher_C"]
-  },
-  "leadclusterspher": {
-             "name"     : "leadclusterspher",
-             "bins"     : ["uniform", 50, 0, 1],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadclusterSpher_C"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -455,7 +440,7 @@ plots = {
   "leadclusterspherlab": {
              "name"     : "leadclusterspherlab",
              "bins"     : ["uniform", 50, 0, 1],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadclusterSpher_L"], y*cut(x)),
              "logY"     : True,
              "normalize": False,

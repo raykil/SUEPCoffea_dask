@@ -8,96 +8,94 @@ def hdf5inpath(path):
     if "hdf5" in f: 
       ret.append(path + "/" + f)
   #if len(ret) > 3: ret = ret[:3]
-  #elif len(ret) < 4000: ret = ret[2000:]
-  #elif len(ret) > 3000: ret = ret[3000:3010]
   return ret
 
 order   = ["ttZ","VV", "WJets","ttto1l", "ttto2l", "DY_Pt650ToInf", "DY_Pt400To650","DY_Pt250To400","DY_Pt100To250","DY_Pt50To100", "DY_Pt0To50"]
 samples = {
-"""  "data": {
+  "data": {
          "name" : "data",
          "label": "Data",
          "xsec" : -1,
          "lineColor": ROOT.kBlack,
          "fillcolor": ROOT.kBlack,
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/data/"),#+ hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/data_RunB/")+hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/data_RunC/")+hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/data_RunD/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/data_RunD/"),#+ hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/data_RunB/")+hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/data_RunC/")+hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/data_RunD/"),
          "markerstyle": 20,
          "markersize" : 1,
-  },"""
+  },
   "DY_Pt0": {
          "name"       : "DY_Pt0", #Here plain text
-         "label"      : "DY (p_{T} = 0 GeV)", #Here we can use weird glyphs
+         "label"      : "DY",# (p_{T} = 0 GeV)", #Here we can use weird glyphs
          "xsec"       : 6309*1000., # in fb
          "linecolor"  : ROOT.kBlack,
-         "fillcolor"  : ROOT.kWhite, # White
+         "fillcolor"  : 7, # White
          "isSig"      : False,
          "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*SF(x) , 
-         "files"      : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/DY_nano_Autumn18/"),
+         "files"      : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DY_nano_Autumn18/"),
   },      
   "DY_Pt0To50": {
          "name"     : "DY_Pt0To50", #Here plain text
-         "label"    : "DY (p_{T} < 50 GeV)", #Here we can use weird glyphs
+         "label"    : "DY",# (p_{T} < 50 GeV)", #Here we can use weird glyphs
          "xsec"     : 1510.*1000, # in fb
          "linecolor": ROOT.kBlack,
          "fillcolor": 7, # Light blue
          "isSig"    : False,
          "extraWeights": lambda x: SF(x),
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/DYToLL_M50_Pt0To50/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt0To50/"),
          "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt0To50/skims.root"
   },
   "DY_Pt50To100": {
          "name"     : "DY_Pt50To100", #Here plain text
-         "label"    : "DY (50 < p_{T} < 100 GeV)", #Here we can use weird glyphs
+         "label"    : "DY",# (50 < p_{T} < 100 GeV)", #Here we can use weird glyphs
          "xsec"     : 392.1*1000., # in fb
          "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kCyan+1, # Light blue
+         "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/DYToLL_M50_Pt50To100/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt50To100/"),
          "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt50To100/skims.root",
          "extraWeights": lambda x: SF(x),
   },
   "DY_Pt100To250": {
          "name"     : "DY_Pt100To250", #Here plain text
-         "label"    : "DY (100 < p_{T} < 250 GeV)", #Here we can use weird glyphs
+         "label"    : "DY",# (100 < p_{T} < 250 GeV)", #Here we can use weird glyphs
          "xsec"     : 91.23*1000., # in fb
          "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kCyan+2, # Light blue
+         "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/DYToLL_M50_Pt100To250/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt100To250/"),
          "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt100To250/skims.root",
          "extraWeights": lambda x: SF(x),
   },
   "DY_Pt250To400": {
          "name"     : "DY_Pt250To400", #Here plain text
-         "label"    : "DY (250 < p_{T} < 400 GeV)", #Here we can use weird glyphs
+         "label"    : "DY",# (250 < p_{T} < 400 GeV)", #Here we can use weird glyphs
          "xsec"     : 3.499*1000., # in fb
          "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kCyan+3, # Light blue
+         "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/DYToLL_M50_Pt250To400/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt250To400/"),
          "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt250To400/skims.root",
          "extraWeights": lambda x: SF(x),
   },
   "DY_Pt400To650": {
          "name"     : "DY_Pt400To650", #Here plain text
-         "label"    : "DY (400 < p_{T} < 650 GeV)", #Here we can use weird glyphs
+         "label"    : "DY",# (400 < p_{T} < 650 GeV)", #Here we can use weird glyphs
          "xsec"     : 0.4765*1000., # in fb
          "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kCyan+4, # Light blue
+         "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/DYToLL_M50_Pt400To650/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt400To650/"),
          "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt400To650/skims.root",
          "extraWeights": lambda x: SF(x),
   },
   "DY_Pt650ToInf": {
          "name"     : "DY_Pt650ToInf", #Here plain text
-         "label"    : "DY (p_{T} > 650 GeV)", #Here we can use weird glyphs
+         "label"    : "DY",# (p_{T} > 650 GeV)", #Here we can use weird glyphs
          "xsec"     : 0.04489*1000., # in fb
          "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kOrange, # Light blue
+         "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/DYToLL_M50_Pt650ToInf/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt650ToInf/"),
          "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt650ToInf/skims.root", 
          "extraWeights": lambda x: SF(x),
   },
@@ -108,7 +106,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 2, # Red
          "isSig"    : False,
-         "files"    :  hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/TTTo2L2Nu/"),
+         "files"    :  hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTTo2L2Nu/"),
          "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/TTTo2L2Nu/skims.root",
          "extraWeights": lambda x: SF(x),
   },
@@ -119,7 +117,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kMagenta, # Red
          "isSig"    : False,
-         "files"    :  hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/tW/"),
+         "files"    :  hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/tW/"),
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/tW/skims.root",
          "extraWeights": lambda x: SF(x),
   },
@@ -130,7 +128,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kAzure, # Red
          "isSig"    : False,
-         "files"    :  hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/DY_lowmass/"),
+         "files"    :  hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DY_lowmass/"),
          "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DY_lowmass/skims.root",
          "extraWeights": lambda x: SF(x),
   },
@@ -142,57 +140,54 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 5, # Yellow
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/TTTo1L1Nu2Q/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTTo1L1Nu2Q/"),
          "extraWeights": lambda x: SF(x),
   },
-"""
-  "Wjets": {
-         "name"     : "Wjets", #Here plain text
-         "label"    : "W", #Here we can use weird glyphs
-         "xsec"     : 20508.9*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 6, # Purple
-         "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/WJets/"), 
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/WJets/skims.root",
-         "extraWeights": lambda x: SF(x),
-  },
-"""
-  "QCD": {
-         "name"     : "QCD", #Here plain text
-         "label"    : "QCD", #Here we can use weird glyphs
-         "xsec"     : 1375000000*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kPink, # Purple
-         "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/QCD/"),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/QCD/skims.root",
-         "extraWeights": lambda x: SF(x),
-  },
+#  "Wjets": {
+#         "name"     : "Wjets", #Here plain text
+#         "label"    : "W", #Here we can use weird glyphs
+#         "xsec"     : 20508.9*1000, # in fb
+#         "linecolor": ROOT.kBlack,
+#         "fillcolor": 6, # Purple
+#         "isSig"    : False,
+#         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/WJets/"), 
+#         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/WJets/skims.root",
+#         "extraWeights": lambda x: SF(x),
+#  },
+#  "QCD": {
+#         "name"     : "QCD", #Here plain text
+#         "label"    : "QCD", #Here we can use weird glyphs
+#         "xsec"     : 1375000000*1000, # in fb
+#         "linecolor": ROOT.kBlack,
+#         "fillcolor": ROOT.kPink, # Purple
+#         "isSig"    : False,
+#         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/QCD/"),
+#         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/QCD/skims.root",
+#         "extraWeights": lambda x: SF(x),
+#  },
 
-"""  "WW": {
+  "WW": {
          "name"     : "WW", #Here plain text
          "label"    : "VV", #Here we can use weird glyphs
          "xsec"     : 10.481*1000, # in fb
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/WWTo2L2Nu/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/WWTo2L2Nu/"),
          "WW"       : "/eos/cms/store/user/cericeci/SUEPS/UL18/WWTo2L2Nu/skims.root",
          "extraWeights": lambda x: SF(x),
   },
-"""
-  "WZ2l2q": {
-         "name"     : "WZ2l2q", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 6.419*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/WZTo2l2Q/"),
-         "extraWeights": lambda x: SF(x),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/WZTo2l2Q/skims.root"
-  },
+#  "WZ2l2q": {
+#         "name"     : "WZ2l2q", #Here plain text
+#         "label"    : "VV", #Here we can use weird glyphs
+#         "xsec"     : 6.419*1000, # in fb
+#         "linecolor": ROOT.kBlack,
+#         "fillcolor": 3, # Green
+#         "isSig"    : False,
+#         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/WZTo2l2Q/"),
+#         "extraWeights": lambda x: SF(x),
+#         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/WZTo2l2Q/skims.root"
+#  },
   "WZ3lnu": {
          "name"     : "WZ3lnu", #Here plain text
          "label"    : "VV", #Here we can use weird glyphs
@@ -200,7 +195,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/WZTo3LNu/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/WZTo3LNu/"),
          "extraWeights": lambda x: SF(x),
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/WZTo3LNu/skims.root"
   },
@@ -211,22 +206,22 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/ZZTo2L2Q/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/ZZTo2L2Q/"),
          "extraWeights": lambda x: SF(x),
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZZTo2L2Q/skims.root"
   },
-"""  "ZZ2l2nu": {
+  "ZZ2l2nu": {
          "name"     : "ZZ2l2nu", #Here plain text
          "label"    : "VV", #Here we can use weird glyphs
          "xsec"     : 0.8738*1000, # in fb
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/ZZTo2L2Nu/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/ZZTo2L2Nu/"),
          "extraWeights": lambda x: SF(x),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZZTo2l2Nu/skims.root"
+         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZZTo2L2Nu/skims.root"
   },
-"""
+
   "ZZ4l": {
          "name"     : "ZZ4l", #Here plain text
          "label"    : "VV", #Here we can use weird glyphs
@@ -234,7 +229,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/ZZTo4L/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/ZZTo4L/"),
          "extraWeights": lambda x: SF(x),
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZZTo4L/skims.root"
   },
@@ -245,22 +240,10 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/ZG/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/ZG/"),
          "extraWeights": lambda x: SF(x),
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZG/skims.root"
   },
-  "WG": {
-         "name"     : "WG", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 412.7*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/WG/"),
-         "extraWeights": lambda x: SF(x),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/WG/skims.root"
-  },
-
   "ttZll": {
          "name"     : "ttZll", #Here plain text
          "label"    : "t#bar{t}X", #Here we can use weird glyphs
@@ -268,20 +251,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/TTZToLL/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTZToLL/"),
          "extraWeights": lambda x: SF(x),
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/TTZToLL/skims.root"
-  },
-  "ttZqq": {
-         "name"     : "ttZqq", #Here plain text
-         "label"    : "t#bar{t}X", #Here we can use weird glyphs
-         "xsec"     : 0.5104*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 9, # Dark blue
-         "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/TTZToQQ/"),
-         "extraWeights": lambda x: SF(x),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/TTZToQQ/skims.root"
   },
   "ttWlnu": {
          "name"     : "ttWlnu", #Here plain text
@@ -290,7 +262,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/TTWToLNu/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTWToLNu/"),
          "extraWeights": lambda x: SF(x),
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/TTWToLNu/skims.root"
   },
@@ -301,10 +273,11 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/TTWToQQ/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTWToQQ/"),
          "extraWeights": lambda x: SF(x),
          "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/TTWToQQ/skims.root"
   },
+
   "SUEP_ZH_generic": {
          "name"     : "SUEP_ZH_generic", #Here plain text
          "label"    : "ZS^{gen}, m_{S} = 125 GeV", #Here we can use weird glyphs
@@ -312,7 +285,37 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kBlack,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/25_07_2022/SUEP_generic_mS125/"),
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/SUEP_generic_mS125_mD2_T2/"),
+         "extraWeights": lambda x: SF(x),
+  },
+  "SUEP_ZH_generic_new": {
+         "name"     : "SUEP_ZH_generic_new", #Here plain text
+         "label"    : "ZS^{gen, new}, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kRed,
+         "fillcolor": ROOT.kRed,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/SUEP_generic_new_mS125_mD2_T2/"),
+         "extraWeights": lambda x: SF(x),
+  },
+  "SUEP_ZH_leptonic": {
+         "name"     : "SUEP_ZH_leptonic", #Here plain text
+         "label"    : "ZS^{lep}, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kBlue,
+         "fillcolor": ROOT.kBlue,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/SUEP_leptonic_mS125_mD2_T2/"),
+         "extraWeights": lambda x: SF(x),
+  },
+  "SUEP_ZH_hadronic": {
+         "name"     : "SUEP_ZH_hadronic", #Here plain text
+         "label"    : "ZS^{had}, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/SUEP_hadronic_mS125_mD2_T2/"),
          "extraWeights": lambda x: SF(x),
   },
 }

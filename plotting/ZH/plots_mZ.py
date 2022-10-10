@@ -2,7 +2,7 @@ import ROOT
 
 
 def cut(x):
-  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["Z_pt"] >= 25) 
+  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) 
 
 plots = {
   "njets": {

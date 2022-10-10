@@ -2,13 +2,13 @@ import ROOT
 
 
 def cut(x):
-  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["Z_pt"] >= 25) 
+  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["Z_pt"] >= 25) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] >= 60) & (x["leadclusterSpher_C"] >= 0.7) 
 
 plots = {
   "njets": {
              "name"     : "njets",
              "bins"     : ["uniform", 20, 0, 20],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["njets"], y*cut(x)),
              "logY"     : True,
              "normalize": False, 
@@ -23,7 +23,7 @@ plots = {
   "HT": {
              "name"     : "HT",
              "bins"     : ["uniform", 40, 0, 400],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["H_T"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -38,7 +38,7 @@ plots = {
   "LHT":{
              "name"     : "LHT",
              "bins"     : ["uniform", 40, 0, 800],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["H_T"]+x["L_T"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -53,7 +53,7 @@ plots = {
   "nBLoose": {
              "name"     : "nBLoose",
              "bins"     : ["uniform", 6, 0, 6],
-             "channel"  : "twoleptons", 
+             "channel"  : "onecluster", 
              "value"    : lambda x, y : (x["nBLoose"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -68,7 +68,7 @@ plots = {
   "nBMedium": {
              "name"     : "nBMedium",
              "bins"     : ["uniform", 6, 0, 6],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["nBMedium"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -83,7 +83,7 @@ plots = {
   "nBTight": {
              "name"     : "nBTight",
              "bins"     : ["uniform", 6, 0, 6],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["nBTight"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -99,7 +99,7 @@ plots = {
   "jet1pt": {
              "name"     : "jet1pt",
              "bins"     : ["uniform", 100, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadjet_pt"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -115,7 +115,7 @@ plots = {
   "jet2pt": {
              "name"     : "jet2pt",
              "bins"     : ["uniform", 100, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["subleadjet_pt"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -130,7 +130,7 @@ plots = {
   "jet3pt": {
              "name"     : "jet3pt",
              "bins"     : ["uniform", 100, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["trailjet_pt"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -145,7 +145,7 @@ plots = {
   "mZ": {
              "name"     : "mZ",
              "bins"     : ["uniform", 60, 0, 300],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -160,7 +160,7 @@ plots = {
   "jet1_eta": {
              "name"     : "jet1_eta",
              "bins"     : ["uniform", 40, -5, 5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadjet_eta"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -176,7 +176,7 @@ plots = {
   "jet2_eta": {
              "name"     : "jet2_eta",
              "bins"     : ["uniform", 40, -5, 5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["subleadjet_eta"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -191,7 +191,7 @@ plots = {
   "jet3_eta": {
              "name"     : "jet3_eta",
              "bins"     : ["uniform", 40, -5, 5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["trailjet_eta"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -207,7 +207,7 @@ plots = {
   "leadlep_pt": {
              "name"     : "leadlep_pt",
              "bins"     : ["uniform", 100, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadlep_pt"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -223,7 +223,7 @@ plots = {
   "subleadlep_pt": {
              "name"     : "subleadlep_pt",
              "bins"     : ["uniform", 100, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["subleadlep_pt"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -239,7 +239,7 @@ plots = {
   "leadlep_eta": {
              "name"     : "leadlep_eta",
              "bins"     : ["uniform", 20, -2.5, 2.5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadlep_eta"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -255,7 +255,7 @@ plots = {
   "subleadlep_eta": {
              "name"     : "subleadlep_eta",
              "bins"     : ["uniform", 20, -2.5, 2.5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["subleadlep_eta"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -270,7 +270,7 @@ plots = {
   "leplep_deta": {
              "name"     : "leplep_deta",
              "bins"     : ["uniform", 20, 0, 5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (abs(x["leadlep_eta"]-x["subleadlep_eta"]), y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -286,7 +286,7 @@ plots = {
   "leplep_dphi": {
              "name"     : "leplep_dphi",
              "bins"     : ["uniform", 20, 0, 5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (abs(x["leadlep_phi"]-x["subleadlep_phi"]), y*cut(x)),
              "logY"     : True,
              "normalize": False, 
@@ -302,7 +302,7 @@ plots = {
   "ntracks": {
              "name"     : "ntracks",
              "bins"     : ["uniform", 40, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["ntracks"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -318,7 +318,7 @@ plots = {
   "Zpt": {
              "name"     : "Zpt",
              "bins"     : ["uniform", 200, 0, 200],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["Z_pt"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -334,7 +334,7 @@ plots = {
   "Zeta": {
              "name"     : "Zeta",
              "bins"     : ["uniform", 40, -5, 5],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["Z_eta"], y*cut(x)),
              "logY"     : True,
              "normalize": False,
@@ -349,7 +349,7 @@ plots = {
   "Zphi": {
              "name"     : "Zphi",
              "bins"     : ["uniform", 40, -3.14, 3.14],
-             "channel"  : "twoleptons",
+             "channel"  : "onecluster",
              "value"    : lambda x, y : (x["Z_phi"], y*cut(x)),
              "logY"     : True,
              "normalize": False,

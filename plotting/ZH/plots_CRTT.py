@@ -2,7 +2,7 @@ import ROOT
 
 
 def cut(x):
-  return (x["njets"] >= 0) & ((x["Z_m"]-90) > 30) & (x["Z_pt"] >= 25) & (x["nBLoose"] > 0) & (x["leadcluster_pt"] >= 60)
+  return  (x["njets"] >= 0) & ((x["Z_m"]-90) > 30) & (x["Z_pt"] >= 25) & (x["nBLoose"] > 0) & (x["leadcluster_pt"] >= 60)
 
 plots = {
   "njets": {
@@ -142,21 +142,21 @@ plots = {
              "xlabel"   : "p_{T}^{jet3}",
              "vars"     : ["trailjet_pt"]
   },
-  #"mZ": {
-  #           "name"     : "mZ",
-  #           "bins"     : ["uniform", 60, 0, 300],
-  #           "channel"  : "onecluster",
-  #           "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
-  #           "logY"     : True,
-  #           "normalize": False,
-  #           "maxY"     : 1e9,
-  #           "minY"     : 1e0,
-  #           "ratiomaxY": 2.,
-  #           "ratiominY": 0.,
-  #           "plotname" : "mZ",
-  #           "xlabel"   : "m(l1,l2) [GeV]",
-  #           "vars"     : ["Z_m"]
-  #},
+  "mZ": {
+             "name"     : "mZ",
+             "bins"     : ["uniform", 60, 0, 300],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["Z_m"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "mZ",
+             "xlabel"   : "m(l1,l2) [GeV]",
+             "vars"     : ["Z_m"]
+  },
   "jet1_eta": {
              "name"     : "jet1_eta",
              "bins"     : ["uniform", 40, -5, 5],
@@ -421,21 +421,6 @@ plots = {
              "plotname" : "leadclustertracks",
              "xlabel"   : "N_{tracks}^{leadcluster}",
              "vars"     : ["leadcluster_ntracks"]
-  },
-  "leadclusterspher": {
-             "name"     : "leadclusterspher",
-             "bins"     : ["uniform", 50, 0, 1],
-             "channel"  : "onecluster",
-             "value"    : lambda x, y : (x["leadclusterSpher_C"], y*cut(x)),
-             "logY"     : True,
-             "normalize": False,
-             "maxY"     : 1e9,
-             "minY"     : 1e0,
-             "ratiomaxY": 2.,
-             "ratiominY": 0.,
-             "plotname" : "leadclusterspher",
-             "xlabel"   : "S^{leadcluster}",
-             "vars"     : ["leadclusterSpher_C"]
   },
   "leadclusterspher": {
              "name"     : "leadclusterspher",
