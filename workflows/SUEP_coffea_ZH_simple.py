@@ -220,8 +220,8 @@ class SUEP_cluster(processor.ProcessorABC):
         ###  Some very simple selections on ID ###
         ###  Muons: loose ID + dxy dz cuts mimicking the medium prompt ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
         ###  Electrons: loose ID + dxy dz cuts for promptness https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification
-        cutMuons     = (events.Muon.looseId) & (events.Muon.pt >= 10) & (abs(events.Muon.dxy) <= 0.02) & (abs(events.Muon.dz) <= 0.1)
-        cutElectrons = (events.Electron.cutBased >= 2) & (events.Electron.pt >= 15)
+        cutMuons     = (events.Muon.looseId) & (events.Muon.pt >= 10) & (abs(events.Muon.dxy) <= 0.02) & (abs(events.Muon.dz) <= 0.1) & (events.Muon.pfIsoId >= 2)
+        cutElectrons = (events.Electron.cutBased >= 2) & (events.Electron.pt >= 15) & (events.Electron.mvaFall17V2Iso_WP90) & ( abs(events.Electron.dxy) < 0.05 + 0.05*(events.Electron.eta > 1.479)) & (abs(events.Electron.dz) <  0.10 + 0.10*(events.Electron.eta > 1.479)) & ((abs(events.Electron.eta) < 1.444) | (abs(events.Electron.eta) > 1.566))
 
         ### Apply the cuts
         # Object selection. selMuons contain only the events that are filtered by cutMuons criteria.
@@ -269,7 +269,7 @@ class SUEP_cluster(processor.ProcessorABC):
             "jetId": events.Jet.jetId
         }, with_name="Momentum4D")
         # Minimimum pT, eta requirements + jet-lepton recleaning
-        jetCut = (Jets.pt > 30) & (abs(Jets.eta)<4.7) & (Jets.deltaR(leptons[:,0])>= 0.4) & (Jets.deltaR(leptons[:,1])>= 0.4)
+        jetCut = (Jets.pt > 30) & (abs(Jets.eta)<2.5) & (Jets.deltaR(leptons[:,0])>= 0.4) & (Jets.deltaR(leptons[:,1])>= 0.4) & (Jets.jetId >= 6)
         jets = Jets[jetCut]
         # The following is the collection of events and of jets
         return events, jets, [coll for coll in extraColls]
@@ -288,7 +288,9 @@ class SUEP_cluster(processor.ProcessorABC):
             (events.PFCands.trkPt >= 1) & \
             (abs(events.PFCands.trkEta) <= 2.5) & \
             (abs(events.PFCands.dz) < 10) & \
-            (events.PFCands.dzErr < 0.05)
+            (abs(events.PFCands.d0) < 0.05) & \
+            (events.PFCands.puppiWeight > 0.1)
+            #(events.PFCands.dzErr < 0.05)
         Cleaned_cands = ak.packed(Cands[cutPF])
 
 	### LOST TRACKS ###
@@ -302,9 +304,11 @@ class SUEP_cluster(processor.ProcessorABC):
 
         cutLost = (events.lostTracks.fromPV > 1) & \
             (events.lostTracks.pt >= 1) & \
-            (abs(events.lostTracks.eta) <= 1.0) \
-            & (abs(events.lostTracks.dz) < 10) & \
-            (events.lostTracks.dzErr < 0.05)
+            (abs(events.lostTracks.eta) <= 2.5) \
+            & (abs(events.lostTracks.dz) < 0.05) & \
+            (abs(events.lostTracks.d0) < 0.05) & \
+            (events.lostTracks.puppiWeight > 0.1)
+            #(events.lostTracks.dzErr < 0.05)
         Lost_Tracks_cands = ak.packed(LostTracks[cutLost])
 
         # dimensions of tracks = events x tracks in event x 4 momenta
