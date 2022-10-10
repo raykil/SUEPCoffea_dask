@@ -44,7 +44,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.00):
     if( iPosX/10==2 ): alignX_=2
     if( iPosX/10==3 ): alignX_=3
     align_ = 10*alignX_ + alignY_
-
+    print("Start padding stuff")
     H = pad.GetWh()
     W = pad.GetWw()
     l = pad.GetLeftMargin()
@@ -54,6 +54,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.00):
     e = 0.025
 
     pad.cd()
+    print("Finish padding stuff")
 
     lumiText = ""
     if( iPeriod==1 ):
@@ -86,8 +87,9 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.00):
     elif ( iPeriod==12 ):
         lumiText += "8 TeV"
     elif ( iPeriod==0 ):
-        lumiText += lumi_sqrtS
-            
+        lumiText += lumi_13TeV
+        lumiText += "(" + lumi_sqrtS+" TeV)"
+    print("Lumitext defined")            
 #    print lumiText
 
     latex = rt.TLatex()
@@ -100,8 +102,9 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.00):
     latex.SetTextFont(42)
     latex.SetTextAlign(31) 
     latex.SetTextSize(lumiTextSize*t)    
-
+    print("Will draw latex",1-r,1-t+lumiTextOffset*t,lumiText)
     latex.DrawLatex(1-r,1-t+lumiTextOffset*t,lumiText)
+    print("Latex drawn")
 
     if( outOfFrame ):
         latex.SetTextFont(cmsTextFont)
@@ -110,6 +113,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.00):
         latex.DrawLatex(l,1-t+lumiTextOffset*t,cmsText)
   
     pad.cd()
+    print("PAD CD")
 
     posX_ = 0
     if( iPosX%10<=1 ):
@@ -157,4 +161,4 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.00):
         latex.DrawLatex(posX_, posY_, extraText)      
 
     pad.Update()
-
+    print("Logo done")

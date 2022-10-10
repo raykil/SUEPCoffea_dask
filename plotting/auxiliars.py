@@ -11,12 +11,17 @@ muID = muIDfile.Get("NUM_LooseID_DEN_TrackerMuons_abseta_pt")
 maxmidx = muID.GetNbinsX()
 maxmidy = muID.GetNbinsY()
 
+muISOfile = ROOT.TFile(SUEP_BASE + "/data/MuUL18/MuISO.root","READ")
+muISO = muISOfile.Get("NUM_LooseRelIso_DEN_LooseID_abseta_pt")
+maxmisox = muISO.GetNbinsX()
+maxmisoy = muISO.GetNbinsY()
+
 muTrkfile = ROOT.TFile(SUEP_BASE + "/data/MuUL18/MuTracking.root","READ")
 muTrk = muTrkfile.Get("NUM_TrackerMuons_DEN_genTracks")
 maxmtx = muTrk.GetNbinsX()
 maxmty = muTrk.GetNbinsY()
 
-eIDfile = ROOT.TFile(SUEP_BASE + "/data/EGammaUL18/EGamma_Loose.root","READ")
+eIDfile = ROOT.TFile(SUEP_BASE + "/data/EGammaUL18/egammaEffi.txt_Ele_wp90iso_EGM2D.root","READ")
 eID = eIDfile.Get("EGamma_SF2D").Clone("eID") #Clone just in case pyroot does its thing
 maxeidx = eID.GetNbinsX()
 maxeidy = eID.GetNbinsY()
@@ -31,6 +36,7 @@ maxerey = eRECO.GetNbinsY()
 def getSFMu(pt, eta):
   sf  = muID.GetBinContent(min(max(1,muID.GetXaxis().FindBin(abs(eta))),maxmidx), min(max(1,muID.GetYaxis().FindBin(pt)),maxmidy))
   sf *= muTrk.GetBinContent(min(max(1,muTrk.GetXaxis().FindBin(abs(eta))),maxmtx), min(max(1,muTrk.GetYaxis().FindBin(pt)),maxmty))
+  sf *= muISO.GetBinContent(min(max(1,muISO.GetXaxis().FindBin(abs(eta))),maxmisox), min(max(1,muISO.GetYaxis().FindBin(pt)),maxmisoy))
   return sf
 
 def getSFEl(pt, eta):
