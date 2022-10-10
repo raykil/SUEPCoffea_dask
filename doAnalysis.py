@@ -47,8 +47,8 @@ if doWhat == "all" or doWhat == "dataframes":
     else:
       for filt in options.samples:
         if re.match(filt, sample):
-          print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
-          if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+          print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+          if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
   print("-------------------------------------------")
   print("-------------------------------------------")
   print("-------------------------------------------")
