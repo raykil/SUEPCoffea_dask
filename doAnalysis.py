@@ -5,7 +5,7 @@ import re
 
 print("Running analysis parsing helper...")
 parser = OptionParser(usage="%prog [all OR dataframes OR plots OR cards OR ABCDtests OR ZptCorrections] [options] [--detailed will get you a rundown of what you are running]")
-parser.add_option("-y","--year", dest="year", type="int", default=2018, help="Year")
+parser.add_option("-y","--year", dest="year", type="string", default="2018", help="Year")
 parser.add_option("-s","--samples", dest="samples", action="append", type="string", default=[], help="Only run these samples (accepts regexp matching)")
 parser.add_option("-d","--detailed", dest="detailed", default=False, action="store_true", help="Print some more details on what is going on")
 parser.add_option("-o","--output", dest="output", type="string", default=os.getcwd(), help="Where to put the output of what you are running")
@@ -26,6 +26,8 @@ doWhat = args[0]
 if not(os.path.exists(options.output)):
     os.system("mkdir %s"%(options.output))
 
+era = str(options.year).replace("APV","") # The analyzer just takes the year
+
 if doWhat == "all" or doWhat == "dataframes":
   if options.detailed:
     print("\x1b[0;31;40m The first analysis step is producing dataframes with reduced event content. By default this will use the SUEP_ZH_simple.py analyzer")
@@ -37,18 +39,18 @@ if doWhat == "all" or doWhat == "dataframes":
   analyzer = "ZH_simple"
   if options.leptonID: analyzer = "ZH_leptonID"
   print("[DATAFRAMES] creation step...")
-  samples = open(os.getcwd() +  "/data/samples_%i.json"%options.year)
+  samples = open(os.getcwd() +  "/data/samples_%s.json"%options.year)
   samplesjson = json.loads(samples.read())
   for sample in samplesjson:
     if (samplesjson[sample]["isData"] > 0) and not(options.unblind): continue
     if len(options.samples) == 0:
-      print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
-      if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+      print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+      if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
     else:
       for filt in options.samples:
         if re.match(filt, sample):
-          print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
-          if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+          print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+          if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
   print("-------------------------------------------")
   print("-------------------------------------------")
   print("-------------------------------------------")
