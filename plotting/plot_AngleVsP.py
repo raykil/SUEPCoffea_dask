@@ -11,7 +11,7 @@ import ROOT
 import os
 import numpy as np
 
-output = "/eos/user/j/jkil/www/S-Frame_Property"
+output = "/eos/user/j/jkil/www"
 ZH = [pd.HDFStore("../outputZHwithGen/"+f, 'r') for f in os.listdir("../outputZHwithGen/")]
 count = 0
 for i in range(len(ZH)):
@@ -24,11 +24,10 @@ print(count, "count")
 
 # Command for accessing the hdf5 files
 
-
 EtaPz = False
 EtaPt = False
 PhiPz = False
-PhiPt = False
+PhiPt = True
 
 if EtaPz:
     #delta Eta vs pz
@@ -97,6 +96,7 @@ if PhiPt:
         deltaPhi = ZH[i]["onetrack"]["boostS_deltaPhi"]
         Hpt = ZH[i]["onetrack"]["genHpt"]
         for j in range(len(deltaPhi)):
+            print(Hpt[j],"Hpt[j]")
             h.Fill(Hpt[j],deltaPhi[j])
 
     h.Draw("colz")

@@ -5,25 +5,28 @@ import re
 
 print("Running analysis parsing helper...")
 parser = OptionParser(usage="%prog [all OR dataframes OR plots OR cards OR ABCDtests OR ZptCorrections] [options] [--detailed will get you a rundown of what you are running]")
-parser.add_option("-y","--year", dest="year", type="int", default=2018, help="Year")
+parser.add_option("-y","--year", dest="year", type="string", default="2018", help="Year")
 parser.add_option("-s","--samples", dest="samples", action="append", type="string", default=[], help="Only run these samples (accepts regexp matching)")
 parser.add_option("-d","--detailed", dest="detailed", default=False, action="store_true", help="Print some more details on what is going on")
 parser.add_option("-o","--output", dest="output", type="string", default=os.getcwd(), help="Where to put the output of what you are running")
-parser.add_option("-q","--queue", dest="queue", type="string", default="longlunch", help="Which condor queue to use, the default is longlunch (2h)")
-parser.add_option("-i","--interval", dest="interval", type="int", default=20, help="When submitting jobs, each one runs this many samples")
+parser.add_option("-q","--queue", dest="queue", type="string", default="workday", help="Which condor queue to use, the default is workday (8h)")
+parser.add_option("-i","--interval", dest="interval", type="int", default=100, help="When submitting jobs, each one runs this many samples")
 parser.add_option("--SR", dest="SR", action="store_true", help="If activated, the analyzer only saves yields up to SR to save space")
 parser.add_option("--submit", dest="submit", action="store_true", help="If activated, do submission of jobs on top of printing the commands")
 parser.add_option("--unblind", dest="unblind", action="store_true", help="Unless you activate this, data won't appear")
-parser.add_option("--plotfile", dest="plotfile", type="string", default="ZH/samples.py", help="File detailing the plots to do in the plotter")
-parser.add_option("--samplefile", dest="samplefile", type="string", default="ZH/plots_cluster.py", help="File detailing the samples to use in the plotter")
+parser.add_option("--plotfile", dest="plotfile", type="string", default="ZH/plots_cluster.py", help="File detailing the plots to do in the plotter")
+parser.add_option("--samplefile", dest="samplefile", type="string", default="ZH/samples.py", help="File detailing the samples to use in the plotter")
 parser.add_option("--systfile", dest="systfile", type="string", default="ZH/systs.py", help="File detailing the uncertainties to use in the datacards")
 parser.add_option("--tag", dest="tag", type="string", default="", help="Add this extra tag to separate the plotting step from others")
 parser.add_option("--var", dest="var", type="string", default="leadclusterspher", help="Make cards based on the shape of this variable")
+parser.add_option("--leptonID", dest="leptonID", action="store_true", default=False, help="Activate lepton ID optimization commands")
 (options, args) = parser.parse_args()
 
 doWhat = args[0]
 if not(os.path.exists(options.output)):
     os.system("mkdir %s"%(options.output))
+
+era = str(options.year).replace("APV","") # The analyzer just takes the year
 
 if doWhat == "all" or doWhat == "dataframes":
   if options.detailed:
@@ -33,20 +36,26 @@ if doWhat == "all" or doWhat == "dataframes":
     print("  - By default commands will be given for batch submission as this should not be run locally. Which queue can be regulated with the -q option")
     print("  - On lxplus, monitoring of the jobs can be done with the condor_q command\x1b[0m")
   print("-------------------------------------------")
-
+  analyzer = "ZH_simple"
+  if options.leptonID: analyzer = "ZH_leptonID"
   print("[DATAFRAMES] creation step...")
-  samples = open(os.getcwd() +  "/data/samples_%i.json"%options.year)
+  samples = open(os.getcwd() +  "/data/samples_%s.json"%options.year)
   samplesjson = json.loads(samples.read())
   for sample in samplesjson:
     if (samplesjson[sample]["isData"] > 0) and not(options.unblind): continue
     if len(options.samples) == 0:
-      print("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
-      if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 ZH_simple %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+      print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+      if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
     else:
       for filt in options.samples:
         if re.match(filt, sample):
+<<<<<<< HEAD
           print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
           if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+=======
+          print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+          if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+>>>>>>> f323335670f284be6f184c77ada9514b66d2c561
   print("-------------------------------------------")
   print("-------------------------------------------")
   print("-------------------------------------------")
@@ -61,6 +70,9 @@ if doWhat == "all" or doWhat == "plots":
   print("-------------------------------------------")
 
   print("[PLOTS] saving step...")
+  print("cd CMSSW_10_2_13/src/")
+  print("cmsenv")
+  print("cd -")
   print("cd plotting")
   print("python plotter_vh.py %s %s -l 60.0 --toSave %s/histos%s/ --batchsize 20 --jobname %s/jobs%s/ %s"%(options.samplefile, options.plotfile, options.output, options.tag, options.output, options.tag, "" if not options.submit else options.queue))
   if options.detailed:
@@ -68,6 +80,9 @@ if doWhat == "all" or doWhat == "plots":
     print(" - Remember that all the jobs in the previous step need to finish before running the histogramming")
     print(" - The next step will produce all plots into the %s/plots%s folder, configurable again with the --output and --tag options\x1b[0m"%(options.output, options.tag))
   print("[PLOTS] loading and plotting step")
+  print("cd CMSSW_10_2_13/src/")
+  print("cmsenv")
+  print("cd -")
   print("cd plotting")
   print("python plotter_vh.py %s %s -l 60.0 --toLoad %s/histos%s/ --batchsize 20 --plotdir %s/plots%s/ %s"%(options.samplefile, options.plotfile, options.output, options.tag, options.output, options.tag, "" if not options.submit else options.queue))
   print("-------------------------------------------")
@@ -83,6 +98,9 @@ if doWhat == "all" or doWhat == "cards":
     print(" - The variable that will be used for making the card is configured through --var=%s\x1b[0m"%options.var)
   print("-------------------------------------------")
   print("[DATACARDS] creation step...")
+  print("cd CMSSW_10_2_13/src/")
+  print("cmsenv")
+  print("cd -")
   print("cd plotting")
   print("python datacardMaker.py %s %s %s/cards%s %s --rootfile %s/plots%s/%s.root --var %s"%(options.samplefile, options.systfile, options.output, options.tag, "--blind" if not options.unblind else "", options.output, options.tag, options.var, options.var))
   print("-------------------------------------------")

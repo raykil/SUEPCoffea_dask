@@ -2,6 +2,7 @@ import ROOT
 import imp
 import copy
 import re 
+
 class datacardMaker(object):
   def __init__(self, samples, systs, output, options):
     self.samples = samples
@@ -70,7 +71,8 @@ class datacardMaker(object):
     for s in self.samples:
       print("....%s"%s)
       newth1 = tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", options.var))
-      self.th1s[s]   = copy.deepcopy("data_obs" if s=="data" else newth1.Clone(s))
+      if s != "data" or "data_obs" in self.th1s:
+        self.th1s[s]   = copy.deepcopy(self.th1s["data_obs"] if s=="data" else newth1.Clone(s))
       self.yields[s] = newth1.Integral()
       if self.yields[s] == 0: 
         print("Process %s has 0 yields, skipping..."%s)
@@ -110,7 +112,7 @@ if __name__ == "__main__":
   samplesFile   = imp.load_source("samples",args[0])
   systsFile     = imp.load_source("systematicsAndShapes", args[1])
   outputFolder  = args[2]
-  if options.blind:
+  if options.blind and "data" in samplesFile.samples:
     del samplesFile.samples["data"]
   dM = datacardMaker(samplesFile.samples, systsFile.systematicsAndShapes, outputFolder, options)
   dM.createDatacards()  

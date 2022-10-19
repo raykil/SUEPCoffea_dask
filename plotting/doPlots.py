@@ -21,8 +21,8 @@ sphericityEvals   = False
 scalarSphericityT = False
 scalarSphericityC = False
 scalarSphericityS = False
-scaledScalarSpherC = True
-scaledScalarSpherS = False
+scaledScalarSpherC = False
+scaledScalarSpherS = True
 
 if leptonProperty:
   output = "/eos/user/j/jkil/www/"
@@ -161,20 +161,20 @@ if scalarSphericityS:
 if scaledScalarSpherC:
   output = "/eos/user/j/jkil/www/ScaledScalarSpher_leadcluster"
   plots = {
-    "Scalar Sphericity of Lead Cluster (C, scaled)": ["scaledLeadclusterScalarSpher_C",50,0,1,"S^{leadcluster}_{scalar} (C, scaled)"],
-    "Scalar Sphericity of Lead Cluster (T, scaled)": ["scaledLeadclusterScalarSpher_T",50,0,1,"S^{leadcluster}_{scalar} (T, scaled)"],
+    "LeadC ScalarSpher(C,scaled,m=125)": ["scaledLeadclusterScalarSpher_C",50,0,1,"S^{leadcluster}_{scalar} (C, scaled)"],
+    "LeadC ScalarSpher(T,scaled,m=125)": ["scaledLeadclusterScalarSpher_T",50,0,1,"S^{leadcluster}_{scalar} (T, scaled)"],
   }
 
 if scaledScalarSpherS:
   output = "/eos/user/j/jkil/www/ScaledScalarSpher_leadstrip"
   plots = {
-    "Scalar Sphericity of Lead Strip (EtaWidth = 0.6)(T, scaled)": ["scaledLeadstripScalarSpher_T"+"_dEta0.6",50,0,1,"S^{leadstrip}_{scalar} (T, scaled)"],
-    "Scalar Sphericity of Lead Strip (EtaWidth = 0.7)(T, scaled)": ["scaledLeadstripScalarSpher_T"+"_dEta0.7",50,0,1,"S^{leadstrip}_{scalar} (T, scaled)"],
-    "Scalar Sphericity of Lead Strip (EtaWidth = 0.8)(T, scaled)": ["scaledLeadstripScalarSpher_T"+"_dEta0.8",50,0,1,"S^{leadstrip}_{scalar} (T, scaled)"],
+    "LeadS ScalarSpher(Etaw=0.6,T,scaled,m=125)": ["scaledLeadstripScalarSpher_T"+"_dEta0.6",50,0,1,"S^{leadstrip}_{scalar} (T, scaled)"],
+    "LeadS ScalarSpher(Etaw=0.7,T,scaled,m=125)": ["scaledLeadstripScalarSpher_T"+"_dEta0.7",50,0,1,"S^{leadstrip}_{scalar} (T, scaled)"],
+    "LeadS ScalarSpher(Etaw=0.8,T,scaled,m=125)": ["scaledLeadstripScalarSpher_T"+"_dEta0.8",50,0,1,"S^{leadstrip}_{scalar} (T, scaled)"],
 
-    "Scalar Sphericity of Lead Strip (EtaWidth = 0.6)(S, scaled)": ["scaledLeadstripScalarSpher_S"+"_dEta0.6",50,0,1,"S^{leadstrip}_{scalar} (S, scaled)"],
-    "Scalar Sphericity of Lead Strip (EtaWidth = 0.7)(S, scaled)": ["scaledLeadstripScalarSpher_S"+"_dEta0.7",50,0,1,"S^{leadstrip}_{scalar} (S, scaled)"],
-    "Scalar Sphericity of Lead Strip (EtaWidth = 0.8)(S, scaled)": ["scaledLeadstripScalarSpher_S"+"_dEta0.8",50,0,1,"S^{leadstrip}_{scalar} (S, scaled)"],
+    "LeadS ScalarSpher(Etaw=0.6,S,scaled,m=125)": ["scaledLeadstripScalarSpher_S"+"_dEta0.6",50,0,1,"S^{leadstrip}_{scalar} (S, scaled)"],
+    "LeadS ScalarSpher(Etaw=0.7,S,scaled,m=125)": ["scaledLeadstripScalarSpher_S"+"_dEta0.7",50,0,1,"S^{leadstrip}_{scalar} (S, scaled)"],
+    "LeadS ScalarSpher(Etaw=0.8,S,scaled,m=125)": ["scaledLeadstripScalarSpher_S"+"_dEta0.8",50,0,1,"S^{leadstrip}_{scalar} (S, scaled)"],
   }
 
 

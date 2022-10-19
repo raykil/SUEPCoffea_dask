@@ -30,7 +30,7 @@ class sample(object):
     self.plotsinchannel = {}
     self.varstoload = {}
     self.yields     = {}
-
+    print(sampledict)
   def initAll(self, options):
     if options.queue: print("Loading sample %s"%self.name)
     iF = 0
@@ -54,7 +54,7 @@ class sample(object):
           a = pd.HDFStore(f, "r")
 
           if not("skim" in self.config) and not(self.isData):
-            #print(a.get_storer("twoleptons").attrs.metadata)
+            #print(a.get_storer("SR").attrs.metadata)
             self.nnorms[f] = a.get_storer("twoleptons").attrs.metadata["gensumweight"]
           b = {}
           if len(a.keys()) == 0: #Empty file
@@ -110,8 +110,8 @@ class sample(object):
     for f in self.safefiles:
        run, luminosityBlock, event= f.split("/")[-1].replace("out_","").replace(".hdf5","").split("_")
        
-       #print("Runs_"+str(event)+ "_" + str(luminosityBlock) + "_" + str(run))
-       #print(self.config["skim"])
+       print("Runs_"+str(event)+ "_" + str(luminosityBlock) + "_" + str(run))
+       print(self.config["skim"])
        tt = rf.Get("Runs_"+str(event)+ "_" + str(luminosityBlock) + "_" + str(run))
        for ev in tt:
          out[f] = ev.genEventSumw
@@ -181,7 +181,6 @@ class sample(object):
             self.norms[plotName] += self.nnorms[self.safefiles[iff]]
           filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
           print(plotName, filename, self.isData, "skim" in self.config, options.toLoad)
-          self.histos[plotName]["total"].Add(self.histos[plotName][filename])
         self.histos[plotName]["total"].Sumw2() # To get proper stat. unc.
         print(plotName, self.safefiles, self.isData, "skim" in self.config, options.toLoad)
         if not(self.isData): self.histos[plotName]["total"].Scale(options.luminosity*self.config["xsec"]/self.norms[plotName])
@@ -200,7 +199,8 @@ class sample(object):
         self.histos[plotName][filename]  = self.histos[plotName]["total"].Clone(self.histos[plotName]["total"].GetName() + "_" + filename)
       for c in self.channels:
         #print(f, safefile)
-        if not(self.isData): 
+        if not(self.isData):
+          print(self.name, c, "genweight", self.channels) 
           weights = f[c]["genweight"]
         else: 
           weights = np.ones(len(f[c]))
@@ -387,10 +387,10 @@ class plotter(object):
     histo.GetXaxis().SetTitle(p["xlabel"]) # Empty, as it goes into the ratio plot
 
     CMS_lumi.writeExtraText = True
-    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity
+    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.3f fb^{-1}" % options.luminosity
     CMS_lumi.extraText  = "Preliminary"
     CMS_lumi.lumi_sqrtS = "13"
-    CMS_lumi.CMS_lumi(c, 4, 0, 0.122)
+    CMS_lumi.CMS_lumi(p1, 4, 0, 0.122)
 
     c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".pdf")
     c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".png")
@@ -402,6 +402,8 @@ class plotter(object):
 
     
   def doStackPlot(self, pname, options):
+   debug = True
+   if debug: print("Do stack plot")
    try:
     p = self.plots[pname]
     c = ROOT.TCanvas(pname,pname, 800,1050)
@@ -430,6 +432,7 @@ class plotter(object):
       p1.SetRightMargin(p["margins"][3])
     p2.Draw()
     p1.cd()
+    if debug: print("...Pads set")
     tl = ROOT.TLegend(0.5,0.55,0.9,0.85)
     if "legendPosition" in p:
       tl = ROOT.TLegend(p["legendPosition"][0], p["legendPosition"][1], p["legendPosition"][2], p["legendPosition"][3])  
@@ -440,19 +443,24 @@ class plotter(object):
     # Background go into the stack
     stacksize = 0
     back = False
+    if debug: print("...Stack set")
+
     if options.ordered:
       self.samples.sort(key= lambda x: x.yields[pname], reverse=False)
     nbins = self.samples[0].histos[pname]["total"].GetNbinsX()
+    thePlotGroups = {}
+    if debug: print("...Samples ordered")
     for s in self.samples:
       if s.isBackground():
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
-        theStack.Add(s.histos[pname]["total"])
-        tl.AddEntry(s.histos[pname]["total"], s.config["label"], "f")
         if not(back): back = s.histos[pname]["total"].Clone("total_background")
         else: back.Add(s.histos[pname]["total"])
         #print(pname, s.name)
         #s.histos[pname]["total"].Print("all")
-        stacksize += s.histos[pname]["total"].Integral()
+        if not(s.config["label"] in thePlotGroups):
+          thePlotGroups[s.config["label"]] = s.histos[pname]["total"].Clone(s.histos[pname]["total"].GetName().replace(s.name, s.config["label"]))
+        else:
+          thePlotGroups[s.config["label"]].Add(s.histos[pname]["total"])
       elif s.isData:
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
         tl.AddEntry(s.histos[pname]["total"], s.config["label"], "pl")
@@ -464,6 +472,12 @@ class plotter(object):
         s.histos[pname]["total"].SetLineStyle(1)
         theIndivs.append(s.histos[pname]["total"])
         tl.AddEntry(s.histos[pname]["total"], s.config["label"], "l")
+    if debug: print("...Groups created")
+    for plotgroup in thePlotGroups:
+      theStack.Add(thePlotGroups[plotgroup])
+      tl.AddEntry(thePlotGroups[plotgroup], plotgroup, "f")
+      stacksize += thePlotGroups[plotgroup].Integral()
+ 
     if p["normalize"]:
       for index in range(len(theIndivs)):
         theIndivs[index].Scale(1./theIndivs[index].Integral())
@@ -472,6 +486,7 @@ class plotter(object):
         if s.isBackground():
           s.histos[pname]["total"].Scale(1./stacksize)
           theStack.Add(s.histos[pname]["total"])
+    if debug: print("...Plot normalized")
     # Now plotting stuff
     theStack.SetTitle("") 
     theStack.Draw("hist")
@@ -486,7 +501,7 @@ class plotter(object):
       theStack.SetMaximum(p["maxY"])
     if "minY" in p:
       theStack.SetMinimum(p["minY"])
-
+    if debug: print("...Max and Min set")
     theStack.Draw("hist")
     for ind in theIndivs:
       ind.Draw("hist same")
@@ -495,7 +510,7 @@ class plotter(object):
       d.Draw("P0 same")
 
     tl.Draw("same")
-
+    if debug: print("...Main plot done")
     # Now we go to the ratio
     p2.cd()
 
@@ -527,17 +542,20 @@ class plotter(object):
     den.Draw("")
     for num in nums:
       num.Draw("same") if not("data" in num.GetName()) else num.Draw("Psame")
+    if debug: print("...Ratio done")
     CMS_lumi.writeExtraText = True
-    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity
+    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.0f pb^{-1}" % (options.luminosity*1000)
     CMS_lumi.extraText  = "Preliminary"
     CMS_lumi.lumi_sqrtS = "13"
+    if debug: print("...CMS_lumi configured")
     CMS_lumi.CMS_lumi(c, 4, 0, 0.122)
-
+    if debug: print("...CMS_lumi set")
     if options.rebin:
       p["plotname"] = p["plotname"] + "_" + str(options.rebin) + "rebinned"
 
     c.SaveAs(options.plotdir + "/" + p["plotname"] + ".pdf")
     c.SaveAs(options.plotdir + "/" + p["plotname"] + ".png")
+    if debug: print("...Files saved")
     # Also save as TH1 in root file 
     tf = ROOT.TFile(options.plotdir + "/" + p["plotname"] + ".root", "RECREATE")
     for s in self.samples:
@@ -547,6 +565,8 @@ class plotter(object):
         s.histos[pname]["total"].Write()
     theStack.Write()
     tf.Close()
+    if debug: print("...File closed")
+    ROOT.SetOwnership(c,False) # This magic avoids segfault due to the garbage collector collecting non garbage stuff
    except:
     print("Something went wrong, skipping plot...")
 
@@ -570,8 +590,9 @@ if __name__ == "__main__":
   parser.add_option("--rebin", dest="rebin", default=None, type="int", help="Collapse bins by this factor")
   parser.add_option("--ratioylabel", dest="ratioylabel", type="string", default="S/B", help="Title of the Y axis of the ratio plot")
   parser.add_option("--sP", dest="singleplot", action="append", default=[], help="Run only these plots")
-
+  parser.add_option("--test", dest="test", action="store_true", default=False, help="Activate test mode (1 file per sample) for quick checks")
   (options, args) = parser.parse_args()
+  print(args)
   samplesFile = imp.load_source("samples",args[0])
   plotsFile   = imp.load_source("plots",  args[1])
   if not(os.path.isdir(options.plotdir)):
@@ -580,12 +601,16 @@ if __name__ == "__main__":
     os.system("mkdir %s"%options.toSave)
   os.system("cp %s %s %s"%(args[0], args[1], options.plotdir))
   samples = samplesFile.samples
+  if options.test:
+    for s in samples:
+      print(s, samples[s]["files"])
+      samples[s]["files"] = [samples[s]["files"][0]]
   plots   = plotsFile.plots
   if options.sample:
     newsamples = {}
     newsamples[options.sample] = samples[options.sample]
     samples = newsamples
-  if options.blind:
+  if options.blind and "data" in samples:
     del samples["data"]
   if len(options.singleplot) > 0:
     newplots = {p: plots[p] for p in options.singleplot}
@@ -613,7 +638,7 @@ if __name__ == "__main__":
 
     command = "python plotter_vh.py " + subprocess.list2cmdline(sys.argv[1:]).replace("--queue %s"%options.queue,"")
     savecommand = open("%s/command.txt"%options.toSave,"w")
-    savecommand.write(command)
+    savecommand.write(command+ "\n")
     savecommand.close()
     nJobs = thePlotter.createJobs(options, command)
     os.system("rm submit.sub")

@@ -4,6 +4,6 @@ import sys
 
 d = sys.argv[1] 
 f = pd.HDFStore(d,"r")
-a = f["onecluster"]
-print(a.corr()["leadjet_pt"])
+a = f["SR"]
+print(a.corr()[sys.argv[2]])
 #print(a["leadclusterSpher_L"].corr(a["leadcluster_ntracks"]))

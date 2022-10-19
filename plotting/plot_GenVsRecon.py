@@ -9,7 +9,10 @@ import ROOT
 import os
 import numpy as np
 
-ZH = [pd.HDFStore("../outputZHwithScale/"+f, 'r') for f in os.listdir("../outputZHwithScale/")]
+#ZH = [pd.HDFStore("../outputZHwithScale/"+f, 'r') for f in os.listdir("../outputZHwithScale/")]
+ZH = [pd.HDFStore("../outputSimTracks/"+f, 'r') for f in os.listdir("../outputSimTracks/")]
+#print(ZH[0]["onecluster"]["nOutBand0.5"])
+
 
 Zboost_px = False
 Zboost_py = False
@@ -41,15 +44,13 @@ scaledCboost_pz = False
 scaledCboost_pt = False
 outputScaledC = "/eos/user/j/jkil/www/scaledC-Frame_Property"
 
-scaledSboost_px = True
-scaledSboost_py = True
-scaledSboost_pz = True
-scaledSboost_pt = True
+scaledSboost_px = False
+scaledSboost_py = False
+scaledSboost_pz = False
+scaledSboost_pt = False
 outputScaledS = "/eos/user/j/jkil/www/scaledS-Frame_Property"
 
 genHpz_genHpt = False
-
-#print(ZH[0]["onecluster"]["genHpx"])
 
 
 ###### Z BOOST ######
