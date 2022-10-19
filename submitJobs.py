@@ -17,7 +17,7 @@ doSubmit    = sys.argv[5] # Whether to submit or not
 analyzer    = sys.argv[6]
 isData      = bool(int(sys.argv[7]))
 interval    = int(sys.argv[8])
-doSRonly    = bool(int(sys.argv[9]))
+#doSRonly    = bool(int(sys.argv[9]))
 filt = None
 isDY = False
 resubmission = False
@@ -82,7 +82,8 @@ while ifile < NumberOfJobs:
         fout.write("conda activate coffea\n")
         for i in range(interval):
           if ifile == NumberOfJobs: continue # Last one will have less
-          fout.write("python condor_SUEP_WS.py  --isMC=%i --era=2018 --dataset=DY --analyzer=%s --infile=%s --outputdir=%s %s %s\n"%(0 if isData else 1, analyzer, files[ifile], OutputDir, "--isDY" if isDY else "", "--SR" if doSRonly else "")) 
+          #fout.write("python condor_SUEP_WS.py  --isMC=%i --era=2018 --dataset=DY --analyzer=%s --infile=%s --outputdir=%s %s %s\n"%(0 if isData else 1, analyzer, files[ifile], OutputDir, "--isDY" if isDY else "", "--SR" if doSRonly else "")) 
+          fout.write("python condor_SUEP_WS.py  --isMC=%i --era=2018 --dataset=DY --analyzer=%s --infile=%s --outputdir=%s %s\n"%(0 if isData else 1, analyzer, files[ifile], OutputDir, "--isDY" if isDY else ""))
           ifile += 1
         fout.write("echo 'STOP---------------'\n")
         fout.write("echo\n")
