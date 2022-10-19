@@ -2,14 +2,14 @@
 import os
 import sys
 
-conda_source = "/afs/cern.ch/user/%s/%s/miniconda3/etc/profile.d/conda.sh"%(os.getlogin()[0], os.getlogin())
-
+conda_source  = "/afs/cern.ch/user/%s/%s/miniconda3/etc/profile.d/conda.sh"%(os.getlogin()[0], os.getlogin())
+doSingularity = True 
 print()
 print('START')
 print()
 ########   YOU ONLY NEED TO FILL THE AREA BELOW   #########
 ########   customization  area #########
-NumberOfJobs= sys.argv[1] # number of jobs to be submitted
+NumberOfJobs= int(sys.argv[1]) # number of jobs to be submitted
 FileFolder  = sys.argv[2] # File folder with all the files
 OutputDir   = sys.argv[3] # Where to put the stuff
 queue       = sys.argv[4] # Which queue to use: expresso (20min), microcentury (1h), longlunch (2h), workday (8h), tomorrow (1d), testmatch (3d), nextweek (1w)
@@ -54,7 +54,7 @@ if resubmission:
 
 tag=OutputDir
 
-if NumberOfJobs == "-1": NumberOfJobs = len(files)
+if NumberOfJobs == -1: NumberOfJobs = len(files)
 
 ########   customization end   #########
 
@@ -73,21 +73,25 @@ print()
 ifile = 0
 ijob  = 1
 while ifile < NumberOfJobs:
+    print(ifile)
     ##### creates jobs #######
     with open('%s/exec/job_'%tag+str(ijob)+'.sh', 'w') as fout:
         fout.write("#!/bin/bash\n")
         fout.write("echo 'START---------------'\n")
         fout.write("echo 'WORKDIR ' ${PWD}\n")
         fout.write("cd "+str(path)+"\n")
-        fout.write("source %s\n\n"%conda_source)
-        fout.write("conda activate coffea\n")
+        if not(doSingularity): # If you are not running on singularity, need to load the coffea environment
+          fout.write("source %s\n\n"%conda_source)
+          fout.write("conda activate coffea\n")
         for i in range(interval):
           if ifile == NumberOfJobs: continue # Last one will have less
-          fout.write("python condor_SUEP_WS.py  --isMC=%i --era=%i --dataset=DY --analyzer=%s --infile=%s --outputdir=%s %s %s\n"%(0 if isData else 1, era, analyzer, files[ifile], OutputDir, "--isDY" if isDY else "", "--SR" if doSRonly else "")) 
+          fout.write("python condor_SUEP_WS.py  --isMC=%i --era=%s --dataset=DY --analyzer=%s --infile=%s --outputdir=%s %s %s\n"%(0 if isData else 1, era, analyzer, files[ifile], OutputDir, "--isDY" if isDY else "", "--SR" if doSRonly else "")) 
           ifile += 1
+
         fout.write("echo 'STOP---------------'\n")
         fout.write("echo\n")
         fout.write("echo\n")
+
     os.system("chmod 755 %s/exec/job_"%tag+str(ijob)+".sh")
     ijob += 1
 
@@ -100,6 +104,7 @@ with open('submit.sub', 'w') as fout:
     fout.write("output                  = %s/batchlogs/$(ClusterId).$(ProcId).out\n"%tag)
     fout.write("error                   = %s/batchlogs/$(ClusterId).$(ProcId).err\n"%tag)
     fout.write("log                     = %s/batchlogs/$(ClusterId).log\n"%tag)
+    if doSingularity: fout.write("+SingularityImage       = \"/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask:latest\"\n")
     fout.write('+JobFlavour = "%s"\n' %(queue))
     fout.write("\n")
     fout.write("queue filename matching (%s/exec/job_*sh)\n"%tag)
