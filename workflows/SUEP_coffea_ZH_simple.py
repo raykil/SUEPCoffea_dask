@@ -376,23 +376,25 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def shouldContinueAfterCut(self, events, out):
         #if debug: print("Conversion to pandas...")
-        if True: # No need to filter it out
-            if len(events) == 0:
-                outdfs  = []
-                outcols = []
-                for channel in out.keys():
-                    outcols.append(channel)
-                    if out[channel][0] == {}:   
-                        outdfs = pd.DataFrame(['empty'], columns=['empty'])
-                    else:              
-                        if self.isMC:
-                            out[channel][0]["genweight"] = out[channel][1].genWeight[:]
+        if len(events) == 0:
+            outdfs  = []
+            outcols = []
+            print("No events pass cut, stopping...")
+            for channel in out.keys():
+                outcols.append(channel)
+                if out[channel][0] == {}:   
+                    outdfs = pd.DataFrame(['empty'], columns=['empty'])
+                else:              
+                    if self.isMC:
+                        out[channel][0]["genweight"] = out[channel][1].genWeight[:]
 
-                    if not isinstance(out[channel][0], pd.DataFrame): 
-                        out[channel][0] = self.ak_to_pandas(out[channel][0])
-    
-                return False
-            else: return True
+                if not isinstance(out[channel][0], pd.DataFrame): 
+                   out[channel][0] = self.ak_to_pandas(out[channel][0])
+            self.save_dfs([out[key][0] for key in out], [key for key in out], self.chunkTag)
+
+            return False
+        else: 
+            return True
 
 
     def process(self, events):
@@ -400,8 +402,8 @@ class SUEP_cluster(processor.ProcessorABC):
         # 255955082 94729 1
         #if not(events.event[0]==255955082 and events.luminosityBlock[0]==94729 and events.run[0]==1): return self.accumulator.identity()
         debug    = True  # If we want some prints in the middle
-        chunkTag = "out_%i_%i_%i.hdf5"%(events.event[0], events.luminosityBlock[0], events.run[0]) #Unique tag to get different outputs per tag
-        fullFile = self.output_location + "/" + chunkTag
+        self.chunkTag = "out_%i_%i_%i.hdf5"%(events.event[0], events.luminosityBlock[0], events.run[0]) #Unique tag to get different outputs per tag
+        fullFile = self.output_location + "/" + self.chunkTag
         print("Check file %s"%fullFile)
         if os.path.isfile(fullFile): 
             print("SKIP")
@@ -553,7 +555,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         if debug: print("DFS saving....")
 
-        self.save_dfs([outputs[key][0] for key in outputs], [key for key in outputs], chunkTag)
+        self.save_dfs([outputs[key][0] for key in outputs], [key for key in outputs], self.chunkTag)
 
         return accumulator
    
