@@ -30,7 +30,7 @@ class sample(object):
     self.plotsinchannel = {}
     self.varstoload = {}
     self.yields     = {}
-    print(sampledict)
+    #print(sampledict)
   def initAll(self, options):
     if options.queue: print("Loading sample %s"%self.name)
     iF = 0
@@ -47,12 +47,11 @@ class sample(object):
 
         if options.resubmit:
           if os.path.isfile(fullfilename):
-            if os.path.getsize(fullfilename) > 1000: #I.e., non corrupted
+            if os.path.getsize(fullfilename) > 100: #I.e., non corrupted
               print("Corrupted!")
               continue    
         if not(options.toLoad and (("skim" in self.config) or (self.isData)) and os.path.isfile(fullfilename)):
           a = pd.HDFStore(f, "r")
-
           if not("skim" in self.config) and not(self.isData):
             #print(a.get_storer("SR").attrs.metadata)
             self.nnorms[f] = a.get_storer("twoleptons").attrs.metadata["gensumweight"]
@@ -63,8 +62,10 @@ class sample(object):
             continue
           if not(options.queue) and not(options.toLoad):
             for k in a.keys():
-              #print(k)
-              b[k.replace("/","")] = a[k]
+              try:
+                b[k.replace("/","")] = a[k]
+              except: # If we are here, there are no events at the cut level, so just save empty space (still need to count for normalizing)
+                b[k.replace("/","")] = []
             self.hdfiles.append(b)
           a.close()
         self.safefiles.append(f)
@@ -73,7 +74,7 @@ class sample(object):
         print("File %s broken, will skip loading it"%f)
         print(str(e))
 
-    print(self.name, self.safefiles)
+    #print(self.name, self.safefiles)
     if "skim" in self.config and not(self.isData):
       self.unskimmedyields, self.norm = self.getUnskimmedYields()
 
@@ -180,16 +181,13 @@ class sample(object):
           if options.toLoad and not("skim" in self.config) and not(self.isData): # If loading and unskimmed, need to set the norm here
             self.norms[plotName] += self.nnorms[self.safefiles[iff]]
           filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
-          print(plotName, filename, self.isData, "skim" in self.config, options.toLoad)
+          self.histos[plotName]["total"].Add(self.histos[plotName][filename])
         self.histos[plotName]["total"].Sumw2() # To get proper stat. unc.
-        print(plotName, self.safefiles, self.isData, "skim" in self.config, options.toLoad)
         if not(self.isData): self.histos[plotName]["total"].Scale(options.luminosity*self.config["xsec"]/self.norms[plotName])
         self.yields[plotName] = self.histos[plotName]["total"].Integral()
-        print(self.name, plotName, self.yields[plotName])
 
   def getRawHistogramsAndNormsOneFile(self, g):
     f, safefile, options = g[0], g[1], g[2]
-    
     filename = safefile.split("/")[-1].replace("out_","").replace(".hdf5","")
     if not(options.toLoad):  
       if options.toSave:
@@ -198,30 +196,48 @@ class sample(object):
       for plotName in self.plots:
         self.histos[plotName][filename]  = self.histos[plotName]["total"].Clone(self.histos[plotName]["total"].GetName() + "_" + filename)
       for c in self.channels:
-        #print(f, safefile)
+        empty = True if type(f[c]) == type([]) else False # Check if there are events there
+        if empty: print("Is empty!", c)
         if not(self.isData):
-          print(self.name, c, "genweight", self.channels) 
-          weights = f[c]["genweight"]
+          if empty:
+            weights = []
+          else:
+            weights = f[c]["genweight"]
         else: 
-          weights = np.ones(len(f[c]))
+          if empty:
+            weights = []
+          else:
+            weights = np.ones(len(f[c]))
         if "extraWeights" in self.config: 
-          extraweights = self.config["extraWeights"](f[c])
+          if empty:
+            extraweights = []
+          else:
+            extraweights = self.config["extraWeights"](f[c])
         for plotName in self.plotsinchannel[c]:
           print("...%s"%plotName)
           p = self.plots[plotName]
           if not("skim" in self.config) and not(self.isData):
             self.norms[plotName] += self.nnorms[safefile]
           if "2D" in p["bins"][0]:
-            values, values2, weightsHere = p["value"](f[c], weights)
+            if empty:
+              values, values2, weightsHere = [], [], []
+            else:
+              values, values2, weightsHere = p["value"](f[c], weights)
           else:
-            values, weightsHere = p["value"](f[c], weights)
-          if "extraWeights" in self.config: weightsHere = weightsHere*extraweights
-          #print(p["value"])
+            if empty:
+              values, weightsHere = [], []
+            else:
+              values, weightsHere = p["value"](f[c], weights)
+          if "extraWeights" in self.config:
+            #for ev in range(len(extraweights)): 
+            #  print(weightsHere[ev], extraweights[ev])
+            weightsHere = weightsHere*extraweights
           for idx in range(len(values)):
             if (idx+1)%100000 == 0: print("%i/%i"%(idx, len(values)))
             if "2D" in p["bins"][0]:
               self.histos[p["name"]][filename].Fill(values[idx], values2[idx], weightsHere[idx])
             else:
+              #print(values[idx], weightsHere[idx])
               self.histos[p["name"]][filename].Fill(values[idx], weightsHere[idx])
           if options.toSave:
             rf.cd()
@@ -592,7 +608,7 @@ if __name__ == "__main__":
   parser.add_option("--sP", dest="singleplot", action="append", default=[], help="Run only these plots")
   parser.add_option("--test", dest="test", action="store_true", default=False, help="Activate test mode (1 file per sample) for quick checks")
   (options, args) = parser.parse_args()
-  print(args)
+  #print(args)
   samplesFile = imp.load_source("samples",args[0])
   plotsFile   = imp.load_source("plots",  args[1])
   if not(os.path.isdir(options.plotdir)):
@@ -603,7 +619,7 @@ if __name__ == "__main__":
   samples = samplesFile.samples
   if options.test:
     for s in samples:
-      print(s, samples[s]["files"])
+      #print(s, samples[s]["files"])
       samples[s]["files"] = [samples[s]["files"][0]]
   plots   = plotsFile.plots
   if options.sample:
@@ -621,7 +637,7 @@ if __name__ == "__main__":
       newfiles = []
       for f in samples[s]["files"]:
         if f in options.files:
-          print(f)
+          #print(f)
           newfiles.append(f)
       samples[s]["files"] = newfiles
 
