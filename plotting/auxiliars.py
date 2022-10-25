@@ -4,6 +4,31 @@ import os
 
 ##### SF files #####
 
+muIDfile = {}
+muID     = {}
+maxmidx  = {}
+maxmidy  = {}
+
+muISOfile = {}
+muISO     = {}
+maxmisox  = {}
+maxmisoy  = {}
+
+muTrkfile = {}
+muTrk     = {}
+maxmtx    = {}
+maxmty    = {}
+
+eIDfile   = {}
+eID       = {}
+maxeidx   = {}
+maxeidy   = {}
+
+eRECOfile = {}
+eRECO     = {}
+maxerex   = {}
+maxerey   = {}
+
 #####  -UL18-  #####
 SUEP_BASE = os.path.dirname(os.path.realpath(__file__).replace("/plotting",""))
 
