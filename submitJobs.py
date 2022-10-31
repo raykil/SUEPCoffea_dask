@@ -10,10 +10,10 @@ print()
 ########   YOU ONLY NEED TO FILL THE AREA BELOW   #########
 ########   customization  area #########
 NumberOfJobs= int(sys.argv[1]) # number of jobs to be submitted
-FileFolder  = sys.argv[2] # File folder with all the files
-OutputDir   = sys.argv[3] # Where to put the stuff
-queue       = sys.argv[4] # Which queue to use: expresso (20min), microcentury (1h), longlunch (2h), workday (8h), tomorrow (1d), testmatch (3d), nextweek (1w)
-doSubmit    = sys.argv[5] # Whether to submit or not
+FileFolder  = sys.argv[2]      # File folder with all the files
+OutputDir   = sys.argv[3]      # Where to put the stuff
+queue       = sys.argv[4]      # Which queue to use: expresso (20min), microcentury (1h), longlunch (2h), workday (8h), tomorrow (1d), testmatch (3d), nextweek (1w)
+doSubmit    = sys.argv[5]      # Whether to submit or not
 analyzer    = sys.argv[6]
 era         = sys.argv[7]
 isData      = bool(int(sys.argv[8]))
@@ -25,7 +25,8 @@ resubmission = False
 if len(sys.argv) > 11:
   filt = sys.argv[11]
 if len(sys.argv) > 12:
-  isDY = True
+  if int(sys.argv[12])==1:  
+    isDY = True
 files = [FileFolder + "/" + f for f in os.listdir(FileFolder)] # list with all the files  
 if filt:
   newfiles = []
