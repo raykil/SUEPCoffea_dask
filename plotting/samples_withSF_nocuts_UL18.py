@@ -7,22 +7,22 @@ def hdf5inpath(path):
   for f in os.listdir(path):
     if "hdf5" in f: 
       ret.append(path + "/" + f)
-  #if len(ret) > 3: ret = ret[:3]
   return ret
 
-order   = ["ttZ","VV", "WJets","ttto1l", "ttto2l", "DY_Pt650ToInf", "DY_Pt400To650","DY_Pt250To400","DY_Pt100To250","DY_Pt50To100", "DY_Pt0To50"]
+# Main path where samples are stored
+main_path = "/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/"
 samples = {
-  "data": {
-         "name" : "data",
-         "label": "Data",
-         "xsec" : -1,
-         "lineColor": ROOT.kBlack,
-         "fillcolor": ROOT.kBlack,
-         "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/data_RunD/"),#+ hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/data_RunB/")+hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/data_RunC/")+hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/data_RunD/"),
-         "markerstyle": 20,
-         "markersize" : 1,
-  },
+#  "data": {
+#         "name" : "data",
+#         "label": "Data",
+#         "xsec" : -1,
+#         "lineColor": ROOT.kBlack,
+#         "fillcolor": ROOT.kBlack,
+#         "isSig"    : False,
+#         "files"    : hdf5inpath(main_path + "data_RunD/"),#+ hdf5inpath(main_path + "data_RunB/")+hdf5inpath(main_path + "data_RunC/")+hdf5inpath(main_path + "data_RunD/"),
+#         "markerstyle": 20,
+#         "markersize" : 1,
+#  },
   "DY_Pt0": {
          "name"       : "DY_Pt0", #Here plain text
          "label"      : "DY",# (p_{T} = 0 GeV)", #Here we can use weird glyphs
@@ -31,7 +31,7 @@ samples = {
          "fillcolor"  : 7, # White
          "isSig"      : False,
          "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*SF(x,18) , 
-         "files"      : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DY_nano_Autumn18/"),
+         "files"      : hdf5inpath(main_path + "DY_nano_Autumn18/"),
   },      
   "DY_Pt0To50": {
          "name"     : "DY_Pt0To50", #Here plain text
@@ -41,8 +41,8 @@ samples = {
          "fillcolor": 7, # Light blue
          "isSig"    : False,
          "extraWeights": lambda x: SF(x,18),
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt0To50/"),
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt0To50/skims.root"
+         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt0To50/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt0To50/skims.root"
   },
   "DY_Pt50To100": {
          "name"     : "DY_Pt50To100", #Here plain text
@@ -51,8 +51,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt50To100/"),
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt50To100/skims.root",
+         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt50To100/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt50To100/skims.root",
          "extraWeights": lambda x: SF(x,18),
   },
   "DY_Pt100To250": {
@@ -62,8 +62,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt100To250/"),
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt100To250/skims.root",
+         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt100To250/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt100To250/skims.root",
          "extraWeights": lambda x: SF(x,18),
   },
   "DY_Pt250To400": {
@@ -73,8 +73,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt250To400/"),
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt250To400/skims.root",
+         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt250To400/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt250To400/skims.root",
          "extraWeights": lambda x: SF(x,18),
   },
   "DY_Pt400To650": {
@@ -84,8 +84,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt400To650/"),
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt400To650/skims.root",
+         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt400To650/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt400To650/skims.root",
          "extraWeights": lambda x: SF(x,18),
   },
   "DY_Pt650ToInf": {
@@ -95,8 +95,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DYToLL_M50_Pt650ToInf/"),
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DYToLL_M50_Pt650ToInf/skims.root", 
+         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt650ToInf/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt650ToInf/skims.root", 
          "extraWeights": lambda x: SF(x,18),
   },
   "ttto2l": {
@@ -106,8 +106,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 2, # Red
          "isSig"    : False,
-         "files"    :  hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTTo2L2Nu/"),
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/TTTo2L2Nu/skims.root",
+         "files"    :  hdf5inpath(main_path + "TTTo2L2Nu/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTTo2L2Nu/skims.root",
          "extraWeights": lambda x: SF(x,18),
   },
   "tW": {
@@ -117,8 +117,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kMagenta, # Red
          "isSig"    : False,
-         "files"    :  hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/tW/"),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/tW/skims.root",
+         "files"    :  hdf5inpath(main_path + "tW/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/tW/skims.root",
          "extraWeights": lambda x: SF(x,18),
   },
   "DY_lowmass": {
@@ -128,8 +128,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kAzure, # Red
          "isSig"    : False,
-         "files"    :  hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/DY_lowmass/"),
-         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/DY_lowmass/skims.root",
+         "files"    :  hdf5inpath(main_path + "DY_lowmass/"),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DY_lowmass/skims.root",
          "extraWeights": lambda x: SF(x,18),
   },
 
@@ -140,8 +140,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 5, # Yellow
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTTo1L1Nu2Q/"),
+         "files"    : hdf5inpath(main_path + "TTTo1L1Nu2Q/"),
          "extraWeights": lambda x: SF(x,18),
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTTo1L1Nu2Q/skims.root",
   },
 #  "Wjets": {
 #         "name"     : "Wjets", #Here plain text
@@ -150,8 +151,8 @@ samples = {
 #         "linecolor": ROOT.kBlack,
 #         "fillcolor": 6, # Purple
 #         "isSig"    : False,
-#         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/WJets/"), 
-#         "skim"     : "/eos/user/c/cericeci/SUEP_signals/skim_UL18/WJets/skims.root",
+#         "files"    : hdf5inpath(main_path + "WJets/"), 
+#         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WJets/skims.root",
 #         "extraWeights": lambda x: SF(x,18),
 #  },
 #  "QCD": {
@@ -161,8 +162,8 @@ samples = {
 #         "linecolor": ROOT.kBlack,
 #         "fillcolor": ROOT.kPink, # Purple
 #         "isSig"    : False,
-#         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/QCD/"),
-#         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/QCD/skims.root",
+#         "files"    : hdf5inpath(main_path + "QCD/"),
+#         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/QCD/skims.root",
 #         "extraWeights": lambda x: SF(x,18),
 #  },
 
@@ -173,8 +174,8 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/WWTo2L2Nu/"),
-         "WW"       : "/eos/cms/store/user/cericeci/SUEPS/UL18/WWTo2L2Nu/skims.root",
+         "files"    : hdf5inpath(main_path + "WWTo2L2Nu/"),
+         "WW"       : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WWTo2L2Nu/skims.root",
          "extraWeights": lambda x: SF(x,18),
   },
 #  "WZ2l2q": {
@@ -184,9 +185,9 @@ samples = {
 #         "linecolor": ROOT.kBlack,
 #         "fillcolor": 3, # Green
 #         "isSig"    : False,
-#         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/WZTo2l2Q/"),
+#         "files"    : hdf5inpath(main_path + "WZTo2l2Q/"),
 #         "extraWeights": lambda x: SF(x,18),
-#         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/WZTo2l2Q/skims.root"
+#         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WZTo2l2Q/skims.root"
 #  },
   "WZ3lnu": {
          "name"     : "WZ3lnu", #Here plain text
@@ -195,9 +196,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/WZTo3LNu/"),
+         "files"    : hdf5inpath(main_path + "WZTo3LNu/"),
          "extraWeights": lambda x: SF(x,18),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/WZTo3LNu/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WZTo3LNu/skims.root"
   },
   "ZZ2l2q": {
          "name"     : "ZZ2l2q", #Here plain text
@@ -206,9 +207,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/ZZTo2L2Q/"),
+         "files"    : hdf5inpath(main_path + "ZZTo2L2Q/"),
          "extraWeights": lambda x: SF(x,18),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZZTo2L2Q/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo2L2Q/skims.root"
   },
   "ZZ2l2nu": {
          "name"     : "ZZ2l2nu", #Here plain text
@@ -217,9 +218,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/ZZTo2L2Nu/"),
+         "files"    : hdf5inpath(main_path + "ZZTo2L2Nu/"),
          "extraWeights": lambda x: SF(x,18),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZZTo2L2Nu/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo2L2Nu/skims.root"
   },
 
   "ZZ4l": {
@@ -229,9 +230,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/ZZTo4L/"),
+         "files"    : hdf5inpath(main_path + "ZZTo4L/"),
          "extraWeights": lambda x: SF(x,18),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZZTo4L/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo4L/skims.root"
   },
   "ZG": {
          "name"     : "ZG", #Here plain text
@@ -240,9 +241,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/ZG/"),
+         "files"    : hdf5inpath(main_path + "ZG/"),
          "extraWeights": lambda x: SF(x,18),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/ZG/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZG/skims.root"
   },
   "ttZll": {
          "name"     : "ttZll", #Here plain text
@@ -251,9 +252,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTZToLL/"),
+         "files"    : hdf5inpath(main_path + "TTZToLL/"),
          "extraWeights": lambda x: SF(x,18),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/TTZToLL/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTZToLL/skims.root"
   },
   "ttWlnu": {
          "name"     : "ttWlnu", #Here plain text
@@ -262,9 +263,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTWToLNu/"),
+         "files"    : hdf5inpath(main_path + "TTWToLNu/"),
          "extraWeights": lambda x: SF(x,18),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/TTWToLNu/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTWToLNu/skims.root"
   },
   "ttWqq": {
          "name"     : "ttWqq", #Here plain text
@@ -273,9 +274,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/TTWToQQ/"),
+         "files"    : hdf5inpath(main_path + "TTWToQQ/"),
          "extraWeights": lambda x: SF(x,18),
-         "skim"     : "/eos/cms/store/user/cericeci/SUEPS/UL18/TTWToQQ/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTWToQQ/skims.root"
   },
 
   "SUEP_ZH_generic": {
@@ -285,7 +286,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kBlack,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/SUEP_generic_mS125_mD2_T2/"),
+         "files"    : hdf5inpath(main_path + "SUEP_generic_mS125_mD2_T2/"),
          "extraWeights": lambda x: SF(x,18),
   },
   "SUEP_ZH_generic_new": {
@@ -295,7 +296,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/SUEP_generic_new_mS125_mD2_T2/"),
+         "files"    : hdf5inpath(main_path + "SUEP_generic_new_mS125_mD2_T2/"),
          "extraWeights": lambda x: SF(x,18),
   },
   "SUEP_ZH_leptonic": {
@@ -305,7 +306,7 @@ samples = {
          "linecolor": ROOT.kBlue,
          "fillcolor": ROOT.kBlue,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/SUEP_leptonic_mS125_mD2_T2/"),
+         "files"    : hdf5inpath(main_path + "SUEP_leptonic_mS125_mD2_T2/"),
          "extraWeights": lambda x: SF(x,18),
   },
   "SUEP_ZH_hadronic": {
@@ -315,7 +316,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/cms/store/user/cericeci/SUEPS/hdf5_29_09_2022/SUEP_hadronic_mS125_mD2_T2/"),
+         "files"    : hdf5inpath(main_path + "SUEP_hadronic_mS125_mD2_T2/"),
          "extraWeights": lambda x: SF(x,18),
   },
 }
