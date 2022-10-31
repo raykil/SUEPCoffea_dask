@@ -15,7 +15,7 @@ parser.add_option("--SR", dest="SR", action="store_true", help="If activated, th
 parser.add_option("--submit", dest="submit", action="store_true", help="If activated, do submission of jobs on top of printing the commands")
 parser.add_option("--unblind", dest="unblind", action="store_true", help="Unless you activate this, data won't appear")
 parser.add_option("--plotfile", dest="plotfile", type="string", default="ZH/plots_mZ.py", help="File detailing the plots to do in the plotter")
-parser.add_option("--samplefile", dest="samplefile", type="string", default="ZH/samples_withSF_nocuts.py", help="File detailing the samples to use in the plotter")
+parser.add_option("--samplefile", dest="samplefile", type="string", default="ZH/samples_withSF_SR_UL18.py", help="File detailing the samples to use in the plotter")
 parser.add_option("--systfile", dest="systfile", type="string", default="ZH/systs.py", help="File detailing the uncertainties to use in the datacards")
 parser.add_option("--tag", dest="tag", type="string", default="", help="Add this extra tag to separate the plotting step from others")
 parser.add_option("--var", dest="var", type="string", default="leadclusterspher", help="Make cards based on the shape of this variable")
@@ -37,7 +37,10 @@ if doWhat == "all" or doWhat == "dataframes":
     print("  - On lxplus, monitoring of the jobs can be done with the condor_q command\x1b[0m")
   print("-------------------------------------------")
   analyzer = "ZH_simple"
-  if options.leptonID: analyzer = "ZH_leptonID"
+  if options.leptonID: 
+    analyzer = "ZH_leptonID"
+    if options.plotfile == "ZH/plots_mZ.py": # If default, change to leptonID one
+      options.plotfile = "ZH/plots_leptonID.py" 
   print("[DATAFRAMES] creation step...")
   samples = open(os.getcwd() +  "/data/samples_%s.json"%options.year)
   samplesjson = json.loads(samples.read())

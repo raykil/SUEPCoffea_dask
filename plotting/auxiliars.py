@@ -173,7 +173,7 @@ def SF(x, year):
     #print(w[i], x["nmuons"][i], x["leadlep_pt"][i], x["leadlep_eta"][i], x["subleadlep_pt"][i], x["subleadlep_eta"][i], year)
   return w
 
-
+#### Zpt Corrections, so far unused ####
 Zptfile = ROOT.TFile(SUEP_BASE + "/data/ZptUL18/Zpt_corr.root","READ")
 ZptHist = Zptfile.Get("Zpt_SF")
 maxZx   = ZptHist.GetNbinsX()
@@ -183,3 +183,7 @@ def correctZpt(x):
   sf = ZptHist.GetBinContent(min(max(1, ZptHist.GetXaxis().FindBin(x["Z_pt"])), maxZx), min(max(1, ZptHist.GetYaxis().FindBin(x["Z_eta"])), maxZy))
   return sf
 
+#### Identity ####
+
+def one(x):
+  return np.ones(len(x))
