@@ -2,7 +2,7 @@
   "DYToLL_M50":{
     "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DYToLL_M50/",
     "isData":0,
-    "filter":"DY_nano",
+    "filter":"DY",
     "isDYinclusive":1
   },
   "DYToLL_M50_Pt0To50":{
@@ -107,8 +107,8 @@
     "filter":0,
     "isDYinclusive":0
   },
-  "WZTo2l2Q":{
-    "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/WZTo2l2Q/",
+  "WZTo2L2Q":{
+    "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/WZTo2L2Q/",
     "isData":0,
     "filter":0,
     "isDYinclusive":0
@@ -148,5 +148,23 @@
     "isData":0,
     "filter":0,
     "isDYinclusive":0
+  },
+  "SUEP_generic_new_mS125_mD2_T2":{
+    "path": "/eos/cms/store/group/phys_exotica/SUEPs/signals/UL16APV/ZHleptonicpythia_generic_new_M125_MD2_T2_HT-1_UL16APV_signal/NANOAOD/",
+    "isData":0,
+    "filter": "total",
+    "isDYinclusive": 0
+  },
+  "SUEP_leptonic_mS125_mD2_T2":{
+    "path": "/eos/cms/store/group/phys_exotica/SUEPs/signals/UL16APV/ZHleptonicpythia_leptonic_M125_MD2_T2_HT-1_UL16APV_signal/NANOAOD/",
+    "isData":0,
+    "filter": "total",
+    "isDYinclusive": 0
+  },
+  "SUEP_hadronic_mS125_mD2_T2":{
+    "path": "/eos/cms/store/group/phys_exotica/SUEPs/signals/UL16APV/ZHleptonicpythia_hadronic_M125_MD2_T2_HT-1_UL16APV_signal/NANOAOD/",
+    "isData":0,
+    "filter": "total",
+    "isDYinclusive": 0
   }
 }
