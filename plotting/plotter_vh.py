@@ -183,7 +183,8 @@ class sample(object):
           filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
           self.histos[plotName]["total"].Add(self.histos[plotName][filename])
         self.histos[plotName]["total"].Sumw2() # To get proper stat. unc.
-        if not(self.isData): self.histos[plotName]["total"].Scale(options.luminosity*self.config["xsec"]/self.norms[plotName])
+        if not(self.isData) and (self.norms[plotName] > 0): 
+          self.histos[plotName]["total"].Scale(options.luminosity*self.config["xsec"]/self.norms[plotName])
         self.yields[plotName] = self.histos[plotName]["total"].Integral()
 
   def getRawHistogramsAndNormsOneFile(self, g):
@@ -231,7 +232,8 @@ class sample(object):
           if "extraWeights" in self.config:
             #for ev in range(len(extraweights)): 
             #  print(weightsHere[ev], extraweights[ev])
-            weightsHere = weightsHere*extraweights
+            if not(empty):
+              weightsHere = weightsHere*extraweights
           for idx in range(len(values)):
             if (idx+1)%100000 == 0: print("%i/%i"%(idx, len(values)))
             if "2D" in p["bins"][0]:
