@@ -136,40 +136,48 @@ maxerex[15] = eRECO[15].GetNbinsX()
 maxerey[15] = eRECO[15].GetNbinsY()
 
 
-def getSFMu(pt, eta, year):
+def getSFMu(pt, eta, year, var):
   sf  = muID[year].GetBinContent(min(max(1,muID[year].GetXaxis().FindBin(abs(eta))),maxmidx[year]), min(max(1,muID[year].GetYaxis().FindBin(pt)),maxmidy[year]))
-  #print("SFMuID:", sf, min(max(1,muID[year].GetXaxis().FindBin(abs(eta))),maxmidx[year]), min(max(1,muID[year].GetYaxis().FindBin(pt)),maxmidy[year]))
   sf *= muTrk[year].GetBinContent(min(max(1,muTrk[year].GetXaxis().FindBin(abs(eta))),maxmtx[year]), min(max(1,muTrk[year].GetYaxis().FindBin(pt)),maxmty[year]))
-  #print("SFMuTrk:", sf, min(max(1,muTrk[year].GetXaxis().FindBin(abs(eta))),maxmtx[year]), min(max(1,muTrk[year].GetYaxis().FindBin(pt)),maxmty[year]))
   sf *= muISO[year].GetBinContent(min(max(1,muISO[year].GetXaxis().FindBin(abs(eta))),maxmisox[year]), min(max(1,muISO[year].GetYaxis().FindBin(pt)),maxmisoy[year]))
-  #print("SFMuISO:", sf, min(max(1,muISO[year].GetXaxis().FindBin(abs(eta))),maxmisox[year]), min(max(1,muISO[year].GetYaxis().FindBin(pt)),maxmisoy[year]))
-  return sf
+  unc = 0
+  if var != 0: # Uncertainties added in quadrature
+    unc  = (muID[year].GetBinError(min(max(1,muID[year].GetXaxis().FindBin(abs(eta))),maxmidx[year]), min(max(1,muID[year].GetYaxis().FindBin(pt)),maxmidy[year])))**2
+    unc += (muTrk[year].GetBinError(min(max(1,muTrk[year].GetXaxis().FindBin(abs(eta))),maxmtx[year]), min(max(1,muTrk[year].GetYaxis().FindBin(pt)),maxmty[year])))**2
+    unc += (muISO[year].GetBinError(min(max(1,muISO[year].GetXaxis().FindBin(abs(eta))),maxmisox[year]), min(max(1,muISO[year].GetYaxis().FindBin(pt)),maxmisoy[year])))**2
+    unc = unc**0.5
+  return sf + unc*var
 
-def getSFEl(pt, eta, year):
+def getSFEl(pt, eta, year, var):
   sf  = eID[year].GetBinContent(min(max(1,eID[year].GetXaxis().FindBin(eta)),maxeidx[year]), min(max(1,eID[year].GetYaxis().FindBin(pt)),maxeidy[year]))
-  #print("SFElID:", sf, min(max(1,eID[year].GetXaxis().FindBin(eta)),maxeidx[year]), min(max(1,eID[year].GetYaxis().FindBin(pt)),maxeidy[year]))
   sf *= eRECO[year].GetBinContent(min(max(1,eRECO[year].GetXaxis().FindBin(eta)),maxerex[year]), min(max(1,eRECO[year].GetYaxis().FindBin(pt)),maxerey[year]))
-  #print("SFElReco:", sf, min(max(1,eRECO[year].GetXaxis().FindBin(eta)),maxerex[year]), min(max(1,eRECO[year].GetYaxis().FindBin(pt)),maxerey[year]))
-  return sf
+  unc = 0
+  if var != 0: # Uncertainties added in quadrature
+    unc  = (eID[year].GetBinError(min(max(1,eID[year].GetXaxis().FindBin(eta)),maxeidx[year]), min(max(1,eID[year].GetYaxis().FindBin(pt)),maxeidy[year])))**2
+    unc += (eRECO[year].GetBinContent(min(max(1,eRECO[year].GetXaxis().FindBin(eta)),maxerex[year]), min(max(1,eRECO[year].GetYaxis().FindBin(pt)),maxerey[year])))**2
+    unc = unc**0.5
+  return sf + unc*var
 
-def getSF2Mu(lep1pt, lep1eta, lep2pt, lep2eta, year):
-  return getSFMu(lep1pt, lep1eta, year)*getSFMu(lep2pt, lep2eta, year)
+def getSF2Mu(lep1pt, lep1eta, lep2pt, lep2eta, year, var):
+  return getSFMu(lep1pt, lep1eta, year, var)*getSFMu(lep2pt, lep2eta, year, var)
 
-def getSF2El(lep1pt, lep1eta, lep2pt, lep2eta, year):
-  return getSFEl(lep1pt, lep1eta, year)*getSFEl(lep2pt, lep2eta, year)
+def getSF2El(lep1pt, lep1eta, lep2pt, lep2eta, year, var):
+  return getSFEl(lep1pt, lep1eta, year, var)*getSFEl(lep2pt, lep2eta, year, var)
 
 
-def getSF(nmu, lep1pt, lep1eta, lep2pt, lep2eta, year):
+def getSF(nmu, lep1pt, lep1eta, lep2pt, lep2eta, year, var=0):
   if nmu == 2:
-    sf = getSF2Mu(lep1pt, lep1eta, lep2pt, lep2eta, year)
+    var = 0 if abs(var) >= 2 else var
+    sf = getSF2Mu(lep1pt, lep1eta, lep2pt, lep2eta, year, var)
   else:
-    sf = getSF2El(lep1pt, lep1eta, lep2pt, lep2eta, year)
+    var = var/2 if abs(var) >= 2 else 0
+    sf = getSF2El(lep1pt, lep1eta, lep2pt, lep2eta, year, var)
   return sf
 
-def SF(x, year):
+def SF(x, year, var=0): # Var encodes the uncertainty-varied SF (+-1 for varying muons, +-2 for varying electrons)
   w = np.array([])
   for i in range(len(x)):
-    w = np.append(w, getSF(x["nmuons"][i], x["leadlep_pt"][i], x["leadlep_eta"][i], x["subleadlep_pt"][i], x["subleadlep_eta"][i], year))
+    w = np.append(w, getSF(x["nmuons"][i], x["leadlep_pt"][i], x["leadlep_eta"][i], x["subleadlep_pt"][i], x["subleadlep_eta"][i], year, var))
     #print(w[i], x["nmuons"][i], x["leadlep_pt"][i], x["leadlep_eta"][i], x["subleadlep_pt"][i], x["subleadlep_eta"][i], year)
   return w
 
