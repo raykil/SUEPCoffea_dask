@@ -1,4 +1,10 @@
 {
+  "data":{
+    "path":["/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/DoubleEG_F/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/DoubleEG_G/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/DoubleEG_H/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/DoubleMuon_F/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/DoubleMuon_G/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/DoubleMuon_H/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/SingleElectron_F/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/SingleElectron_G/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/SingleElectron_H/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/SingleMuon_F/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/SingleMuon_G/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/SingleMuon_H/"],
+    "isData":1,
+    "filter":0,
+    "isDYinclusive":0
+  },
   "DYToLL_M50":{
     "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL16/skim_2l_20_10/DYToLL_M50/",
     "isData":0,

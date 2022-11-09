@@ -1,4 +1,10 @@
 {
+  "data":{
+    "path":["/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleEG_B/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleEG_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleEG_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleEG_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleEG_F/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleMuon_B/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleMuon_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleMuon_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleMuon_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DoubleMuon_F/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleMuon_B/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleMuon_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleMuon_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleMuon_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleMuon_F/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleElectron_B/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleElectron_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleElectron_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleElectron_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/SingleElectron_F/"],
+    "isData":1,
+    "filter":0,
+    "isDYinclusive":0
+  },
   "DYToLL_M50":{
     "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DYToLL_M50/",
     "isData":0,
