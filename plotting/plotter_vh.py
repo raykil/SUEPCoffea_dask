@@ -18,6 +18,7 @@ ROOT.gROOT.SetBatch(True)
 class sample(object):
   def __init__(self, sampledict, options):
     self.config  = sampledict
+    if not("year" in self.config): self.config["year"] = "" # Safety replace 
     self.name    = sampledict["name"]
     self.hdfiles = []
     self.safefiles=[]
@@ -41,14 +42,14 @@ class sample(object):
       try:
         filename = f.split("/")[-1].replace("out_","").replace(".hdf5","")
         if options.toSave: 
-          fullfilename = options.toSave + "/" + self.name + "_" + filename + ".root"
+          fullfilename = options.toSave.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
         if options.toLoad:
-          fullfilename = options.toLoad + "/" + self.name + "_" + filename + ".root"
+          fullfilename = options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
 
         if options.resubmit:
           if os.path.isfile(fullfilename):
             if os.path.getsize(fullfilename) > 100: #I.e., non corrupted
-              print("Corrupted!")
+              print("Exists!")
               continue    
         if not(options.toLoad and (("skim" in self.config) or (self.isData)) and os.path.isfile(fullfilename)):
           a = pd.HDFStore(f, "r")
@@ -88,9 +89,9 @@ class sample(object):
       try:
         filename = f.split("/")[-1].replace("out_","").replace(".hdf5","")
         if options.toSave:
-          fullfilename = options.toSave + "/" + self.name + "_" + filename + ".root"
+          fullfilename = options.toSave.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
         if options.toLoad:
-          fullfilename = options.toLoad + "/" + self.name + "_" + filename + ".root"
+          fullfilename = options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
 
         if options.resubmit:
           if os.path.isfile(fullfilename):
@@ -110,9 +111,6 @@ class sample(object):
     norm = 0
     for f in self.safefiles:
        run, luminosityBlock, event= f.split("/")[-1].replace("out_","").replace(".hdf5","").split("_")
-       
-       print("Runs_"+str(event)+ "_" + str(luminosityBlock) + "_" + str(run))
-       print(self.config["skim"])
        tt = rf.Get("Runs_"+str(event)+ "_" + str(luminosityBlock) + "_" + str(run))
        for ev in tt:
          out[f] = ev.genEventSumw
@@ -181,10 +179,11 @@ class sample(object):
           if options.toLoad and not("skim" in self.config) and not(self.isData): # If loading and unskimmed, need to set the norm here
             self.norms[plotName] += self.nnorms[self.safefiles[iff]]
           filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
+          #print(filename, plotName)
           self.histos[plotName]["total"].Add(self.histos[plotName][filename])
         self.histos[plotName]["total"].Sumw2() # To get proper stat. unc.
         if not(self.isData) and (self.norms[plotName] > 0): 
-          self.histos[plotName]["total"].Scale(options.luminosity*self.config["xsec"]/self.norms[plotName])
+          self.histos[plotName]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
         self.yields[plotName] = self.histos[plotName]["total"].Integral()
 
   def getRawHistogramsAndNormsOneFile(self, g):
@@ -192,11 +191,12 @@ class sample(object):
     filename = safefile.split("/")[-1].replace("out_","").replace(".hdf5","")
     if not(options.toLoad):  
       if options.toSave:
-        rf = ROOT.TFile(options.toSave + "/" + self.name + "_" + filename + ".root", "RECREATE")
+        rf = ROOT.TFile(options.toSave.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root", "RECREATE")
 
       for plotName in self.plots:
         self.histos[plotName][filename]  = self.histos[plotName]["total"].Clone(self.histos[plotName]["total"].GetName() + "_" + filename)
       for c in self.channels:
+        #print(safefile)
         empty = True if type(f[c]) == type([]) else False # Check if there are events there
         if empty: print("Is empty!", c)
         if not(self.isData):
@@ -215,7 +215,7 @@ class sample(object):
           else:
             extraweights = self.config["extraWeights"](f[c])
         for plotName in self.plotsinchannel[c]:
-          print("...%s"%plotName)
+          #print("...%s"%plotName)
           p = self.plots[plotName]
           if not("skim" in self.config) and not(self.isData):
             self.norms[plotName] += self.nnorms[safefile]
@@ -246,10 +246,10 @@ class sample(object):
             self.histos[p["name"]][filename].Write()
       if options.toSave: rf.Close() 
     else:
-      rf = ROOT.TFile(options.toLoad + "/" + self.name + "_" + filename + ".root", "READ")
-      print(options.toLoad + "/" + self.name + "_" + filename + ".root")
+      rf = ROOT.TFile(options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root", "READ")
+      #print(options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root")
       for plotName in self.plots:
-        print(self.histos[plotName]["total"].GetName() + "_" + filename)
+        #print(self.histos[plotName]["total"].GetName() + "_" + filename)
         self.histos[plotName][filename] = copy.copy(rf.Get(self.histos[plotName]["total"].GetName() + "_" + filename))
  
   def setStyleOptions(self):
@@ -615,6 +615,7 @@ if __name__ == "__main__":
   plotsFile   = imp.load_source("plots",  args[1])
   if not(os.path.isdir(options.plotdir)):
     os.system("mkdir %s"%options.plotdir)
+  os.system("cp index.php %s"%options.plotdir)
   if options.toSave and not(os.path.isdir(options.toSave)):
     os.system("mkdir %s"%options.toSave)
   os.system("cp %s %s %s"%(args[0], args[1], options.plotdir))
@@ -625,6 +626,7 @@ if __name__ == "__main__":
       samples[s]["files"] = [samples[s]["files"][0]]
   plots   = plotsFile.plots
   if options.sample:
+    print(samples.keys())
     newsamples = {}
     newsamples[options.sample] = samples[options.sample]
     samples = newsamples
