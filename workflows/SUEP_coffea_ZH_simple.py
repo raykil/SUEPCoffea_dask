@@ -12,9 +12,12 @@ import awkward as ak
 import pandas as pd
 import numpy as np
 import fastjet
-from coffea import hist, processor
+from coffea import hist, processor, lookup_tools
+import pickle
 import vector
 from typing import List, Optional
+import correctionlib
+
 vector.register_awkward()
 
 class SUEP_cluster(processor.ProcessorABC):
@@ -180,7 +183,7 @@ class SUEP_cluster(processor.ProcessorABC):
         ### Apply MET filter selection (see https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2)
         if self.era == 2018 or self.era == 2017:
            cutAnyFilter = (events.Flag.goodVertices) | (events.Flag.globalSuperTightHalo2016Filter) | (events.Flag.HBHENoiseFilter) | (events.Flag.HBHENoiseIsoFilter) | (events.Flag.EcalDeadCellTriggerPrimitiveFilter) | (events.Flag.BadPFMuonFilter) | (events.Flag.BadPFMuonDzFilter) | (events.Flag.eeBadScFilter) | (events.Flag.ecalBadCalibFilter)
-        if self.era == 2016:
+        if self.era == 2016 or self.era == 2015: # 2015==2016APV
            cutAnyFilter = (events.Flag.goodVertices) | (events.Flag.globalSuperTightHalo2016Filter) | (events.Flag.HBHENoiseFilter) | (events.Flag.HBHENoiseIsoFilter) | (events.Flag.EcalDeadCellTriggerPrimitiveFilter) | (events.Flag.BadPFMuonFilter) | (events.Flag.BadPFMuonDzFilter) | (events.Flag.eeBadScFilter)
         return events[cutAnyFilter]
 
@@ -193,7 +196,7 @@ class SUEP_cluster(processor.ProcessorABC):
         if self.era == 2017:
            cutAnyHLT = (events.HLT.IsoMu27) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8) | (events.HLT.Ele35_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL) #| (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
            return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
-        if self.era == 2016:
+        if self.era == 2016 or self.era == 2015: # 2015==2016APV
            cutAnyHLT = (events.HLT.IsoMu24) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ) | (events.HLT.Ele27_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ) #| (events.HLT.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) | (events.HLT.Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ)
            return events[cutAnyHLT], [coll[cutAnyHLT] for coll in extraColls]
         return events, [coll[cutAnyHLT] for coll in extraColls]
@@ -260,14 +263,27 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def selectByJets(self, events, leptons = [],  extraColls = []):
         # These are just standard jets, as available in the nanoAOD
-        Jets = ak.zip({
-            "pt": events.Jet.pt,
-            "eta": events.Jet.eta,
-            "phi": events.Jet.phi,
-            "mass": events.Jet.mass,
-            "btag": events.Jet.btagDeepFlavB,
-            "jetId": events.Jet.jetId
-        }, with_name="Momentum4D")
+        if self.isMC:
+            Jets = ak.zip({
+              "pt": events.Jet.pt,
+              "eta": events.Jet.eta,
+              "phi": events.Jet.phi,
+              "mass": events.Jet.mass,
+              "btag": events.Jet.btagDeepFlavB,
+              "jetId": events.Jet.jetId,
+              "hadronFlavour": events.Jet.hadronFlavour
+            }, with_name="Momentum4D")
+
+        else:
+            Jets = ak.zip({
+              "pt": events.Jet.pt,
+              "eta": events.Jet.eta,
+              "phi": events.Jet.phi,
+              "mass": events.Jet.mass,
+              "btag": events.Jet.btagDeepFlavB,
+              "jetId": events.Jet.jetId
+            }, with_name="Momentum4D")
+ 
         # Minimimum pT, eta requirements + jet-lepton recleaning
         jetCut = (Jets.pt > 30) & (abs(Jets.eta)<2.5) & (Jets.deltaR(leptons[:,0])>= 0.4) & (Jets.deltaR(leptons[:,1])>= 0.4) & (Jets.jetId >= 6)
         jets = Jets[jetCut]
@@ -321,12 +337,24 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def clusterizeTracks(self, events, tracks):
         # anti-kt, dR=1.5 jets
-        jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)        
-        cluster = fastjet.ClusterSequence(tracks, jetdef)
-        ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
-        ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
-
-        return events, ak15_jets, ak15_consts
+        smallEvents = len(events) < 5000
+        if not smallEvents:
+          jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)        
+          cluster = fastjet.ClusterSequence(tracks, jetdef)
+          ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
+          ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
+          return events, ak15_jets, ak15_consts
+        else: #With few events/file the thing crashes because of FastJet so we are going to create "fake" events
+          ncopies     = round(5000/(len(events)))
+          oldtracks   = tracks
+          for i in range(ncopies):
+            tracks = ak.concatenate([tracks, oldtracks], axis=0) # I.e. duplicate our events until we are feeding 1000 events to the clusterizer
+          jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)
+          cluster = fastjet.ClusterSequence(tracks, jetdef)
+          ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
+          ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
+          # But now we have to delete the repeated set of events
+          return events, ak15_jets[:len(oldtracks)], ak15_consts[:len(oldtracks)]
 
     def striptizeTracks(self, events, tracks, etaWidth=0.75):
         etaCenters = np.linspace(-2.5, 2.5, 50) # Scan 50 eta values
@@ -398,9 +426,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
 
     def process(self, events):
-        #print(events.event[0], events.luminosityBlock[0], events.run[0])
-        # 255955082 94729 1
-        #if not(events.event[0]==255955082 and events.luminosityBlock[0]==94729 and events.run[0]==1): return self.accumulator.identity()
+        np.random.seed(max(0,min(events.event[0], 2**31))) # This ensures reproducibility of results (i.e. for the random track dropping), while also getting different random numbers per file to avoid biases (like always dropping the first track, etc.
         debug    = True  # If we want some prints in the middle
         self.chunkTag = "out_%i_%i_%i.hdf5"%(events.event[0], events.luminosityBlock[0], events.run[0]) #Unique tag to get different outputs per tag
         fullFile = self.output_location + "/" + self.chunkTag
@@ -410,11 +436,10 @@ class SUEP_cluster(processor.ProcessorABC):
             return self.accumulator.identity()
 
         self.doTracks   = True  # Make it false, and it will speed things up but not run the tracks
-        self.doClusters = True
-        self.doGen      = False if not(self.isDY) else True # In case we want info on the gen level 
+        self.doClusters = True  # Make it false, and it will speed things up but not run the clusters
+        self.doGen      = False if not(self.isDY) else True # In case we want info on the gen level, we do need it for the buggy DY samples (to get proper stitching)
+
         # Main processor code
-
-
         # ------------------------------------------------------------------------------------
         # ------------------------------- DEFINE OUTPUTS -------------------------------------
         # ------------------------------------------------------------------------------------
@@ -474,11 +499,6 @@ class SUEP_cluster(processor.ProcessorABC):
                 highpt_clusters = ak.argsort(self.clusters.pt, axis=1, ascending=False, stable=True)
                 self.clusters   = self.clusters[highpt_clusters]
                 self.constituents = self.constituents[highpt_clusters]
-                """self.etaWidths = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-                self.strips = {}
-                self.sconstituents = {}
-                for etaw in self.etaWidths:
-                  self.events, self.strips[etaw], self.sconstituents[etaw] = self.striptizeTracks(self.events, self.tracks, etaw)[:3]"""
 
         if self.doGen:
             print("Do gen!")
@@ -490,48 +510,82 @@ class SUEP_cluster(processor.ProcessorABC):
         ##### Finally, build additional composite objects
         # First the Z candidates
         self.Zcands = self.leptons[:,0] + self.leptons[:,1]
-        
+       
+        if self.isMC:
+            self.btagweights = self.doBTagWeights(self.events, self.jets, "L") # Does not change selection 
+        # ------------------------------------------------------------------------------
+        # ------------------------------- UNCERTAINTIES --------------------------------
+        # ------------------------------------------------------------------------------
+        self.jetsVar   = {"": self.jets} # If not activated, always central jet collection
+        self.tracksVar = {"": self.tracks} # If not activated, always central jet collection
+
+        self.varsToDo = [""]           # If not activated just do nominal yields
+        if self.do_syst:
+          self.puweights   = self.doPUWeights(self.events)                                   # Does not change selection
+          self.l1preweights= self.doPrefireWeights(self.events) 
+          self.isrweights  = self.doISRWeights(self.events)                                  # Does not change selection
+          self.jetsVar     = self.doJECJERVariations(self.events, self.jets)                 # Does change selection, entry "" is central jets, entry "JECX" is JECUp/JECDown, entry "JERX" is JERUp/JerDown
+          if self.doTracks: self.tracksVar = self.doTracksDropping(self.events, self.tracks) # Does change selection, entry "" is central, "TRACKUP" is tracks modified
+          for channel in outputs:
+            outputs[channel + "_JECUP"]   = outputs[channel]
+            outputs[channel + "_JECDOWN"] = outputs[channel]
+            outputs[channel + "_JERUP"]   = outputs[channel]
+            outputs[channel + "_JERDOWN"] = outputs[channel]
+            outputs[channel + "_TRACKUP"] = outputs[channel]
+          self.varsToDo = ["", "_JECUP", "_JECDOWN", "_JERUP", "_JERDOWN", "_TRACKUP"]
+
         # ------------------------------------------------------------------------------
         # ------------------------------- SELECTION + PLOTTING -------------------------
         # ------------------------------------------------------------------------------
-        self.isSpherable   = False # So we don't do sphericity plots until we have clusters
-        self.isClusterable = False # So we don't try to compute sphericity if clusters are empty
-        outputs["twoleptons"] = [self.doAllPlots("twoleptons", debug), self.events]
-        if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-        if debug: print("%i events pass twoleptons cuts. Doing more stuff..."%len(self.events))
+        self.var = "" # To keep track of the systematic variation: "" == nominal
+        if len(self.varsToDo) > 1:
+            self.saveAllCollections()
+        for var in self.varsToDo:
+            self.var = var
+            # Reset collections for syst variation
+            if var != "": 
+                self.resetAllCollections()
+                if var in self.jetsVar:
+                  self.jets   = self.jetsVar[var]
+                if var in self.tracksVar:
+                  self.tracks = self.tracksVar[var]
 
-        if self.doTracks:
-            cutOneTrack = (ak.num(self.tracks) != 0)
-            self.applyCutToAllCollections(cutOneTrack)
-            self.isSpherable = True # So we do sphericity plots
+            self.isSpherable   = False # So we don't do sphericity plots until we have clusters
+            self.isClusterable = False # So we don't try to compute sphericity if clusters are empty
+            outputs["twoleptons"+var] = [self.doAllPlots("twoleptons"+var, debug), self.events]
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-            if debug: print("%i events pass onetrack cuts. Doing more stuff..."%len(self.events))
-          
-            if self.doClusters:
-                cutOneCluster = (ak.num(self.clusters) != 0)
-                self.applyCutToAllCollections(cutOneCluster)
-                self.isClusterable = True # So we do cluster plots
-                outputs["onecluster"] = [self.doAllPlots("onecluster", debug), self.events]
-                if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-                if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))        
+            if debug: print("%i events pass twoleptons cuts. Doing more stuff..."%len(self.events))
 
-                cutZm  = (abs(self.Zcands.mass - 90) < 30)
-                self.applyCutToAllCollections(cutZm)
+            if self.doTracks:
+                cutOneTrack = (ak.num(self.tracks) != 0)
+                self.applyCutToAllCollections(cutOneTrack)
+                self.isSpherable = True # So we do sphericity plots
                 if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-                if debug: print("%i events pass Zm cuts. Doing more stuff..."%len(self.events))
-                cutZpt = (self.Zcands.pt > 25)
-                self.applyCutToAllCollections(cutZpt)
-                if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-                if debug: print("%i events pass Zpt cuts. Doing more stuff..."%len(self.events))
-                cut0tag =  (ak.sum((self.jets.btag >= 0.0490), axis=1) == 0)
-                self.applyCutToAllCollections(cut0tag)
-                if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-                if debug: print("%i events pass 1tag cuts. Doing more stuff..."%len(self.events))
-                cutclusterpt60 = (self.clusters.pt[:,0] >= 60)
-                self.applyCutToAllCollections(cutclusterpt60)
-                if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-                if debug: print("%i events pass clusterpt cuts. Doing more stuff..."%len(self.events))
-                outputs["SR"] = [self.doAllPlots("SR", debug), self.events]
+                if debug: print("%i events pass onetrack cuts. Doing more stuff..."%len(self.events))
+                if self.doClusters:
+                    cutOneCluster = (ak.num(self.clusters) != 0)
+                    self.applyCutToAllCollections(cutOneCluster)
+                    self.isClusterable = True # So we do cluster plots
+                    outputs["onecluster"+var] = [self.doAllPlots("onecluster"+var, debug), self.events]
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))
+                    cutZm  = (abs(self.Zcands.mass - 90) < 30)
+                    self.applyCutToAllCollections(cutZm)
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if debug: print("%i events pass Zm cuts. Doing more stuff..."%len(self.events))
+                    cutZpt = (self.Zcands.pt > 25)
+                    self.applyCutToAllCollections(cutZpt)
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if debug: print("%i events pass Zpt cuts. Doing more stuff..."%len(self.events))
+                    cut0tag =  (ak.sum(self.jets.btag >= self.btagcuts("Loose", self.era), axis=1) == 0)
+                    self.applyCutToAllCollections(cut0tag)
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if debug: print("%i events pass 1tag cuts. Doing more stuff..."%len(self.events))
+                    cutclusterpt60 = (self.clusters.pt[:,0] >= 60)
+                    self.applyCutToAllCollections(cutclusterpt60)
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if debug: print("%i events pass clusterpt cuts. Doing more stuff..."%len(self.events))
+                    outputs["SR"+var] = [self.doAllPlots("SR"+var, debug), self.events]
 
         # ------------------------------------------------------------------------------
         # -------------------------------- SAVING --------------------------------------
@@ -567,14 +621,15 @@ class SUEP_cluster(processor.ProcessorABC):
         self.leptons   = self.leptons[cut]
         self.jets      = self.jets[cut]
         self.Zcands    = self.Zcands[cut]
+        if self.isMC:
+            for k in self.btagweights:
+                self.btagweights[k]  = self.btagweights[k][cut]
+
         if self.doTracks:
             self.tracks  = self.tracks[cut]
             if self.doClusters:
                 self.clusters     = self.clusters[cut]
                 self.constituents = self.constituents[cut]
-                """for etaw in self.etaWidths:
-                  self.strips[etaw]        = self.strips[etaw][cut]
-                  self.sconstituents[etaw] = self.sconstituents[etaw][cut]"""
 
         if self.doGen:
             if self.isDY:
@@ -583,6 +638,189 @@ class SUEP_cluster(processor.ProcessorABC):
                 self.genZ    = self.genZ[cut]
                 self.genH    = self.genH[cut]
                 self.genSUEP = self.genSUEP[cut]
+        if self.do_syst and self.var == "":
+            self.puweights    = self.puweights[cut]
+            self.l1preweights = self.l1preweights[cut]
+            self.isrweights   = self.isrweights[cut]
+
+    def saveAllCollections(self): # Save collections before cutting, to reset when dealing with systematics
+        self.safeevents    = self.events
+        self.safeelectrons = self.electrons
+        self.safemuons     = self.muons
+        self.safeleptons   = self.leptons
+        self.safejets      = self.jets
+        self.safeZcands    = self.ZCands
+        if self.doTracks:
+            self.safetracks  = self.tracks
+            if self.doClusters:
+                self.safeclusters     = self.clusters
+                self.safeconstituents = self.constituents
+
+        if self.doGen:
+            if self.isDY:
+                self.safeZpt = self.Zpt
+            else:
+                self.safegenZ    = self.genZ
+                self.safegenH    = self.genH
+                self.safegenSUEP = self.genSUEP
+        
+    def resetAllCollections(self): # Reset collections to before cutting, useful when dealing with systematics
+        self.events    = self.safeevents
+        self.electrons = self.safeelectrons
+        self.muons     = self.safemuons
+        self.leptons   = self.safeleptons
+        self.jets      = self.safejets
+        self.Zcands    = self.safeZCands
+        if self.doTracks:
+            self.tracks  = self.safetracks
+            if self.doClusters:
+                self.clusters     = self.safeclusters
+                self.constituents = self.safeconstituents
+
+        if self.doGen:
+            if self.isDY:
+                self.Zpt = self.safeZpt
+            else:
+                self.genZ    = self.safegenZ
+                self.genH    = self.safegenH
+                self.genSUEP = self.safegenSUEP
+
+    def btagcuts(self, WP, era):
+        if era == 2015: #2016APV
+          if WP == "Loose":  return 0.0480
+          if WP == "Medium": return 0.2489
+          if WP == "Tight":  return 0.6377
+        if era == 2016:
+          if WP == "Loose":  return 0.0508
+          if WP == "Medium": return 0.2598
+          if WP == "Tight":  return 0.6502
+        if era == 2017: 
+          if WP == "Loose":  return 0.0532
+          if WP == "Medium": return 0.3040
+          if WP == "Tight":  return 0.7476
+        if era == 2018: 
+          if WP == "Loose":  return 0.0490
+          if WP == "Medium": return 0.2783
+          if WP == "Tight":  return 0.7100
+        
+
+    def doISRWeights(self, events):
+        out = {}
+        out["PSWeight_ISRUP"]   = events.PSWeight[:,0]
+        out["PSWeight_FSRUP"]   = events.PSWeight[:,1]
+        out["PSWeight_ISRDOWN"] = events.PSWeight[:,2]
+        out["PSWeight_FSRDOWN"] = events.PSWeight[:,3]
+        return out
+
+    def doPrefireWeights(self, events):
+        out = {}  
+        if self.era == 2016 or self.era == 2017 or self.era == 2015: # 2015 == 2016APV
+           out["L1prefire_nom"]  = events.L1PreFiringWeight_Nom
+           out["L1prefire_up"]   = events.L1PreFiringWeight_Up
+           out["L1prefire_down"] = events.L1PreFiringWeight_Dn
+        else:
+           out["L1prefire_nom"]  = 1.0
+           out["L1prefire_up"]   = 1.0
+           out["L1prefire_down"] = 1.0
+        return out
+
+    def doPUWeights(self, events):
+        if self.era == 2016 or self.era == 2015:
+            weightsNom = [0.26018077, 0.36628044, 0.88641703, 0.8539137, 0.9363881, 0.79212093, 0.7889529, 0.7477801, 0.70349234, 0.6906215, 0.7222935, 0.7636166, 0.80246115, 0.8335345, 0.86026233, 0.8914726, 0.92116714, 0.9473544, 0.96650285, 0.97886634, 0.98783386, 0.99871737, 1.013512, 1.0294081, 1.0416297, 1.0514929, 1.0588624, 1.0660558, 1.0753927, 1.0872909, 1.099803, 1.1150165, 1.1363182, 1.1628817, 1.1909355, 1.2174218, 1.2473173, 1.2743632, 1.3033608, 1.3298254, 1.3512429, 1.3726808, 1.4003977, 1.4352003, 1.4816226, 1.4986303, 1.5163825, 1.5327102, 1.4839698, 1.3851563, 1.2323056, 1.078277, 0.87726563, 0.7286223, 0.57999974, 0.41314062, 0.33262798, 0.22232734, 0.21020901, 0.17870684, 0.14504391, 0.13231093, 0.14085712, 0.12380952, 0.073247686, 0.05144765, 0.08378049, 0.061047662, 0.042274423, 0.1293808, 0.20961441, 0.020201342, 0.02054449, 0.12478866, 0.0447785, 0.0037996888, 0.024160748, 0.008747019, 1.0, 0.0015699057, 0.00015667515, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+            weightsUp = [0.22796525, 0.3130057, 0.8050016, 0.7574693, 0.81391674, 0.6178775, 0.5898711, 0.578412, 0.54505455, 0.5216448, 0.54068935, 0.5790399, 0.62146866, 0.6597525, 0.6952342, 0.7410549, 0.7937431, 0.8439945, 0.8842998, 0.91400003, 0.93553334, 0.9558551, 0.98172486, 1.0135264, 1.0456519, 1.0769331, 1.105947, 1.1351252, 1.1674252, 1.2039505, 1.2433747, 1.2893019, 1.3474729, 1.4191604, 1.5020808, 1.594486, 1.7053531, 1.8293147, 1.9766083, 2.144738, 2.3333235, 2.554826, 2.8267605, 3.1591506, 3.5723693, 3.9708588, 4.42342, 4.922977, 5.2384787, 5.3511305, 5.17285, 4.866292, 4.194612, 3.6213768, 2.9274712, 2.0628958, 1.6006144, 1.0088502, 0.88807166, 0.7020976, 0.5351205, 0.46630746, 0.48375195, 0.42228788, 0.25211716, 0.1809277, 0.30376983, 0.22966583, 0.16573903, 0.5301713, 0.8995535, 0.09091304, 0.09704618, 0.6191172, 0.23344412, 0.020822363, 0.13921489, 0.053007763, 1.0, 0.010531503, 0.0011062882, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+            weightsDn = [0.29942793, 0.44098234, 0.97288865, 0.96896553, 1.1037534, 1.055607, 1.0567397, 0.9758199, 0.9264562, 0.9344218, 0.97321296, 1.0085037, 1.0343684, 1.0503454, 1.0548458, 1.0524924, 1.0470169, 1.0442938, 1.0408691, 1.0372617, 1.0345886, 1.032288, 1.0288227, 1.0228273, 1.0125073, 1.0004466, 0.9864025, 0.97216034, 0.9593289, 0.94749963, 0.933951, 0.9194741, 0.90587735, 0.89158195, 0.8730761, 0.84793437, 0.8196417, 0.7841922, 0.7452712, 0.70118177, 0.6522694, 0.6027846, 0.55654156, 0.5142841, 0.47776642, 0.4349034, 0.39703262, 0.36407393, 0.32272804, 0.27954924, 0.2351147, 0.19918405, 0.16142318, 0.1376844, 0.11573233, 0.08875457, 0.07742832, 0.055668335, 0.055628337, 0.048876766, 0.04010227, 0.036289115, 0.037768353, 0.032112747, 0.018243475, 0.012244026, 0.018989949, 0.01315021, 0.008641727, 0.02507445, 0.0384884, 0.0035125734, 0.0033815438, 0.019437198, 0.006598452, 0.000529551, 0.0031836047, 0.0010893325, 1.0, 0.000174414, 1.6427193e-05, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        if self.era == 2017:
+           weightsNom = [0.56062746, 0.7356768, 0.53791887, 1.2182341, 0.80225897, 0.9162976, 1.0035353, 0.925153, 0.6846759, 0.7131643, 0.7505122, 0.81651765, 0.83766913, 0.84635574, 0.84402835, 0.84390676, 0.8666289, 0.8929616, 0.91802394, 0.9357903, 0.9556427, 0.9721437, 0.981183, 0.9832299, 0.9780843, 0.97595227, 0.9765533, 0.98268455, 0.9903925, 0.9981199, 1.0078238, 1.0190171, 1.0302624, 1.0435067, 1.0528812, 1.0608327, 1.067958, 1.0711179, 1.0701725, 1.0608593, 1.0426793, 1.0292999, 1.0110271, 0.9897588, 0.9667128, 0.95965326, 0.9605182, 0.97262126, 0.98598033, 1.0203637, 1.0798059, 1.1309571, 1.1752437, 1.2064251, 1.1893482, 1.175364, 1.1530457, 1.1393427, 1.1491059, 1.1861941, 1.229691, 1.2843318, 1.3475113, 1.4150772, 1.4889932, 1.5639929, 1.7605078, 2.4973722, 3.6048465, 3.5103703, 5.5461583, 16.473486, 30.208288, 159.5513, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+           weightsUp = [0.52825576, 0.6443592, 0.43563217, 1.2328962, 0.681312, 0.8173814, 0.9699813, 0.84744084, 0.5507151, 0.46106908, 0.5342559, 0.5669717, 0.6342342, 0.6532066, 0.64575315, 0.63797486, 0.6526295, 0.68949956, 0.7374308, 0.77661604, 0.8149431, 0.8510646, 0.8780491, 0.8933845, 0.8956852, 0.89616364, 0.9014064, 0.9177949, 0.94078916, 0.9670744, 0.99642795, 1.0270404, 1.0584179, 1.0940686, 1.1266212, 1.1550058, 1.1773461, 1.1900263, 1.1926558, 1.1774322, 1.138953, 1.0896544, 1.0225472, 0.9495554, 0.8836903, 0.84982145, 0.8451007, 0.87502867, 0.9322783, 1.0379951, 1.2038503, 1.3998994, 1.6277765, 1.876774, 2.0781448, 2.2990248, 2.509696, 2.7378345, 3.0210533, 3.3794851, 3.76058, 4.177537, 4.621196, 5.0730963, 5.5325174, 5.9695816, 6.8397713, 9.786043, 14.126716, 13.661171, 21.332146, 62.4961, 113.12327, 591.6532, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+           weightsDn = [0.59782815, 0.807688, 0.7068454, 1.1679783, 0.93490654, 1.0152472, 1.047385, 1.0350986, 0.9933875, 1.0624125, 1.0984166, 1.1376686, 1.0986158, 1.1164582, 1.126787, 1.137055, 1.1452283, 1.130928, 1.1201867, 1.1079938, 1.0993465, 1.091717, 1.0839876, 1.0777133, 1.0688987, 1.0591336, 1.0446264, 1.0307156, 1.01609, 1.0019246, 0.9908169, 0.9804498, 0.96907, 0.961301, 0.9547044, 0.9521451, 0.95375824, 0.95871556, 0.97194415, 0.9945388, 1.0261062, 1.0728791, 1.1109722, 1.1248587, 1.1034995, 1.0646065, 1.004128, 0.9337611, 0.852428, 0.78408086, 0.7321661, 0.67489123, 0.6182854, 0.5625684, 0.4955873, 0.44199666, 0.39557, 0.3605184, 0.33896416, 0.32952267, 0.3248907, 0.3259218, 0.33180428, 0.34167248, 0.35624802, 0.37438077, 0.42493474, 0.61087203, 0.89509976, 0.8834194, 1.4085646, 4.1966577, 7.666078, 40.053448, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+          
+        if self.era == 2018:
+           weightsNom = [4.7595778, 1.080637, 1.2167456, 0.88091785, 0.76623887, 1.0115454, 1.3231441, 1.3395604, 1.1045256, 0.9123554, 0.82408345, 0.80039644, 0.7907753, 0.8067813, 0.8323937, 0.8564064, 0.8725103, 0.8821015, 0.8946645, 0.91871005, 0.9464174, 0.96640754, 0.9801638, 0.99084246, 0.99259967, 0.9873948, 0.97978294, 0.9812892, 0.9868872, 0.99286324, 0.9982276, 1.0017577, 1.0033858, 1.0051285, 1.0066245, 1.008838, 1.0116601, 1.0160315, 1.0208794, 1.0281874, 1.03718, 1.047111, 1.0584829, 1.0710881, 1.0818367, 1.0950999, 1.1098212, 1.1259873, 1.142475, 1.1547482, 1.1680748, 1.1769618, 1.1830877, 1.1996388, 1.1972251, 1.1950814, 1.1915771, 1.2094747, 1.2186052, 1.2395588, 1.252892, 1.2392353, 1.1711651, 1.0816797, 1.0067116, 0.9124977, 0.86009574, 0.7820993, 0.65758467, 0.63088226, 0.59884727, 0.714113, 0.71516764, 0.5360348, 0.40905133, 0.4283063, 0.44173172, 0.44235674, 1.0353466, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+           weightsUp = [4.4270334, 0.94696635, 1.0174417, 0.75674623, 0.660584, 0.87549543, 1.1313093, 1.132636, 0.92944854, 0.75887454, 0.6724943, 0.643334, 0.6300619, 0.6410678, 0.66177934, 0.6823179, 0.6978642, 0.7102508, 0.72788054, 0.7584186, 0.7958842, 0.83003813, 0.8601236, 0.8863557, 0.9013146, 0.9056365, 0.90373224, 0.9073797, 0.9133702, 0.91952753, 0.9258928, 0.9319249, 0.9378536, 0.94576323, 0.9556233, 0.9688274, 0.9859416, 1.0086592, 1.0367004, 1.072807, 1.1168977, 1.1687762, 1.2295333, 1.2994728, 1.3751776, 1.4623153, 1.559881, 1.6679225, 1.7843952, 1.9008608, 2.0239122, 2.1420274, 2.2552886, 2.387414, 2.4787638, 2.5656967, 2.6453657, 2.7715604, 2.8805547, 3.0244043, 3.161072, 3.2420754, 3.1878612, 3.074373, 2.9981654, 2.8564253, 2.837117, 2.723575, 2.4203987, 2.4557285, 2.4652593, 3.1080935, 3.2893617, 2.604268, 2.0987904, 2.3212414, 2.5304043, 2.6816385, 6.6539707, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+           weightsDn = [5.1427293, 1.252341, 1.460148, 1.0309888, 0.89403486, 1.1795671, 1.5657326, 1.6002822, 1.3279383, 1.1164327, 1.028542, 1.0120672, 1.0054909, 1.0262952, 1.0569706, 1.0835164, 1.096756, 1.0971861, 1.0959034, 1.1031847, 1.1105756, 1.1076767, 1.1002375, 1.0946506, 1.0853548, 1.0738025, 1.0631845, 1.0639712, 1.0690187, 1.0731227, 1.0745729, 1.0717589, 1.0643873, 1.0542315, 1.0403752, 1.023244, 1.0023034, 0.9783363, 0.95047414, 0.9209969, 0.88969696, 0.8565766, 0.8227402, 0.78869885, 0.75298655, 0.719494, 0.6880412, 0.6591464, 0.63260126, 0.60641074, 0.5837689, 0.56197304, 0.5418327, 0.5288385, 0.5093433, 0.49132562, 0.4733166, 0.4634092, 0.44906828, 0.4377016, 0.42218664, 0.3968928, 0.3552229, 0.3097935, 0.2716718, 0.23172171, 0.20541322, 0.1756697, 0.13896713, 0.1255068, 0.112196885, 0.12601438, 0.1188145, 0.083754934, 0.060007818, 0.05885399, 0.05669032, 0.052844524, 0.1147116, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        out = {}
+        out["PUWeight"] = weightsNom[events.Pileup.nTrueInt]
+        out["PUWeightUp"] = weightsUp[events.Pileup.nTrueInt]
+        out["PUWeightDn"] = weightsDn[events.Pileup.nTrueInt]
+        return out
+
+    def doTracksDropping(self, events, tracks):
+        probsLowPt  = {2015: 0.027, 2016: 0.027, 2017: 0.022, 2018: 0.021}
+        probsHighPt = {2015: 0.01, 2016: 0.01, 2017: 0.01, 2018: 0.01} 
+        cutLowPtTracks  = (tracks.pt < 20) & (tracks.pt >= 1)
+        lowPtTracks     = tracks[cutLowPtTracks]
+        cutHighPtTracks = (tracks.pt >= 20) 
+        highPtTracks    = tracks[cutHighPtTracks]
+        # Generate random numbers
+        randomLow   = ak.unflatten(np.random.random(ak.sum(ak.num(lowPtTracks))), ak.num(lowPtTracks))
+        randomHigh  = ak.unflatten(np.random.random(ak.sum(ak.num(highPtTracks))), ak.num(highPtTracks))
+        # Now get the tracks
+        passLowPtTracks  = lowPtTracks[(randomLow > probsLowPt[self.era])]
+        passHighPtTracks = highPtTracks[(randomHigh > probsHighPt[self.era])]
+        # And then broadcast them together again
+        return {"":tracks, "_TRACKUP":ak.concatenate([passLowPtTracks, passHighPtTracks], axis=1)}
+        
+    def doBTagWeights(self, events, jetsPre, wp="L"):
+        jets, njets = ak.flatten(jetsPre), ak.num(jetsPre)
+        hadronFlavourLightAsB = np.where(jets.hadronFlavour == 0, 5, jets.hadronFlavour)
+        hadronFlavourBCAsLight= np.where(jets.hadronFlavour != 0, 0, jets.hadronFlavour)
+        if self.era == 2015:
+            btagfile = "data/BTagUL16APV/btagging.json.gz"	
+        if self.era == 2016:
+            btagfile = "data/BTagUL16/btagging.json.gz"
+        if self.era == 2017:
+            btagfile = "data/BTagUL17/btagging.json.gz"
+        if self.era == 2018:
+            btagfile = "data/BTagUL18/btagging.json.gz"
+        corrector = correctionlib.CorrectionSet.from_file(btagfile)
+        SF = {}
+        SF["central"] = corrector["deepJet_comb"].evaluate("central", wp, hadronFlavourLightAsB, np.abs(jets.eta),jets.pt) # SF per jet, later argument is dummy as will be overwritten next
+        SF["central"] = np.where(abs(jets.hadronFlavour) == 0, corrector["deepJet_incl"].evaluate("central", wp, hadronFlavourBCAsLight, np.abs(jets.eta),jets.pt) ,SF["central"])
+        if self.do_syst:
+            SF["HFcorrelated_Up"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("up_correlated", wp, hadronFlavourLightAsB,np.abs(jets.eta),jets.pt), SF["central"])
+            SF["HFcorrelated_Dn"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("down_correlated", wp, hadronFlavourLightAsB,np.abs(jets.eta),jets.pt), SF["central"]) 
+            SF["HFuncorrelated_Up"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("up_uncorrelated", wp, hadronFlavourLightAsB,np.abs(jets.eta),jets.pt), SF["central"])
+            SF["HFuncorrelated_Dn"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("down_uncorrelated", wp, hadronFlavourLightAsB,np.abs(jets.eta),jets.pt), SF["central"])
+            SF["LFcorrelated_Up"] = np.where(abs(jets.hadronFlavour) == 0, corrector["deepJet_incl"].evaluate("up_correlated", wp, hadronFlavourBCAsLight,np.abs(jets.eta),jets.pt), SF["central"])
+            SF["LFcorrelated_Dn"] = np.where(abs(jets.hadronFlavour) == 0, corrector["deepJet_incl"].evaluate("down_correlated", wp, hadronFlavourBCAsLight,np.abs(jets.eta),jets.pt), SF["central"])
+            SF["LFuncorrelated_Up"] = np.where(abs(jets.hadronFlavour) == 0, corrector["deepJet_incl"].evaluate("up_uncorrelated", wp, hadronFlavourBCAsLight,np.abs(jets.eta),jets.pt), SF["central"])
+            SF["LFuncorrelated_Dn"] = np.where(abs(jets.hadronFlavour) == 0, corrector["deepJet_incl"].evaluate("down_uncorrelated", wp, hadronFlavourBCAsLight,np.abs(jets.eta),jets.pt), SF["central"])
+        effs = self.getBTagEffs(events, jets, wp)
+        wps = {"L": "Loose", "M": "Medium", "T":"Tight"} # For safe conversion
+        weights = {}
+        effs = ak.unflatten(effs, njets)
+        for key in SF:
+            SF[key] = ak.unflatten(SF[key], njets)
+        for syst_var in SF.keys(): # Method (1.a) here: https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods
+           mceff   = ak.prod(np.where(jetsPre.btag >= self.btagcuts(wps[wp], self.era), effs, 1-effs), axis = 1)
+           dataeff = ak.prod(np.where(jetsPre.btag >= self.btagcuts(wps[wp], self.era), SF[syst_var]*effs, 1-SF[syst_var]*effs), axis = 1)
+           weights[syst_var] = dataeff/mceff
+
+        return weights
+
+    def getBTagEffs(self, events, jets, wp="L"):
+        if wp != "L":
+            print("Warning, efficiencies are computed for the Loose WP only!")
+        if self.era == 2015:
+            btagfile = "data/BTagUL16APV/eff.pickle"
+        if self.era == 2016:
+            btagfile = "data/BTagUL16/eff.pickle"
+        if self.era == 2017:
+            btagfile = "data/BTagUL17/eff.pickle"
+        if self.era == 2018:
+            btagfile = "data/BTagUL18/eff.pickle"
+        bfile = open(btagfile, "rb")
+        effsLoad = pickle.load(bfile)
+        effs = effsLoad["L"](jets.pt, np.abs(jets.eta))
+        effs = np.where(abs(jets.hadronFlavour) == 4, effsLoad["C"](jets.pt, np.abs(jets.eta)), effs)
+        effs = np.where(abs(jets.hadronFlavour) == 5, effsLoad["B"](jets.pt, np.abs(jets.eta)), effs)
+        return effs
+
+
+    def doJECJERVariations(self, events, jets):
+        jetsOut = {"":jets, "_JECUP":jets, "_JECDOWN":jets, "_JERUP":jets, "_JERDOWN": jets}
+        return jetsOut
+
 
     def doAllPlots(self, channel, debug=True):
         # ------------------------------------------------------------------------------
@@ -621,65 +859,21 @@ class SUEP_cluster(processor.ProcessorABC):
         out["subleadjet_pt"]  = ak.fill_none(ak.pad_none(self.jets.pt,  2, axis=1, clip=True), 0.)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
         out["subleadjet_eta"] = ak.fill_none(ak.pad_none(self.jets.eta, 2, axis=1, clip=True), -999)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["subleadjet_phi"] = ak.fill_none(ak.pad_none(self.jets.phi, 2, axis=1, clip=True), -999)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
-
         out["trailjet_pt"]    = ak.fill_none(ak.pad_none(self.jets.pt,  3, axis=1, clip=True), 0.)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
         out["trailjet_eta"]   = ak.fill_none(ak.pad_none(self.jets.eta, 3, axis=1, clip=True), -999)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["trailjet_phi"]   = ak.fill_none(ak.pad_none(self.jets.phi, 3, axis=1, clip=True), -999)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["H_T"]            = ak.sum(self.jets.pt, axis=1)[:]
         out["L_T"]            = ak.sum(self.leptons.pt, axis=1)[:]
-        #### ALL JETS PROPERTIES ####
-        ##maxnjets = ak.max(ak.num(self.jets, axis=1)) # We need to know the maximum to do the proper padding
-        ##out["alljets_pt"]      = ak.fill_none(ak.pad_none(self.jets.pt,  maxnjets, axis=1, clip=True), 0.)
-        ##out["alljets_eta"]     = ak.fill_none(ak.pad_none(self.jets.eta,  maxnjets, axis=1, clip=True), -999.)
-        ##out["alljets_phi"]     = ak.fill_none(ak.pad_none(self.jets.phi,  maxnjets, axis=1, clip=True), -999.)
+        out["MET_pt"]         = self.events.MET.pt[:] # Just in case
 
+        # Corrections
+        if self.isMC: out["bTagWeight"]     = self.btagweights["central"][:]
 
         if self.doTracks:
             out["ntracks"]     = ak.num(self.tracks, axis=1)[:]
-            ##maxntracks         = ak.max(ak.num(self.tracks, axis=1))
-            ##out["tracks_pt"]   = ak.fill_none(ak.pad_none(self.tracks.pt,  maxntracks, axis=1, clip=True), 0.)
-            ##out["tracks_eta"]  = ak.fill_none(ak.pad_none(self.tracks.eta,  maxntracks, axis=1, clip=True), -999.)
-            ##out["tracks_phi"]  = ak.fill_none(ak.pad_none(self.tracks.phi,  maxntracks, axis=1, clip=True), -999.)
-
             if self.isSpherable:
-              
-                # Reconstructing by setting pS = -pZ 
-                boost_Zinv = ak.zip({
-                  "px": self.Zcands.px,
-                  "py": self.Zcands.py,
-                  "pz": self.Zcands.pz,
-                  "mass": self.Zcands.mass
-                }, with_name="Momentum4D") 
-
-                # Reconstructing by summing all tracks
-                boost_tracks = ak.zip({
-                  "px": ak.sum(self.tracks.px, axis=1)*-1,
-                  "py": ak.sum(self.tracks.py, axis=1)*-1,
-                  "pz": ak.sum(self.tracks.pz, axis=1)*-1,
-                  "mass": 125 # Assuming it is a Higgs?
-                }, with_name="Momentum4D")
-
-                tracks_boostedagainstZ      = self.tracks.boost_p4(boost_Zinv)
-                tracks_boostedagainsttracks = self.tracks.boost_p4(boost_tracks)
-
-                evalsL = self.sphericity(self.events, self.tracks, 2) # Gives the sphericity in Lab frame
-                evalsZ = self.sphericity(self.events, tracks_boostedagainstZ, 2) #Gives the sphericity in -Z frame (-pZ = pS)
-                evalsT = self.sphericity(self.events, tracks_boostedagainsttracks, 2) #Gives the sphericity in -Z frame (tracks)
-
-                #region: OUTPUT FOR SPHERICITY
-                ### Scalar Sphericity ###
-                out["scalarSpher_L"] = 1.5*(evalsL[:,0] + evalsL[:,1])
-                out["scalarSpher_Z"] = 1.5*(evalsZ[:,0] + evalsZ[:,1])
-                out["scalarSpher_T"] = 1.5*(evalsT[:,0] + evalsT[:,1])
-
-                ### Mean Difference ###
-                out["meanDiff_L"] = np.mean(np.stack([evalsL[:,2]-evalsL[:,1], evalsL[:,2]-evalsL[:,0], evalsL[:,1]-evalsL[:,0]]), axis=0)
-                out["meanDiff_Z"] = np.mean(np.stack([evalsZ[:,2]-evalsZ[:,1], evalsZ[:,2]-evalsZ[:,0], evalsZ[:,1]-evalsZ[:,0]]), axis=0)
-                out["meanDiff_T"] = np.mean(np.stack([evalsT[:,2]-evalsT[:,1], evalsT[:,2]-evalsT[:,0], evalsT[:,1]-evalsT[:,0]]), axis=0)
-
                 if self.doClusters and self.isClusterable:
                     out["nclusters"]           = ak.num(self.clusters, axis=1)[:]
-                    #maxnclusters              = ak.max(ak.num(self.clusters, axis=1))
                     out["leadcluster_pt"]      = self.clusters.pt[:,0]
                     out["leadcluster_eta"]     = self.clusters.eta[:,0]
                     out["leadcluster_phi"]     = self.clusters.phi[:,0]
@@ -691,53 +885,14 @@ class SUEP_cluster(processor.ProcessorABC):
                       "mass": self.clusters[:,0].mass
                     }, with_name="Momentum4D")
 
-
                     leadingclustertracks = self.constituents[:,0]
-                    leadingclustertracks_boostedagainstZ      = leadingclustertracks.boost_p4(boost_Zinv)
-                    leadingclustertracks_boostedagainsttracks = leadingclustertracks.boost_p4(boost_tracks)
                     leadingclustertracks_boostedagainstSUEP   = leadingclustertracks.boost_p4(boost_leading)
 
                     evalsL = self.sphericity(self.events, leadingclustertracks, 2) 
-                    evalsZ = self.sphericity(self.events, leadingclustertracks_boostedagainstZ, 2)
-                    evalsT = self.sphericity(self.events, leadingclustertracks_boostedagainsttracks, 2)
                     evalsC = self.sphericity(self.events, leadingclustertracks_boostedagainstSUEP, 2)
 
                     out["leadclusterSpher_L"] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
-                    out["leadclusterSpher_Z"] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
-                    out["leadclusterSpher_T"] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
                     out["leadclusterSpher_C"] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))
-                    """for etaw in self.etaWidths:
-
-                    out["leadstrip_pt" + "_dEta%1.1f"%etaw ]      = self.strips[etaw].pt[:]
-                    out["leadstrip_eta" + "_dEta%1.1f"%etaw]     = self.strips[etaw].eta[:]
-                    out["leadstrip_phi" + "_dEta%1.1f"%etaw]     = self.strips[etaw].phi[:]
-                    out["leadstrip_ntracks" + "_dEta%1.1f"%etaw] = ak.num(self.sconstituents[etaw], axis = 1)[:]
-
-                    boost_leading = ak.zip({
-                      "px": self.strips[etaw][:].px*-1,
-                      "py": self.strips[etaw][:].py*-1,
-                      "pz": self.strips[etaw][:].pz*-1,
-                      "mass": self.strips[etaw][:].mass
-                    }, with_name="Momentum4D")
-  
-
-                    leadingstriptracks = self.sconstituents[etaw]
-                    leadingstriptracks_boostedagainstZ      = leadingstriptracks.boost_p4(boost_Zinv)
-                    leadingstriptracks_boostedagainsttracks = leadingstriptracks.boost_p4(boost_tracks)
-                    leadingstriptracks_boostedagainstSUEP   = leadingstriptracks.boost_p4(boost_leading)
-
-                    evalsL = self.sphericity(self.events, leadingstriptracks, 2)
-                    evalsZ = self.sphericity(self.events, leadingstriptracks_boostedagainstZ, 2)
-                    evalsT = self.sphericity(self.events, leadingstriptracks_boostedagainsttracks, 2)
-                    evalsC = self.sphericity(self.events, leadingstriptracks_boostedagainstSUEP, 2)
-
-                    out["leadstripSpher_L" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsL[:,0] + evalsL[:,1]))
-                    out["leadstripSpher_Z" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsZ[:,0] + evalsZ[:,1]))
-                    out["leadstripSpher_T" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsT[:,0] + evalsT[:,1]))
-                    out["leadstripSpher_C" + "_dEta%1.1f"%etaw] =  np.real(1.5*(evalsC[:,0] + evalsC[:,1]))"""
-
-
-
 
         if self.doGen:
             if debug: print("Saving gen variables")
