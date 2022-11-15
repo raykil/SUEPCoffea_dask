@@ -15,11 +15,11 @@ import matplotlib.pyplot as plt
 # clusterEfficiency = nSUEPinCluster / nSUEPtracks
 # clusterPurity = nSUEPinCluster / nInCluster
 
-ZH = [pd.HDFStore("../outputSimTracksTest/"+f, 'r') for f in os.listdir("../outputSimTracksTest/")]
+ZH = [pd.HDFStore("../outputSimTracks/"+f, 'r') for f in os.listdir("../outputSimTracks/")]
 output = "/eos/user/j/jkil/www/EfficiencyAndPurity"
 
-bothEff = True
-bothPur = True
+bothEff = False
+bothPur = False
 
 HighPtOnly = False # Make it True to enable high pt cut. Careful! Make sure to disable LowPtOnly
 LowPtOnly = False  # Make it True to enable low pt cut. Careful! Make sure to disable HighPtOnly
@@ -41,7 +41,6 @@ for i in range(len(ZH)):
     Hpz[i] = pd.Series.tolist(genHpz)
 
 Hpt = sum(Hpt,[])
-print(len(Hpt))
 Hpz = sum(Hpz,[])
 
 highHptCut = (np.array(Hpt)[:] > ptCutVal) # Only the ones with high pt survives
@@ -62,13 +61,15 @@ for i in range(len(ZH)):
     nSUEPinCluster = ZH[i]["onecluster"]["nSUEPinCluster"]
 
     clusterEff[i] = pd.Series.tolist(nSUEPinCluster/nSUEPtracks)
+    for eff in clusterEff[i]:
+        if eff>1: print(eff,"this shouldnt happen")
     clusterPur[i] = pd.Series.tolist(nSUEPinCluster/nInCluster)
 
 clusterEff = np.array(sum(clusterEff,[]))
 clusterPur = np.array(sum(clusterPur,[]))
 
-clusterEffCut = (clusterEff[:] <= 1)
-clusterEff = clusterEff[clusterEffCut]
+#clusterEffCut = (clusterEff[:] <= 1)
+#clusterEff = clusterEff[clusterEffCut]
 
 # Applying pt cut
 if HighPtOnly & (LowPtOnly == False):
@@ -88,13 +89,15 @@ elif LowPzOnly & (HighPzOnly == False):
     clusterPur = clusterPur[lowHpzCut]
 elif HighPzOnly & LowPzOnly: print("Make sure you are choosing either high/low pz! Now drawing with no cuts.")
 
+meanClusterEff = np.mean(clusterEff)
+meanClusterPur = np.mean(clusterPur)
+
 
 ###### STRIP VARIABLES ######
 
 #EtaWidths = ["0.1","0.2","0.3","0.4","0.5","0.6","0.7","0.8","0.9","1.0"]
 EtaWidths = ["0.2","0.4","0.8","1.0","1.2","1.4","1.6","1.8","2.0"]
-#EtaWidths = ["1.2","1.4","1.6","1.8","2.0"]
-#EtaWidths = ["0.6","0.7","0.8","0.9","1.0"]
+
 
 for etaWidth in EtaWidths:
     stripEff = [0]*len(ZH)
@@ -109,6 +112,7 @@ for etaWidth in EtaWidths:
         stripPur[i] = pd.Series.tolist(nSUEPinBand/nInBand)
 
     stripEff = sum(stripEff,[])
+    #print(stripEff,"stripEff, why nan?")
     stripPur = sum(stripPur,[])
 
     if HighPtOnly & (LowPtOnly == False):
@@ -127,6 +131,9 @@ for etaWidth in EtaWidths:
         stripPur = stripPur[lowHpzCut]
     elif HighPzOnly & LowPzOnly: print("Make sure you are choosing either high/low pz! Now drawing with no cuts.")
 
+    meanStripEff = np.mean(stripEff)
+    meanStripPur = np.mean(stripPur)
+
     if bothEff:
         plt.figure()
         plt.hist(clusterEff, alpha=0.5, color="tab:blue")
@@ -136,7 +143,8 @@ for etaWidth in EtaWidths:
         #if LowPtOnly:  plt.text(x,y,"Hpt > {}".format(ptCutVal))
         #if HighPzOnly: plt.text(x,y,"Hpt > {}".format(ptCutVal))
         #if LowPzOnly:  plt.text(x,y,"Hpt > {}".format(ptCutVal))
-
+        plt.text(0.6,1000,"meanClusterEff = {0:.3f}".format(meanClusterEff))
+        plt.text(0.6,900,"meanStrip{0}Eff = {1:.3f}".format(etaWidth,meanStripEff))
         plt.xlabel("Efficiency")
         plt.ylabel("Counts")
         plt.legend(["cluster Efficiency", "Strip{} Efficiency".format(etaWidth)])
@@ -147,6 +155,8 @@ for etaWidth in EtaWidths:
         plt.hist(clusterPur, alpha=0.5, color="tab:blue")
         plt.hist(stripPur, alpha=0.5, color="tab:green")
         plt.title("Purity of Cluster and Strip{}".format(etaWidth))
+        plt.text(0.6,1000,"meanClusterPur = {0:.3f}".format(meanClusterPur))
+        plt.text(0.6,900,"meanStrip{0}Pur = {1:.3f}".format(etaWidth,meanStripPur))
         plt.xlabel("Purity")
         plt.ylabel("Counts")
         plt.legend(["cluster Purity", "Strip{} Purity".format(etaWidth)])
