@@ -125,7 +125,7 @@ samples = {
   "DY_lowmass": {
          "name"     : "DY_lowmass", #Here plain text
          "label"    : "DY (m_{ll} < 50 GeV)", #Here we can use weird glyphs
-         "xsec"     : 15810.0*1000, # in fb
+         "xsec"     : 20590.0*1000, # in fb
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kAzure, # Red
          "isSig"    : False,
@@ -281,7 +281,7 @@ samples = {
   },
   "SUEP_ZH_generic_new": {
          "name"     : "SUEP_ZH_generic_new", #Here plain text
-         "label"    : "ZS^{gen, new}, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    : "ZS^{gen}, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,

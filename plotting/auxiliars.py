@@ -143,7 +143,6 @@ def getSFMu(pt, eta, year, var):
   unc = 0
   if var != 0: # Uncertainties added in quadrature
     unc  = (muID[year].GetBinError(min(max(1,muID[year].GetXaxis().FindBin(abs(eta))),maxmidx[year]), min(max(1,muID[year].GetYaxis().FindBin(pt)),maxmidy[year])))**2
-    unc += (muTrk[year].GetBinError(min(max(1,muTrk[year].GetXaxis().FindBin(abs(eta))),maxmtx[year]), min(max(1,muTrk[year].GetYaxis().FindBin(pt)),maxmty[year])))**2
     unc += (muISO[year].GetBinError(min(max(1,muISO[year].GetXaxis().FindBin(abs(eta))),maxmisox[year]), min(max(1,muISO[year].GetYaxis().FindBin(pt)),maxmisoy[year])))**2
     unc = unc**0.5
   return sf + unc*var
@@ -154,7 +153,7 @@ def getSFEl(pt, eta, year, var):
   unc = 0
   if var != 0: # Uncertainties added in quadrature
     unc  = (eID[year].GetBinError(min(max(1,eID[year].GetXaxis().FindBin(eta)),maxeidx[year]), min(max(1,eID[year].GetYaxis().FindBin(pt)),maxeidy[year])))**2
-    unc += (eRECO[year].GetBinContent(min(max(1,eRECO[year].GetXaxis().FindBin(eta)),maxerex[year]), min(max(1,eRECO[year].GetYaxis().FindBin(pt)),maxerey[year])))**2
+    unc += (eRECO[year].GetBinError(min(max(1,eRECO[year].GetXaxis().FindBin(eta)),maxerex[year]), min(max(1,eRECO[year].GetYaxis().FindBin(pt)),maxerey[year])))**2
     unc = unc**0.5
   return sf + unc*var
 
