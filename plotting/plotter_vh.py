@@ -11,6 +11,8 @@ from contextlib import closing
 import subprocess, sys
 import math
 import numpy as np
+import re
+from multiHadd import *
 
 ROOT.gStyle.SetOptStat(0)
 ROOT.gROOT.SetBatch(True)
@@ -45,7 +47,6 @@ class sample(object):
           fullfilename = options.toSave.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
         if options.toLoad:
           fullfilename = options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
-
         if options.resubmit:
           if os.path.isfile(fullfilename):
             if os.path.getsize(fullfilename) > 100: #I.e., non corrupted
@@ -70,7 +71,7 @@ class sample(object):
             self.hdfiles.append(b)
           a.close()
         self.safefiles.append(f)
-        #print("File %s loaded succesfully"%f)
+        print("File %s loaded succesfully"%f)
       except Exception as e:
         print("File %s broken, will skip loading it"%f)
         print(str(e))
@@ -153,24 +154,16 @@ class sample(object):
       for iff, f in enumerate(self.hdfiles):
         print("Loading file %i/%i"%(iff, len(self.hdfiles)))
         self.getRawHistogramsAndNormsOneFile([f,self.safefiles[iff], options])
+    elif options.dohadd: # Then, we collect from all files into a single hadd
+      self.haddedfile = self.getRawHistogramsAndNormsHadd(options)
+      self.haddedTFile = ROOT.TFile(self.haddedfile, "READ")
     else:
       for iff, f in enumerate(self.safefiles):
-        print("Loading file %i/%i"%(iff, len(self.hdfiles)))
+        print("Loading file %i/%i: %s"%(iff, len(self.safefiles), f))
         self.getRawHistogramsAndNormsOneFile(["",self.safefiles[iff], options])
 
-    """elif options.jobs >= 2:
-      with closing(Pool(options.jobs)) as p:
-        retlist1 = p.map_async(self.getRawHistogramsAndNormsOneFile, [[h, options] for h in self.hdfiles], 1)
-        while not retlist1.ready():
-          print("Jobs left: {}".format(retlist1._number_left ))
-          time.sleep(1)
-        retlist1 = retlist1.get()
-        p.close()
-        p.join()
-        p.terminate()"""
-    
     # After all is said and done, add up histograms and normalize to xsec
-    if options.toSave: 
+    if options.toSave: #If only saving, no need to continue merging 
       return
     for c in self.channels:
       for plotName in self.plotsinchannel[c]:
@@ -178,9 +171,11 @@ class sample(object):
         for iff, f in enumerate(self.safefiles):
           if options.toLoad and not("skim" in self.config) and not(self.isData): # If loading and unskimmed, need to set the norm here
             self.norms[plotName] += self.nnorms[self.safefiles[iff]]
-          filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
-          #print(filename, plotName)
-          self.histos[plotName]["total"].Add(self.histos[plotName][filename])
+          if not(options.dohadd):
+            filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
+            self.histos[plotName]["total"].Add(self.histos[plotName][filename])
+        if options.dohadd:
+          self.histos[plotName]["total"] = self.haddedTFile.Get(plotName + "_" + self.name)
         self.histos[plotName]["total"].Sumw2() # To get proper stat. unc.
         if not(self.isData) and (self.norms[plotName] > 0): 
           self.histos[plotName]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
@@ -195,8 +190,12 @@ class sample(object):
 
       for plotName in self.plots:
         self.histos[plotName][filename]  = self.histos[plotName]["total"].Clone(self.histos[plotName]["total"].GetName() + "_" + filename)
-      for c in self.channels:
+      for cpre in self.channels:
         #print(safefile)
+        c = cpre
+        if "replaceChannel" in  self.config:
+          if cpre in self.config["replaceChannel"]: # This is needed for systematics that change event variables, like JES or TRACK
+            c = self.config["replaceChannel"][cpre]
         empty = True if type(f[c]) == type([]) else False # Check if there are events there
         if empty: print("Is empty!", c)
         if not(self.isData):
@@ -213,8 +212,9 @@ class sample(object):
           if empty:
             extraweights = []
           else:
+            print(c)
             extraweights = self.config["extraWeights"](f[c])
-        for plotName in self.plotsinchannel[c]:
+        for plotName in self.plotsinchannel[cpre]:
           #print("...%s"%plotName)
           p = self.plots[plotName]
           if not("skim" in self.config) and not(self.isData):
@@ -252,6 +252,24 @@ class sample(object):
         #print(self.histos[plotName]["total"].GetName() + "_" + filename)
         self.histos[plotName][filename] = copy.copy(rf.Get(self.histos[plotName]["total"].GetName() + "_" + filename))
  
+  def getRawHistogramsAndNormsHadd(self, options):
+    # Collect all filenames 
+    inputFiles = []
+    for iff, f in enumerate(self.safefiles):
+      #print(iff, f)
+      safefile = self.safefiles[iff]
+      filename = safefile.split("/")[-1].replace("out_","").replace(".hdf5","")
+      inputFiles.append(options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root")
+    outputFil = options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_hadded.root" 
+
+    if os.path.isfile(outputFil):
+      print("Hadded file %s already exists, will read from there"%outputFil)
+    else:
+      print("Will hadd %i files into %s"%(len(inputFiles), outputFil))
+      # Run our paralellized hadd
+      haddAll(inputFiles, outputFil)
+    return outputFil
+
   def setStyleOptions(self):
     for key in self.histos:
       if "linecolor" in self.config: 
@@ -350,8 +368,8 @@ class plotter(object):
       if mode == "stack": self.doStackPlot(plotName, options)
       if mode == "colz": self.doColZPlots(plotName, options)
       ## More to be implemented
-     except:
-      print("Something went wrong with %s"%plotName)
+     except Exception as e:
+      print("Something went wrong with %s: "%plotName, e)
 
   def doColZPlots(self, pname, options):
 
@@ -451,7 +469,8 @@ class plotter(object):
     p2.Draw()
     p1.cd()
     if debug: print("...Pads set")
-    tl = ROOT.TLegend(0.5,0.55,0.9,0.85)
+    tl = ROOT.TLegend(p1.GetLeftMargin() ,0.55, 1-p1.GetRightMargin(), 1-p1.GetTopMargin())
+    tl.SetNColumns(2)
     if "legendPosition" in p:
       tl = ROOT.TLegend(p["legendPosition"][0], p["legendPosition"][1], p["legendPosition"][2], p["legendPosition"][3])  
     # Now get the histograms and build the stack
@@ -467,6 +486,8 @@ class plotter(object):
       self.samples.sort(key= lambda x: x.yields[pname], reverse=False)
     nbins = self.samples[0].histos[pname]["total"].GetNbinsX()
     thePlotGroups = {}
+    thePlotGroupsSignal = {}
+    thePlotGroupsData   = {}
     if debug: print("...Samples ordered")
     for s in self.samples:
       if s.isBackground():
@@ -481,21 +502,36 @@ class plotter(object):
           thePlotGroups[s.config["label"]].Add(s.histos[pname]["total"])
       elif s.isData:
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
-        tl.AddEntry(s.histos[pname]["total"], s.config["label"], "pl")
-        theData.append(s.histos[pname]["total"])
-      else:
+        #tl.AddEntry(s.histos[pname]["total"], s.config["label"], "pl")
+        if not(s.config["label"] in thePlotGroupsData):
+          print("new data!")
+          thePlotGroupsData[s.config["label"]] = s.histos[pname]["total"].Clone(s.histos[pname]["total"].GetName().replace(s.name, s.config["label"]))
+        else:
+          print("more data!")
+          thePlotGroupsData[s.config["label"]].Add(s.histos[pname]["total"])
+      else: 
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
         s.histos[pname]["total"].SetFillStyle(0)
         s.histos[pname]["total"].SetLineWidth(3)
         s.histos[pname]["total"].SetLineStyle(1)
-        theIndivs.append(s.histos[pname]["total"])
-        tl.AddEntry(s.histos[pname]["total"], s.config["label"], "l")
+        if not(s.config["label"] in thePlotGroupsSignal):
+          thePlotGroupsSignal[s.config["label"]] = s.histos[pname]["total"].Clone(s.histos[pname]["total"].GetName().replace(s.name, s.config["label"]))
+        else:
+          thePlotGroupsSignal[s.config["label"]].Add(s.histos[pname]["total"])
+
     if debug: print("...Groups created")
     for plotgroup in thePlotGroups:
       theStack.Add(thePlotGroups[plotgroup])
       tl.AddEntry(thePlotGroups[plotgroup], plotgroup, "f")
       stacksize += thePlotGroups[plotgroup].Integral()
+    for plotgroup in thePlotGroupsSignal:
+      theIndivs.append(thePlotGroupsSignal[plotgroup])
+      tl.AddEntry(thePlotGroupsSignal[plotgroup], plotgroup, "l")
+    for plotgroup in thePlotGroupsData:
+      theData.append(thePlotGroupsData[plotgroup])
+      tl.AddEntry(thePlotGroupsData[plotgroup], plotgroup, "pl")
  
+
     if p["normalize"]:
       for index in range(len(theIndivs)):
         theIndivs[index].Scale(1./theIndivs[index].Integral())
@@ -516,7 +552,7 @@ class plotter(object):
     theStack.GetYaxis().SetTitle("Normalized events" if p["normalize"] else "Events")
     theStack.GetXaxis().SetTitle("") # Empty, as it goes into the ratio plot
     if "maxY" in p: 
-      theStack.SetMaximum(p["maxY"])
+      theStack.SetMaximum(p["maxY"]*options.scaleMax)
     if "minY" in p:
       theStack.SetMinimum(p["minY"])
     if debug: print("...Max and Min set")
@@ -532,7 +568,7 @@ class plotter(object):
     # Now we go to the ratio
     p2.cd()
 
-    # By default S/B, TODO: add more options
+    # By default S/B, data/MC, TODO: add more options
     den  = back.Clone("back_ratio")
     nums = []
     for ind in  theIndivs + theData:
@@ -554,19 +590,38 @@ class plotter(object):
     den.GetXaxis().SetLabelSize(0.1)
     den.GetYaxis().SetLabelSize(0.06)
     if "ratiomaxY" in p:
-      den.SetMaximum(p["ratiomaxY"])
+      den.SetMaximum(p["ratiomaxY"] if not options.rmax else float(options.rmax))
     if "ratiominY" in p:
-      den.SetMinimum(p["ratiominY"])
-    den.Draw("")
+      den.SetMinimum(p["ratiominY"] if not options.rmin else float(options.rmin))
+    denbar = den.Clone(den.GetName() + "_bar")
+    denbar.SetFillColor(ROOT.kGray)
+    denbar.Draw("E2")
+    ncolumns = 2
+    tlr = ROOT.TLegend(0.9-0.2*ncolumns,0.89,0.9,0.97)
+    tlr.SetNColumns(ncolumns)
+    tlr.SetBorderSize(0)
+    if "legendRatioPosition" in p:
+      tlr = ROOT.TLegend(p["legendRatioPosition"][0], p["legendRatioPosition"][1], p["legendRatioPosition"][2], p["legendRatioPosition"][3])
+    tlr.AddEntry(denbar, options.ratiostatlabel, "f")
+    for ib in range(0, den.GetNbinsX()+1):
+      den.SetBinError(ib,0)
+      den.SetBinContent(ib, 1)
+    den.SetFillStyle(0)	
+    den.Draw("same")
     for num in nums:
-      num.Draw("same") if not("data" in num.GetName()) else num.Draw("Psame")
+      num.Draw("same" + ("hist" if options.noratiostat else "")) if not("Data" in num.GetName()) else num.Draw("Psame")
+      print(num.GetName())
+      if "Data" in num.GetName(): 
+        print("DDDATA")
+        tlr.AddEntry(num, "Data", "pl") 
     if debug: print("...Ratio done")
+    tlr.Draw("same")
     CMS_lumi.writeExtraText = True
-    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.0f pb^{-1}" % (options.luminosity*1000)
+    CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.0f pb^{-1}" % (options.luminosity*1000)
     CMS_lumi.extraText  = "Preliminary"
     CMS_lumi.lumi_sqrtS = "13"
     if debug: print("...CMS_lumi configured")
-    CMS_lumi.CMS_lumi(c, 4, 0, 0.122)
+    CMS_lumi.CMS_lumi(c, 4, 0, 0.077)
     if debug: print("...CMS_lumi set")
     if options.rebin:
       p["plotname"] = p["plotname"] + "_" + str(options.rebin) + "rebinned"
@@ -585,8 +640,8 @@ class plotter(object):
     tf.Close()
     if debug: print("...File closed")
     ROOT.SetOwnership(c,False) # This magic avoids segfault due to the garbage collector collecting non garbage stuff
-   except:
-    print("Something went wrong, skipping plot...")
+   except Exception as e:
+    print("Something went wrong, skipping plot...", e)
 
 if __name__ == "__main__":
   print("Starting plotting script...")
@@ -598,17 +653,24 @@ if __name__ == "__main__":
   parser.add_option("--toLoad", dest="toLoad", type="str", default=None, help="If active, instead of reading hdf5 load per file histograms from this folder")
   parser.add_option("-p","--plotdir", dest="plotdir", type="string", default="./", help="Where to put the plots")
   parser.add_option("--strict-order", dest="ordered", action="store_true", default=False, help="If true, will stack samples in the order of yields")
+  parser.add_option("--dohadd", dest="dohadd", action="store_true", default=False, help="If true, will run (or read) hadded files rather than individual .root files, faster for cases with high #files")
   parser.add_option("--blind", dest="blind", action="store_true", default=False, help="Activate for blinding (no data)")
-  parser.add_option("--sample", dest ="sample", default=None, help="If not none, process only this specific sample")
+  parser.add_option("--sample", dest ="sample", default=[], action="append", help="If not none, process only this specific sample")
   parser.add_option("--files", dest="files", default=None, help="If not none, process only these set of comma separated files")
   parser.add_option("--queue", dest="queue", default=None, help="If not none, submit jobs to this queue")
   parser.add_option("--batchsize", dest="batchsize", default=1, help="Run this many files per batch job")
   parser.add_option("--jobname", dest="jobname", default="batchjobs", help="Folder in which to create the executable jobs")
   parser.add_option("--resubmit", dest="resubmit", default=False, action="store_true", help="If true, only run jobs that failed before (missing root files)")
   parser.add_option("--rebin", dest="rebin", default=None, type="int", help="Collapse bins by this factor")
-  parser.add_option("--ratioylabel", dest="ratioylabel", type="string", default="S/B", help="Title of the Y axis of the ratio plot")
+  parser.add_option("--ratioylabel", dest="ratioylabel", type="string", default="X/SM", help="Title of the Y axis of the ratio plot")
+  parser.add_option("--ratiostatlabel", dest="ratiostatlabel", type="string", default="SM Stat. Unc.", help="Legend entry for the uncertainty in the denominator of the ratio")
   parser.add_option("--sP", dest="singleplot", action="append", default=[], help="Run only these plots")
   parser.add_option("--test", dest="test", action="store_true", default=False, help="Activate test mode (1 file per sample) for quick checks")
+  parser.add_option("--rmax", dest="rmax", type="float", default=None, help="Ratio maximum")
+  parser.add_option("--rmin", dest="rmin", type="float", default=None, help="Ratio minimum")
+  parser.add_option("--scaleY", dest="scaleMax", type="float", default=1., help="Scale Y axis maximum by this number (useful when plotting only signal, for example)")
+  parser.add_option("--noratiostat", dest="noratiostat", action="store_true", default=False, help="Do not show stat uncertainties in ratios (i.e. if num/dem are fully correlated this would mean double counting")
+
   (options, args) = parser.parse_args()
   #print(args)
   samplesFile = imp.load_source("samples",args[0])
@@ -625,10 +687,13 @@ if __name__ == "__main__":
       #print(s, samples[s]["files"])
       samples[s]["files"] = [samples[s]["files"][0]]
   plots   = plotsFile.plots
-  if options.sample:
-    print(samples.keys())
+  if options.sample != []:
     newsamples = {}
-    newsamples[options.sample] = samples[options.sample]
+    for s in options.sample:
+      for ss in samples.keys():
+        if re.match(s, ss):
+          print("Add", ss)
+          newsamples[ss] = samples[ss]
     samples = newsamples
   if options.blind and "data" in samples:
     del samples["data"]
