@@ -212,7 +212,6 @@ class sample(object):
           if empty:
             extraweights = []
           else:
-            print(c)
             extraweights = self.config["extraWeights"](f[c])
         for plotName in self.plotsinchannel[cpre]:
           #print("...%s"%plotName)
@@ -291,6 +290,10 @@ class sample(object):
     if self.isData: return False
     return bkg
 
+  def isSignal(self):
+    return not(self.isData or self.isBackground())
+
+
 class plotter(object):
   def __init__(self, plotdicts, sampledicts, options):
     self.plots      = plotdicts #[plotdicts[d] for d in plotdicts]
@@ -361,15 +364,15 @@ class plotter(object):
 
   def doStackPlots(self, options):
     for plotName in self.plots:
-     try:
-      print("...Plotting %s"%plotName)
-      mode = "stack"
-      if "mode" in self.plots[plotName]: mode = self.plots[plotName]["mode"]
-      if mode == "stack": self.doStackPlot(plotName, options)
-      if mode == "colz": self.doColZPlots(plotName, options)
-      ## More to be implemented
-     except Exception as e:
-      print("Something went wrong with %s: "%plotName, e)
+      try:
+        print("...Plotting %s"%plotName)
+        mode = "stack"
+        if "mode" in self.plots[plotName]: mode = self.plots[plotName]["mode"]
+        if mode == "stack": self.doStackPlot(plotName, options)
+        if mode == "colz": self.doColZPlots(plotName, options)
+        ## More to be implemented
+      except Exception as e:
+        print("Something went wrong with %s: "%plotName, e)
 
   def doColZPlots(self, pname, options):
 
@@ -435,8 +438,98 @@ class plotter(object):
     histo.Write()
     tf.Close()
 
+  def doSystVariations(self, systfile, pname, options, nomstack):
+    # Only background uncertainties for plotting
+    theStacks = {} 
+    histosToSave = {}
+    systsFile = imp.load_source("systematicsAndShapes", systfile)
+    systsFile = systsFile.systematicsAndShapes
+    for syst in systsFile:
+      if syst == "yields": continue
+      # Background go into the stack
+      backUp = False
+      backDn = False
+      #if debug: print("...Getting syst %s"%syst)
+      nbins = self.samples[0].histos[pname]["total"].GetNbinsX()
+      thePlotGroups = {}
+      for s in self.samples:
+        if "isSyst" in s.config:
+          if s.config["isSyst"]:
+            continue
 
-    
+        if s.isBackground():
+          if systsFile[syst]["type"] == "lnN":
+            tmpUp = s.histos[pname]["total"].Clone("tmp%s%sUp"%(s.name, syst))
+            tmpDn = s.histos[pname]["total"].Clone("tmp%s%sDn"%(s.name, syst))
+            if any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]):
+              tmpUp.Scale(systsFile[syst]["size"])
+              tmpDn.Scale(1./systsFile[syst]["size"])
+       
+          if systsFile[syst]["type"] == "shape":
+            altNameUp = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst) + systsFile[syst]["up"]
+            altNameDn = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst) + systsFile[syst]["down"]
+            if any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]): 
+              # Then we need to find alternative histograms
+              for s in self.samples:
+                print(s.name, altNameUp, altNameDn)
+                if s.name == altNameUp:
+                  s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin) if options.rebin else s.histos[pname]["total"]
+                  tmpUp = s.histos[pname]["total"].Clone(altNameUp)
+                if s.name == altNameDn:
+                  s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin) if options.rebin else s.histos[pname]["total"]
+                  tmpDn = s.histos[pname]["total"].Clone(altNameDn)
+              histosToSave[altNameUp] = tmpUp
+              histosToSave[altNameDn] = tmpDn
+            else:
+              # In this case just read nominal
+              tmpUp = s[histos[pname]]["total"].Clone(altNameUp)
+              tmpDn = s[histos[pname]]["total"].Clone(altNameDn)
+          if not(backUp):
+            backUp = tmpUp.Clone().Clone("total_background_%sUp"%syst)
+            backDn = tmpDn.Clone().Clone("total_background_%sUp"%syst)
+          else: 
+            backUp.Add(tmpUp)
+            backDn.Add(tmpDn)
+        if systsFile[syst]["type"] == "shape" and s.isSignal() and any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]): # For signals just save
+          # Then we need to find alternative histograms
+          for s in self.samples:
+            print(s.name, altNameUp, altNameDn)
+            if s.name == altNameUp:
+              s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin) if options.rebin else s.histos[pname]["total"]
+              tmpUp = s.histos[pname]["total"].Clone(altNameUp)
+            if s.name == altNameDn:
+              s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin) if options.rebin else s.histos[pname]["total"]
+              tmpDn = s.histos[pname]["total"].Clone(altNameDn)
+          histosToSave[altNameUp] = tmpUp
+          histosToSave[altNameDn] = tmpDn
+
+      theStacks["%sUp"%syst] = backUp
+      theStacks["%sDn"%syst] = backDn
+    # Here we have all systs saved in theStacks, now we add systematics bin by bin
+    nomHistoSyst = nomstack.Clone(nomstack.GetName() + "_Syst")
+    for ibin in range(0,nomstack.GetNbinsX()+1):
+      nom = nomstack.GetBinContent(ibin)
+      nomup, nomdown = nomstack.GetBinError(ibin)**2, nomstack.GetBinError(ibin)**2 # Initialize to MC stat
+      for syst in systsFile:
+        if syst == "yields": continue
+        nomupHere, nomdownHere = theStacks["%sUp"%syst].GetBinContent(ibin) - nom, theStacks["%sDn"%syst].GetBinContent(ibin) - nom
+        if nomupHere*nomdownHere >= 0: # if same side, take biggest
+          var = max(abs(nomupHere), abs(nomdownHere))
+          if nomupHere < 0:
+            nomdown += var**2
+          else:
+            nomup   += var**2
+        else:
+          if nomupHere >= 0:
+            nomup   += nomupHere**2
+            nomdown += nomdownHere**2
+          else:
+            nomdown += nomupHere**2
+            nomup   += nomdownHere**2
+      nomHistoSyst.SetBinError(ibin, max(nomup**0.5, nomdown**0.5))
+    return nomHistoSyst, histosToSave
+
+
   def doStackPlot(self, pname, options):
    debug = True
    if debug: print("Do stack plot")
@@ -490,6 +583,9 @@ class plotter(object):
     thePlotGroupsData   = {}
     if debug: print("...Samples ordered")
     for s in self.samples:
+      if "isSyst" in s.config:
+        if s.config["isSyst"]:
+          continue
       if s.isBackground():
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
         if not(back): back = s.histos[pname]["total"].Clone("total_background")
@@ -518,7 +614,6 @@ class plotter(object):
           thePlotGroupsSignal[s.config["label"]] = s.histos[pname]["total"].Clone(s.histos[pname]["total"].GetName().replace(s.name, s.config["label"]))
         else:
           thePlotGroupsSignal[s.config["label"]].Add(s.histos[pname]["total"])
-
     if debug: print("...Groups created")
     for plotgroup in thePlotGroups:
       theStack.Add(thePlotGroups[plotgroup])
@@ -530,7 +625,9 @@ class plotter(object):
     for plotgroup in thePlotGroupsData:
       theData.append(thePlotGroupsData[plotgroup])
       tl.AddEntry(thePlotGroupsData[plotgroup], plotgroup, "pl")
- 
+    backSyst = back
+    if options.systFile:
+      backSyst, histosToSave = self.doSystVariations(options.systFile, pname, options, back)
 
     if p["normalize"]:
       for index in range(len(theIndivs)):
@@ -557,6 +654,14 @@ class plotter(object):
       theStack.SetMinimum(p["minY"])
     if debug: print("...Max and Min set")
     theStack.Draw("hist")
+    doSyst = options.systFile # This seems so very wrong even if it works
+    print("DO SYST", doSyst)
+    if doSyst:
+      back.SetFillColor(ROOT.kBlack)
+      back.SetLineColor(ROOT.kBlack)
+      back.SetFillStyle(3244)
+      tl.AddEntry(back, "SM Unc.", "f")
+      back.Draw("E2same")
     for ind in theIndivs:
       ind.Draw("hist same")
     # Last, draw the data
@@ -569,7 +674,7 @@ class plotter(object):
     p2.cd()
 
     # By default S/B, data/MC, TODO: add more options
-    den  = back.Clone("back_ratio")
+    den  = backSyst.Clone("backsyst_ratio")
     nums = []
     for ind in  theIndivs + theData:
       try:
@@ -580,7 +685,7 @@ class plotter(object):
     for num in nums: 
       num.Divide(den)
     den.Divide(den)
-    den.SetLineColor(ROOT.kBlack)
+    den.SetLineColor(ROOT.kBlack) #ROOT.kCyan if doSyst else ROOT.kGray)
     den.SetTitle("")
     den.GetYaxis().SetTitle(options.ratioylabel)
     den.GetXaxis().SetTitle(p["xlabel"])
@@ -594,15 +699,24 @@ class plotter(object):
     if "ratiominY" in p:
       den.SetMinimum(p["ratiominY"] if not options.rmin else float(options.rmin))
     denbar = den.Clone(den.GetName() + "_bar")
-    denbar.SetFillColor(ROOT.kGray)
+    denbar.SetFillColor(ROOT.kCyan if doSyst else ROOT.kGray)
     denbar.Draw("E2")
-    ncolumns = 2
+    if doSyst:
+      backratio = back.Clone("backratiostat")
+      backratio.Divide(back)
+      backratio.SetFillColor(ROOT.kGray)
+      backratio.SetLineColor(ROOT.kGray)
+      backratio.SetFillStyle(1001)
+      backratio.Draw("E2 same")
+    ncolumns = 3 if doSyst else 2 
     tlr = ROOT.TLegend(0.9-0.2*ncolumns,0.89,0.9,0.97)
     tlr.SetNColumns(ncolumns)
     tlr.SetBorderSize(0)
     if "legendRatioPosition" in p:
       tlr = ROOT.TLegend(p["legendRatioPosition"][0], p["legendRatioPosition"][1], p["legendRatioPosition"][2], p["legendRatioPosition"][3])
-    tlr.AddEntry(denbar, options.ratiostatlabel, "f")
+    tlr.AddEntry(denbar, "SM syst.+stat. Unc." if doSyst else options.ratiostatlabel, "f")
+    if doSyst:
+      tlr.AddEntry(back, options.ratiostatlabel, "f")
     for ib in range(0, den.GetNbinsX()+1):
       den.SetBinError(ib,0)
       den.SetBinContent(ib, 1)
@@ -641,7 +755,7 @@ class plotter(object):
     if debug: print("...File closed")
     ROOT.SetOwnership(c,False) # This magic avoids segfault due to the garbage collector collecting non garbage stuff
    except Exception as e:
-    print("Something went wrong, skipping plot...", e)
+     print("Something went wrong, skipping plot...", e)
 
 if __name__ == "__main__":
   print("Starting plotting script...")
@@ -670,9 +784,9 @@ if __name__ == "__main__":
   parser.add_option("--rmin", dest="rmin", type="float", default=None, help="Ratio minimum")
   parser.add_option("--scaleY", dest="scaleMax", type="float", default=1., help="Scale Y axis maximum by this number (useful when plotting only signal, for example)")
   parser.add_option("--noratiostat", dest="noratiostat", action="store_true", default=False, help="Do not show stat uncertainties in ratios (i.e. if num/dem are fully correlated this would mean double counting")
+  parser.add_option("--systFile", dest="systFile", type="string", default=None, help="Systematics configuration file")
 
   (options, args) = parser.parse_args()
-  #print(args)
   samplesFile = imp.load_source("samples",args[0])
   plotsFile   = imp.load_source("plots",  args[1])
   if not(os.path.isdir(options.plotdir)):
@@ -682,6 +796,19 @@ if __name__ == "__main__":
     os.system("mkdir %s"%options.toSave)
   os.system("cp %s %s %s"%(args[0], args[1], options.plotdir))
   samples = samplesFile.samples
+  if False: #not(options.systFile):
+    # Then we take out all systematic variations because we don't need to process them
+    newsamples = {}
+    for s in samples:
+      if "isSyst" in samples[s]:
+        if samples[s]["isSyst"]:
+          continue 
+        else:
+          newsamples[s] = samples[s]
+      else:
+        newsamples[s] = samples[s]
+    samples = newsamples
+
   if options.test:
     for s in samples:
       #print(s, samples[s]["files"])
