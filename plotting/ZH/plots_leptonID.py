@@ -36,7 +36,7 @@ plots = {
              "ratiomaxY": 2.,
              "ratiominY": 0.,
              "plotname" : "leadclusterspher_base",
-             "xlabel"   : "S^{leadcluster}",
+             "xlabel"   : "S^{SUEP}",
              "vars"     : ["leadclusterSpher_C"]
    },
 "LeadMuon_mediumId": {

@@ -59,12 +59,6 @@
     "filter":0,
     "isDYinclusive":0
   },
-  "QCD":{
-    "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/QCD/",
-    "isData":0,
-    "filter":0,
-    "isDYinclusive":0
-  },
   "TTTo1L1Nu2Q":{
     "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/TTTo1L1Nu/  ",
     "isData":0,

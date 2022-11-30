@@ -1,6 +1,7 @@
 import os
 import ROOT
 from auxiliars import *
+import copy
 
 def hdf5inpath(path):
   ret = []
@@ -10,7 +11,7 @@ def hdf5inpath(path):
   return ret
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5/"
+main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_withsysts/"
 samples = {
   "data": {
          "name" : "data",
@@ -19,7 +20,7 @@ samples = {
          "lineColor": ROOT.kBlack,
          "fillcolor": ROOT.kBlack,
          "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "data/"),#+ hdf5inpath(main_path + "data_RunB/")+hdf5inpath(main_path + "data_RunC/")+hdf5inpath(main_path + "data_RunD/"),
+         "files"    : hdf5inpath("/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5/data/"),#+ hdf5inpath(main_path + "data_RunB/")+hdf5inpath(main_path + "data_RunC/")+hdf5inpath(main_path + "data_RunD/"),
          "markerstyle": 20,
          "markersize" : 1,
   },
@@ -30,7 +31,7 @@ samples = {
          "linecolor"  : ROOT.kBlack,
          "fillcolor"  : 7, # White
          "isSig"      : False,
-         "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*x["bTagWeight"]*SF(x,18) , 
+         "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18) , 
          "files"      : hdf5inpath(main_path + "DY_nano_Autumn18/"),
   },      
   "DY_Pt0To50": {
@@ -40,7 +41,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt0To50/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt0To50/skims.root"
   },
@@ -53,7 +54,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt50To100/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt50To100/skims.root",
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "DY_Pt100To250": {
          "name"     : "DY_Pt100To250", #Here plain text
@@ -64,7 +65,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt100To250/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt100To250/skims.root",
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "DY_Pt250To400": {
          "name"     : "DY_Pt250To400", #Here plain text
@@ -75,7 +76,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt250To400/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt250To400/skims.root",
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "DY_Pt400To650": {
          "name"     : "DY_Pt400To650", #Here plain text
@@ -86,7 +87,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt400To650/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt400To650/skims.root",
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "DY_Pt650ToInf": {
          "name"     : "DY_Pt650ToInf", #Here plain text
@@ -97,7 +98,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt650ToInf/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt650ToInf/skims.root", 
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "ttto2l": {
          "name"     : "ttto2l", #Here plain text
@@ -108,7 +109,7 @@ samples = {
          "isSig"    : False,
          "files"    :  hdf5inpath(main_path + "TTTo2L2Nu/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTTo2L2Nu/skims.root",
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "tW": {
          "name"     : "tW", #Here plain text
@@ -119,7 +120,7 @@ samples = {
          "isSig"    : False,
          "files"    :  hdf5inpath(main_path + "tW/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/tW/skims.root",
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "DY_lowmass": {
          "name"     : "DY_lowmass", #Here plain text
@@ -130,7 +131,7 @@ samples = {
          "isSig"    : False,
          "files"    :  hdf5inpath(main_path + "DY_lowmass/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DY_lowmass/skims.root",
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
 
   "ttto1l": {
@@ -141,7 +142,7 @@ samples = {
          "fillcolor": 5, # Yellow
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTTo1L1Nu2Q/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTTo1L1Nu2Q/skims.root",
   },
 #  "Wjets": {
@@ -149,11 +150,11 @@ samples = {
 #         "label"    : "W", #Here we can use weird glyphs
 #         "xsec"     : 20508.9*1000, # in fb
 #         "linecolor": ROOT.kBlack,
-#         "fillcolor": 6, # Purple
+#         "fillcolor": ROOT.kBlack, # Purple
 #         "isSig"    : False,
 #         "files"    : hdf5inpath(main_path + "WJets/"), 
 #         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WJets/skims.root",
-#         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
 #  },
 
   "WW": {
@@ -165,7 +166,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "WWTo2L2Nu/"),
          "WW"       : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WWTo2L2Nu/skims.root",
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "WZ2l2q": {
          "name"     : "WZ2l2q", #Here plain text
@@ -175,7 +176,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "WZTo2l2Q/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WZTo2l2Q/skims.root"
   },
   "WZ3lnu": {
@@ -186,7 +187,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "WZTo3LNu/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WZTo3LNu/skims.root"
   },
   "ZZ2l2q": {
@@ -197,7 +198,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "ZZTo2L2Q/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo2L2Q/skims.root"
   },
   "ZZ2l2nu": {
@@ -208,7 +209,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "ZZTo2L2Nu/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo2L2Nu/skims.root"
   },
 
@@ -220,7 +221,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "ZZTo4L/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo4L/skims.root"
   },
   "ZG": {
@@ -231,7 +232,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "ZG/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZG/skims.root"
   },
   "ttZll": {
@@ -242,7 +243,7 @@ samples = {
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTZToLL/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTZToLL/skims.root"
   },
   "ttWlnu": {
@@ -253,7 +254,7 @@ samples = {
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTWToLNu/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTWToLNu/skims.root"
   },
   "ttWqq": {
@@ -264,7 +265,7 @@ samples = {
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTWToQQ/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTWToQQ/skims.root"
   },
 
@@ -276,7 +277,7 @@ samples = {
 #         "fillcolor": ROOT.kBlack,
 #         "isSig"    : True,
 #         "files"    : hdf5inpath(main_path + "SUEP_generic_mS125_mD2_T2/"),
-#         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
 #  },
   "SUEP_ZH_generic_new": {
          "name"     : "SUEP_ZH_generic", #Here plain text
@@ -286,7 +287,7 @@ samples = {
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
          "files"    : hdf5inpath(main_path + "SUEP_generic_new_mS125_mD2_T2/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "SUEP_ZH_leptonic": {
          "name"     : "SUEP_ZH_leptonic", #Here plain text
@@ -296,7 +297,7 @@ samples = {
          "fillcolor": ROOT.kBlue,
          "isSig"    : True,
          "files"    : hdf5inpath(main_path + "SUEP_leptonic_mS125_mD2_T2/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
   "SUEP_ZH_hadronic": {
          "name"     : "SUEP_ZH_hadronic", #Here plain text
@@ -306,6 +307,159 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "files"    : hdf5inpath(main_path + "SUEP_hadronic_mS125_mD2_T2/"),
-         "extraWeights": lambda x: x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
   },
 }
+
+for sample in samples:
+  if "data" in sample: continue
+  samples[sample]["variations"] = {
+  "ElSFUp": {
+           "name"            :   "ElSFUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: SF(x,18, 2)/SF(x,18, 0), # Relative to central
+           "symmetrize"      :      False,
+  },
+  "ElSFDn": {
+           "name"            :   "ElSFDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: SF(x,18, -2)/SF(x,18, 0),
+           "symmetrize"      :      False,
+  },
+  "MuSFUp": {
+           "name"            :   "MuSFUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: SF(x,18, 1)/SF(x,18, 0),
+           "symmetrize"      :      False,
+  },
+  "MuSFDn": {
+           "name"            :   "MuSFDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: SF(x,18, -1)/SF(x,18, 0),
+           "symmetrize"      :      False,
+  },
+  "PUUp": {
+           "name"            :   "PUUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["PUWeight_Up"]/x["PUWeight"],
+           "symmetrize"      :      False,
+  },
+  "PUDn": {
+           "name"            :   "PUDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["PUWeight_Dn"]/x["PUWeight"],
+           "symmetrize"      :      False,
+  },
+  "L1Up": {
+           "name"            :   "L1Up",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["L1prefireWeight_Up"]/x["L1prefireWeight"],
+           "symmetrize"      :      False,
+  },
+  "L1Dn": {
+           "name"            :   "L1Dn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["L1prefireWeight_Dn"]/x["L1prefireWeight"],
+           "symmetrize"      :      False,
+  },
+  "ISRUp": {
+           "name"            :   "ISRUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["ISRWeight_Up"],
+           "symmetrize"      :      False,
+  },
+  "ISRDn": {
+           "name"            :   "ISRDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["ISRWeight_Dn"],
+           "symmetrize"      :      False,
+  },
+  "FSRUp": {
+           "name"            :   "FSRUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["FSRWeight_Up"],
+           "symmetrize"      :      False,
+  },
+  "FSRDn": {
+           "name"            :   "FSRDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["FSRWeight_Dn"],
+           "symmetrize"      :      False,
+  },
+  "LFCorrUp": {
+           "name"            :   "LFCorrUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["bTagWeight_LFCorr_Up"]/x["bTagWeight"],
+           "symmetrize"      :      False,
+  },
+  "LFCorrDn": {
+           "name"            :   "LFCorrDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["bTagWeight_LFCorr_Dn"]/x["bTagWeight"],
+           "symmetrize"      :      False,
+  },
+  "HFCorrUp": {
+           "name"            :   "HFCorrUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["bTagWeight_HFCorr_Up"]/x["bTagWeight"],
+           "symmetrize"      :      False,
+  },
+  "HFCorrDn": {
+           "name"            :   "HFCorrDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["bTagWeight_HFCorr_Dn"]/x["bTagWeight"],
+           "symmetrize"      :      False,
+  },
+  "LFUnCorrUp": {
+           "name"            :   "LFUnCorrUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["bTagWeight_LFUnCorr_Up"]/x["bTagWeight"],
+           "symmetrize"      :      False,
+  },
+  "LFUnCorrDn": {
+           "name"            :   "LFUnCorrDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["bTagWeight_LFUnCorr_Dn"]/x["bTagWeight"],
+           "symmetrize"      :      False,
+  },
+  "HFUnCorrUp": {
+           "name"            :   "HFUnCorrUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["bTagWeight_HFUnCorr_Up"]/x["bTagWeight"],
+           "symmetrize"      :      False,
+  },
+  "HFUnCorrDn": {
+           "name"            :   "HFUnCorrDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: x["bTagWeight_HFUnCorr_Dn"]/x["bTagWeight"],
+           "symmetrize"      :      False,
+  },
+  "Track": {
+           "name"            : "Track",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_TRACKUP", "onecluster":"onecluster_TRACKUP", "twoleptons":"twoleptons_TRACKUP"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :     True,
+  },
+}
+

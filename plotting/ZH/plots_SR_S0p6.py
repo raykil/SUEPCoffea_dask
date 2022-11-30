@@ -374,7 +374,7 @@ plots = {
              "ratiomaxY": 2.,
              "ratiominY": 0.,
              "plotname" : "leadclusterpt",
-             "xlabel"   : "p_{T}^{leadcluster} [GeV]",
+             "xlabel"   : "p_{T}^{SUEP} [GeV]",
              "vars"     : ["leadcluster_pt"]
   },
   "leadclustereta": {
@@ -389,7 +389,7 @@ plots = {
              "ratiomaxY": 2.,
              "ratiominY": 0.,
              "plotname" : "leadclustereta",
-             "xlabel"   : "#eta^{leadcluster}",
+             "xlabel"   : "#eta^{SUEP}",
              "vars"     : ["leadcluster_eta"]
   },
   "leadclusterphi": {
@@ -404,7 +404,7 @@ plots = {
              "ratiomaxY": 2.,
              "ratiominY": 0.,
              "plotname" : "leadclusterphi",
-             "xlabel"   : "#phi^{leadcluster}",
+             "xlabel"   : "#phi^{SUEP}",
              "vars"     : ["leadcluster_phi"]
   },
   "leadclustertracks": {
@@ -419,7 +419,7 @@ plots = {
              "ratiomaxY": 2.,
              "ratiominY": 0.,
              "plotname" : "leadclustertracks",
-             "xlabel"   : "N_{tracks}^{leadcluster}",
+             "xlabel"   : "N_{tracks}^{SUEP}",
              "vars"     : ["leadcluster_ntracks"]
   },
   "leadclusterspher": {
@@ -434,7 +434,7 @@ plots = {
              "ratiomaxY": 2.,
              "ratiominY": 0.,
              "plotname" : "leadclusterspher",
-             "xlabel"   : "S^{leadcluster}",
+             "xlabel"   : "S^{SUEP}",
              "vars"     : ["leadclusterSpher_C"]
   },
   "leadclusterspherlab": {
@@ -449,7 +449,7 @@ plots = {
              "ratiomaxY": 2.,
              "ratiominY": 0.,
              "plotname" : "leadclusterspherlab",
-             "xlabel"   : "S^{leadcluster}_{lab}",
+             "xlabel"   : "S^{SUEP}_{lab}",
              "vars"     : ["leadclusterSpher_L"]
   },
 }

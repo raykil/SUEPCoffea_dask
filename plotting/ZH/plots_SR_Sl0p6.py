@@ -2,8 +2,7 @@ import ROOT
 
 
 def cut(x):
-  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["Z_pt"] < 25) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] >= 60)
-
+  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["Z_pt"] >= 25) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] >= 60) & (x["leadclusterSpher_C"] < 0.6) 
 
 plots = {
   "njets": {
