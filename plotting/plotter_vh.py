@@ -13,6 +13,7 @@ import math
 import numpy as np
 import re
 from multiHadd import *
+import root_numpy
 
 ROOT.gStyle.SetOptStat(0)
 ROOT.gROOT.SetBatch(True)
@@ -33,15 +34,34 @@ class sample(object):
     self.plotsinchannel = {}
     self.varstoload = {}
     self.yields     = {}
-    #print(sampledict)
+    self.doSyst     = options.systFile
+    #self.altChannels= {}
+    self.variations = {} 
+    if self.doSyst and not(self.isData): # Then we collect all possible channel alternatives
+      self.variations = {}
+      for var in self.config["variations"]:
+        if not(self.doSyst) and self.config["variations"]["isSyst"]: 
+          continue
+        else:
+          self.variations[var] = self.config["variations"][var]
+
+      #for var in self.variations:
+      #  for orig in self.variations[var]["replaceChannel"]:
+      #    if not(orig in self.altChannels):
+      #      self.altChannels[orig] = self.variations[var]["replaceChannel"][orig]
+      #    else:
+      #      for alt in self.variations[var]["replaceChannel"][orig]:
+      #        if not(alt in self.altChannels[orig]): 
+      #          self.altChannels[orig].append(alt)
+
   def initAll(self, options):
     if options.queue: print("Loading sample %s"%self.name)
     iF = 0
     for f in self.config["files"]:
       iF +=1
-      #if options.queue:
-      print("Checking files %i/%i"%(iF, len(self.config["files"])))
+      if (iF%100 == 1): print("Checking files %i/%i"%(iF, len(self.config["files"])))
       try:
+        if self.isData and options.dohadd: continue
         filename = f.split("/")[-1].replace("out_","").replace(".hdf5","")
         if options.toSave: 
           fullfilename = options.toSave.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
@@ -50,28 +70,30 @@ class sample(object):
         if options.resubmit:
           if os.path.isfile(fullfilename):
             if os.path.getsize(fullfilename) > 100: #I.e., non corrupted
-              print("Exists!")
+              #print("Exists!")
               continue    
         if not(options.toLoad and (("skim" in self.config) or (self.isData)) and os.path.isfile(fullfilename)):
-          a = pd.HDFStore(f, "r")
+          if not("skim" in self.config) and not(self.isData) or (not(options.queue) and not(options.toLoad)):
+            a = pd.HDFStore(f, "r")
           if not("skim" in self.config) and not(self.isData):
             #print(a.get_storer("SR").attrs.metadata)
             self.nnorms[f] = a.get_storer("twoleptons").attrs.metadata["gensumweight"]
-          b = {}
-          if len(a.keys()) == 0: #Empty file
-            a.close()
-            print("No keys!")
-            continue
           if not(options.queue) and not(options.toLoad):
+            b = {}
+            if len(a.keys()) == 0: #Empty file
+              a.close()
+              print("No keys!")
+              continue
             for k in a.keys():
               try:
                 b[k.replace("/","")] = a[k]
               except: # If we are here, there are no events at the cut level, so just save empty space (still need to count for normalizing)
                 b[k.replace("/","")] = []
             self.hdfiles.append(b)
-          a.close()
+          if not("skim" in self.config) and not(self.isData) or (not(options.queue) and not(options.toLoad)):
+            a.close()
         self.safefiles.append(f)
-        print("File %s loaded succesfully"%f)
+        #print("File %s loaded succesfully"%f)
       except Exception as e:
         print("File %s broken, will skip loading it"%f)
         print(str(e))
@@ -86,7 +108,7 @@ class sample(object):
     for f in self.config["files"]:
       iF +=1
       #if options.queue:
-      print("Checking files %i/%i"%(iF, len(self.config["files"])))
+      if (iF % 100 == 1): print("Checking files %i/%i"%(iF, len(self.config["files"])))
       try:
         filename = f.split("/")[-1].replace("out_","").replace(".hdf5","")
         if options.toSave:
@@ -97,7 +119,7 @@ class sample(object):
         if options.resubmit:
           if os.path.isfile(fullfilename):
             if os.path.getsize(fullfilename) > 1000: #I.e., non corrupted
-              print("Corrupted!")
+              #print("Corrupted!")
               continue
         self.safefiles.append(f)
         #print("File %s loaded succesfully"%f)
@@ -125,11 +147,22 @@ class sample(object):
       self.channels.append(plotdict["channel"])
       self.plotsinchannel[plotdict["channel"]] = [plotdict["name"]]
       self.varstoload[plotdict["channel"]]     = plotdict["vars"]
+      #if plotdict["channel"] in self.altChannels and self.doSyst:
+      #  for altChannel in self.altChannels[plotdict["channel"]]:
+      #    self.channels.append(altChannel)
+      #    self.plotsinchannel(altChannel) = [plotdict["name"]]
+      #    self.varstoload[altChannel]     = plotdict["vars"]
     else:
       self.plotsinchannel[plotdict["channel"]].append(plotdict["name"])
       for v in plotdict["vars"]:
         if not(v in self.varstoload[plotdict["channel"]]): 
           self.varstoload[plotdict["channel"]].append(v)
+      #if plotdict["channel"] in self.altChannels and self.doSyst:
+      #  for altChannel in self.altChannels[plotdict["channel"]]:
+      #    self.plotsinchannel(altChannel).append(plotdict["name"])
+      #    for v in plotdict["vars"]:
+      #      if not(v in self.varstoload[altChannel]):
+      #        self.varstoload[altChannel].append(v)
 
   def getRawHistogramsAndNorms(self, options):
     for plotName in self.plots:
@@ -148,18 +181,28 @@ class sample(object):
         self.histos[plotName]["total"] = ROOT.TH2F(plotName + "_" + self.name, plotName + "_" + self.name, array.array('f', p["bins"][1]), array.array('f', p["bins"][2]))
 
       if not(self.isData): self.norms[plotName] = 0 if not("skim" in self.config) else self.norm
+      if self.doSyst:
+        for var in self.variations:
+          if self.variations[var]["symmetrize"]:
+            self.histos[plotName+ "_" + var + "Up"] = {}
+            self.histos[plotName+ "_" + var + "Up"]["total"] = self.histos[plotName]["total"].Clone(plotName + "_" + self.name +  "_" + var + "Up")
+            self.histos[plotName+ "_" + var + "Dn"] = {}
+            self.histos[plotName+ "_" + var + "Dn"]["total"] = self.histos[plotName]["total"].Clone(plotName + "_" + self.name +  "_" + var + "Dn")
+          else:
+            self.histos[plotName+ "_" + var] = {}
+            self.histos[plotName+ "_" + var]["total"] = self.histos[plotName]["total"].Clone(plotName + "_" + self.name +  "_" + var)
 
     print(self.name, "Pre-load")
     if not(options.toLoad):
       for iff, f in enumerate(self.hdfiles):
-        print("Loading file %i/%i"%(iff, len(self.hdfiles)))
+        if (iff %1 == 0): print("Loading file %i/%i : %s"%(iff, len(self.hdfiles),self.safefiles[iff]))
         self.getRawHistogramsAndNormsOneFile([f,self.safefiles[iff], options])
     elif options.dohadd: # Then, we collect from all files into a single hadd
       self.haddedfile = self.getRawHistogramsAndNormsHadd(options)
       self.haddedTFile = ROOT.TFile(self.haddedfile, "READ")
     else:
       for iff, f in enumerate(self.safefiles):
-        print("Loading file %i/%i: %s"%(iff, len(self.safefiles), f))
+        if (iff %1 == 0): print("Loading file %i/%i: %s"%(iff, len(self.safefiles), f))
         self.getRawHistogramsAndNormsOneFile(["",self.safefiles[iff], options])
 
     # After all is said and done, add up histograms and normalize to xsec
@@ -174,12 +217,42 @@ class sample(object):
           if not(options.dohadd):
             filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
             self.histos[plotName]["total"].Add(self.histos[plotName][filename])
+            if self.doSyst:
+              for var in self.variations:
+                if self.variations[var]["symmetrize"]:
+                  self.histos[plotName+ "_" + var + "Up"]["total"].Add(self.histos[plotName+ "_" + var + "Up"][filename])
+                  self.histos[plotName+ "_" + var + "Dn"]["total"].Add(self.histos[plotName+ "_" + var + "Dn"][filename])
+                else:
+                  self.histos[plotName+ "_" + var]["total"].Add(self.histos[plotName+ "_" + var][filename])
         if options.dohadd:
           self.histos[plotName]["total"] = self.haddedTFile.Get(plotName + "_" + self.name)
-        self.histos[plotName]["total"].Sumw2() # To get proper stat. unc.
+          if self.doSyst:
+            for var in self.variations:
+              if self.variations[var]["symmetrize"]:
+                self.histos[plotName+ "_" + var + "Up"]["total"] = self.haddedTFile.Get(plotName + "_" + self.name +  "_" + var + "Up")
+                self.histos[plotName+ "_" + var + "Dn"]["total"] = self.haddedTFile.Get(plotName + "_" + self.name +  "_" + var + "Dn")
+              else:
+                self.histos[plotName+ "_" + var]["total"] = self.haddedTFile.Get(plotName + "_" + self.name +  "_" + var)
+        # Not needed, as the sumw2 structure exists already
+        #self.histos[plotName]["total"].Sumw2() # To get proper stat. unc.
+        #if self.doSyst:
+        #  for var in self.variations:
+        #    if self.variations[var]["symmetrize"]:
+        #      self.histos[plotName+ "_" + var + "Up"]["total"].Sumw2()
+        #      self.histos[plotName+ "_" + var + "Dn"]["total"].Sumw2()
+        #    else:
+        #      self.histos[plotName+ "_" + var]["total"].Sumw2()
+
         if not(self.isData) and (self.norms[plotName] > 0): 
           self.histos[plotName]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
         self.yields[plotName] = self.histos[plotName]["total"].Integral()
+        if self.doSyst:
+          for var in self.variations:
+            if self.variations[var]["symmetrize"]:
+              self.histos[plotName+ "_" + var + "Up"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+              self.histos[plotName+ "_" + var + "Dn"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+            else:
+              self.histos[plotName+ "_" + var]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
 
   def getRawHistogramsAndNormsOneFile(self, g):
     f, safefile, options = g[0], g[1], g[2]
@@ -190,8 +263,14 @@ class sample(object):
 
       for plotName in self.plots:
         self.histos[plotName][filename]  = self.histos[plotName]["total"].Clone(self.histos[plotName]["total"].GetName() + "_" + filename)
+        if self.doSyst:
+          for var in self.variations:
+            if self.variations[var]["symmetrize"]:
+              self.histos[plotName+ "_" + var + "Up"][filename] = self.histos[plotName+ "_" + var + "Up"]["total"].Clone(self.histos[plotName+ "_" + var + "Up"]["total"].GetName() + "_" + filename)
+              self.histos[plotName+ "_" + var + "Dn"][filename] = self.histos[plotName+ "_" + var + "Dn"]["total"].Clone(self.histos[plotName+ "_" + var + "Dn"]["total"].GetName() + "_" + filename)
+            else:
+              self.histos[plotName+ "_" + var][filename] = self.histos[plotName+ "_" + var]["total"].Clone(self.histos[plotName+ "_" + var]["total"].GetName() + "_" + filename)
       for cpre in self.channels:
-        #print(safefile)
         c = cpre
         if "replaceChannel" in  self.config:
           if cpre in self.config["replaceChannel"]: # This is needed for systematics that change event variables, like JES or TRACK
@@ -199,58 +278,162 @@ class sample(object):
         empty = True if type(f[c]) == type([]) else False # Check if there are events there
         if empty: print("Is empty!", c)
         if not(self.isData):
+          weights = {}
           if empty:
-            weights = []
+            weights[""] = []
           else:
-            weights = f[c]["genweight"]
+            weights[""] = f[c]["genweight"]
+            if self.doSyst:
+              for var in self.variations:
+                if c in self.variations[var]["replaceChannel"]:
+                  if not(self.variations[var]["replaceChannel"][c] in weights):
+                    if empty or type(f[self.variations[var]["replaceChannel"][c]]) != type(f[c]):
+                      weights[var] = []
+                    else:
+                      weights[var] = f[self.variations[var]["replaceChannel"][c]]["genweight"]
         else: 
           if empty:
-            weights = []
+            weights[""] = []
           else:
-            weights = np.ones(len(f[c]))
-        if "extraWeights" in self.config: 
+            weights[""] = np.ones(len(f[c]))
+        if "extraWeights" in self.config:
+          extraweights = {}
           if empty:
-            extraweights = []
+            extraweights[""] = []
           else:
-            extraweights = self.config["extraWeights"](f[c])
+            extraweights[""] = self.config["extraWeights"](f[c])
+
+          if self.doSyst:
+            for var in self.variations:
+              if empty:
+               extraweights[var] = []
+              elif not(c in self.variations[var]["replaceChannel"]):
+                extraweights[var] = extraweights[""]*self.variations[var]["extraWeights"](f[c])
+              elif type(f[self.variations[var]["replaceChannel"][c]]) != type(f[c]): # Basically check if variation is empty, as variations might change selection
+                extraweights[var] = []
+              else:
+                extraweights[var] = self.variations[var]["extraWeights"](f[self.variations[var]["replaceChannel"][c]])
         for plotName in self.plotsinchannel[cpre]:
-          #print("...%s"%plotName)
           p = self.plots[plotName]
           if not("skim" in self.config) and not(self.isData):
             self.norms[plotName] += self.nnorms[safefile]
           if "2D" in p["bins"][0]:
+            values, values2, weightsNom = {}, {} , {}
             if empty:
-              values, values2, weightsHere = [], [], []
+              values[""], values2[""], weightsNom[""] = [], [], []
+              if self.doSyst:
+                for var in self.variations:
+                  if (c in self.variations[var]["replaceChannel"]):
+                    values[var], values2[var], weightsNom[var] = [], [], []
             else:
-              values, values2, weightsHere = p["value"](f[c], weights)
+              values[""], values2[""], weightsNom[""] = p["value"](f[c], weights[""])
+              if self.doSyst:
+                for var in self.variations:
+                  if (c in self.variations[var]["replaceChannel"]) and type(f[self.variations[var]["replaceChannel"][c]]) == type(f[c]):
+                    values[var], values2[var], weightsNom[var] = p["value"](f[self.variations[var]["replaceChannel"][c]], weights[var])
+                  elif (c in self.variations[var]["replaceChannel"]):
+                    values[var], values2[var], weightsNom[var] = [], [], []
           else:
+            values, weightsNom = {}, {}
             if empty:
-              values, weightsHere = [], []
+              values[""], weightsNom[""] = [], []
+              if self.doSyst:
+                for var in self.variations:
+                  if (c in self.variations[var]["replaceChannel"]):
+                    values[var], weightsNom[var] = [], []
             else:
-              values, weightsHere = p["value"](f[c], weights)
+              values[""], weightsNom[""] = p["value"](f[c], weights[""])
+              if self.doSyst:
+                for var in self.variations:
+                  if (c in self.variations[var]["replaceChannel"]) and type(f[self.variations[var]["replaceChannel"][c]]) == type(f[c]):
+                    values[var], weightsNom[var] = p["value"](f[self.variations[var]["replaceChannel"][c]], weights[var])
+                  elif (c in self.variations[var]["replaceChannel"]):
+                    values[var], weightsNom[var] = [], []
           if "extraWeights" in self.config:
-            #for ev in range(len(extraweights)): 
-            #  print(weightsHere[ev], extraweights[ev])
-            if not(empty):
-              weightsHere = weightsHere*extraweights
-          for idx in range(len(values)):
-            if (idx+1)%100000 == 0: print("%i/%i"%(idx, len(values)))
+            weightsHere = {}
+            for var in extraweights:
+                if empty:
+                  weightsHere[var] = []
+                elif var == "":
+                  weightsHere[var] = weightsNom[var]*extraweights[var]
+                elif (var in self.variations) and not(c in self.variations[var]["replaceChannel"]):
+                  weightsHere[var] = weightsNom[""]*extraweights[var]
+                elif type(f[self.variations[var]["replaceChannel"][c]]) == type(f[c]):
+                  weightsHere[var] = weightsNom[var]*extraweights[var]
+                else:
+                  weightsHere[var] = weightsNom[var] # Empty, in fact
+          else:
+            weightsHere = weightsNom
+
+          if "2D" in p["bins"][0]: 
+            root_numpy.fill_hist(self.histos[p["name"]][filename], np.array([values[""], values2[""]]), weightsHere[""])
+            if self.doSyst:
+              for var in self.variations:
+                if not(c in self.variations[var]["replaceChannel"]):
+                  root_numpy.fill_hist(self.histos[p["name"]+ "_" + var + ("Up" if self.variations[var]["symmetrize"] else "")][filename], np.array([values[""], values2[""]]), weightsHere[var])
+          else:
+            root_numpy.fill_hist(self.histos[p["name"]][filename], values[""], weightsHere[""])
+            if self.doSyst:
+              for var in self.variations:
+                if not(c in self.variations[var]["replaceChannel"]):
+                  root_numpy.fill_hist(self.histos[p["name"]+ "_" + var + ("Up" if self.variations[var]["symmetrize"] else "")][filename], values[""], weightsHere[var])
+
+          for altchan in values:
+            if altchan == "": continue # Skip nominal
             if "2D" in p["bins"][0]:
-              self.histos[p["name"]][filename].Fill(values[idx], values2[idx], weightsHere[idx])
+              for var in self.variations:
+                if var == altchan:
+                  root_numpy.fill_hist(self.histos[p["name"]+ "_" + var + ("Up" if self.variations[var]["symmetrize"] else "")][filename], np.array([values[var], values2[var]]), weightsHere[var])
             else:
-              #print(values[idx], weightsHere[idx])
-              self.histos[p["name"]][filename].Fill(values[idx], weightsHere[idx])
+              for var in self.variations:
+                if var == altchan:
+                  root_numpy.fill_hist(self.histos[p["name"]+ "_" + var + ("Up" if self.variations[var]["symmetrize"] else "")][filename], values[var], weightsHere[var])
+
+
+          if self.doSyst:
+            for var in self.variations:
+              if self.variations[var]["symmetrize"]:
+                if "2D" in p["bins"][0]:
+                  for ibin in range(0, self.histos[p["name"]+ "_" + var + "Up"][filename].GetNbinsX()+1):
+                    for jbin in range(0, self.histos[p["name"]+ "_" + var + "Up"][filename].GetNbinsY()+1):
+                      cent = self.histos[p["name"]][filename].GetBinContent(ibin, jbin)
+                      up   = self.histos[p["name"]+ "_" + var + "Up"][filename].GetBinContent(ibin, jbin)
+                      down = max(0,cent*2 - up)
+                      self.histos[p["name"]+ "_" + var + "Dn"][filename].SetBinContent(ibin, jbin, down)
+                      self.histos[p["name"]+ "_" + var + "Dn"][filename].SetBinError(ibin, jbin, self.histos[p["name"]][filename].GetBinError(ibin, jbin))
+                else:
+                  for ibin in range(0, self.histos[p["name"]+ "_" + var + "Up"][filename].GetNbinsX()+1):
+                    cent = self.histos[p["name"]][filename].GetBinContent(ibin)
+                    up   = self.histos[p["name"]+ "_" + var + "Up"][filename].GetBinContent(ibin)
+                    down = max(0,cent*2 - up)
+                    self.histos[p["name"]+ "_" + var + "Dn"][filename].SetBinContent(ibin, down)
+                    self.histos[p["name"]+ "_" + var + "Dn"][filename].SetBinError(ibin, self.histos[p["name"]][filename].GetBinError(ibin))
+
           if options.toSave:
             rf.cd()
             self.histos[p["name"]][filename].Write()
-      if options.toSave: rf.Close() 
+            if self.doSyst:
+              for var in self.variations:
+                if self.variations[var]["symmetrize"]:
+                  self.histos[p["name"]+ "_" + var + "Up"][filename].Write()
+                  self.histos[p["name"]+ "_" + var + "Dn"][filename].Write()
+                else:
+                  self.histos[p["name"]+ "_" + var][filename].Write()
+
+      if options.toSave: 
+        rf.Close() 
     else:
       rf = ROOT.TFile(options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root", "READ")
-      #print(options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root")
       for plotName in self.plots:
-        #print(self.histos[plotName]["total"].GetName() + "_" + filename)
         self.histos[plotName][filename] = copy.copy(rf.Get(self.histos[plotName]["total"].GetName() + "_" + filename))
- 
+        if self.doSyst:
+          for var in self.variations:
+            if self.variations[var]["symmetrize"]:
+              self.histos[plotName+ "_" + var + "Up"][filename] = copy.copy(rf.Get(self.histos[plotName+ "_" + var + "Up"]["total"].GetName() + "_" + filename))
+              self.histos[plotName+ "_" + var + "Dn"][filename] = copy.copy(rf.Get(self.histos[plotName+ "_" + var + "Dn"]["total"].GetName() + "_" + filename))
+            else:
+              self.histos[plotName+ "_" + var][filename] = copy.copy(rf.Get(self.histos[plotName+ "_" + var]["total"].GetName() + "_" + filename))
+
   def getRawHistogramsAndNormsHadd(self, options):
     # Collect all filenames 
     inputFiles = []
@@ -298,7 +481,8 @@ class plotter(object):
   def __init__(self, plotdicts, sampledicts, options):
     self.plots      = plotdicts #[plotdicts[d] for d in plotdicts]
     self.samples    = [sample(sampledicts[d], options) for d in sampledicts]
-    print("...Initializing")
+    self.doSyst     = options.systFile
+    print("...Initializing plotter")
     print("...Will run over %i samples"%(sum([len(s.safefiles) for s in self.samples])))
     for p in self.plots:
       for s in self.samples:
@@ -426,7 +610,7 @@ class plotter(object):
     histo.GetXaxis().SetTitle(p["xlabel"]) # Empty, as it goes into the ratio plot
 
     CMS_lumi.writeExtraText = True
-    CMS_lumi.lumi_13TeV = "%.0f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.3f fb^{-1}" % options.luminosity
+    CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.3f fb^{-1}" % options.luminosity
     CMS_lumi.extraText  = "Preliminary"
     CMS_lumi.lumi_sqrtS = "13"
     CMS_lumi.CMS_lumi(p1, 4, 0, 0.122)
@@ -459,6 +643,7 @@ class plotter(object):
 
         if s.isBackground():
           if systsFile[syst]["type"] == "lnN":
+            # Flat, so no need to search for shapes
             tmpUp = s.histos[pname]["total"].Clone("tmp%s%sUp"%(s.name, syst))
             tmpDn = s.histos[pname]["total"].Clone("tmp%s%sDn"%(s.name, syst))
             if any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]):
@@ -468,18 +653,40 @@ class plotter(object):
           if systsFile[syst]["type"] == "shape":
             altNameUp = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst) + systsFile[syst]["up"]
             altNameDn = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst) + systsFile[syst]["down"]
+            tmpUp, tmpDn = None, None
             if any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]): 
-              # Then we need to find alternative histograms
-              for s in self.samples:
-                print(s.name, altNameUp, altNameDn)
-                if s.name == altNameUp:
-                  s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin) if options.rebin else s.histos[pname]["total"]
-                  tmpUp = s.histos[pname]["total"].Clone(altNameUp)
-                if s.name == altNameDn:
-                  s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin) if options.rebin else s.histos[pname]["total"]
-                  tmpDn = s.histos[pname]["total"].Clone(altNameDn)
-              histosToSave[altNameUp] = tmpUp
-              histosToSave[altNameDn] = tmpDn
+              # Then we need to find alternative histograms, they can be configured through alternative samples (i.e. alternative files) or through variations of a sample, so it is tricky to find
+              tmpUp, tmpDn = None, None
+              for ss in self.samples: # First check if it is a separate sample
+                if ss.name == altNameUp:
+                  ss.histos[pname]["total"] = ss.histos[pname]["total"].Rebin(options.rebin) if options.rebin else ss.histos[pname]["total"]
+                  tmpUp = ss.histos[pname]["total"].Clone(altNameUp)
+                if ss.name == altNameDn:
+                  ss.histos[pname]["total"] = ss.histos[pname]["total"].Rebin(options.rebin) if options.rebin else ss.histos[pname]["total"]
+                  tmpDn = ss.histos[pname]["total"].Clone(altNameDn)
+              # If here and not found, let's look at variations of the nominal
+              if not(tmpUp) or not(tmpDn):
+                for var in s.variations:
+                  if s.variations[var]["symmetrize"]:
+                    testUp = s.name + "_" + var + "Up"
+                    testDn = s.name + "_" + var + "Dn"
+                    if testUp == altNameUp and altNameDn == testDn:
+                      tmpUp = s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameUp).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameUp)
+                      tmpDn = s.histos[pname+ "_" + var + "Dn"]["total"].Clone(altNameDn).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var + "Dn"]["total"].Clone(altNameDn)
+                      tmpNom = s.histos[pname]["total"]
+                      for ibin in range(tmpUp.GetNbinsX()+1):
+                        cent = tmpNom.GetBinContent(ibin)
+                        up   = tmpUp.GetBinContent(ibin)
+                        tmpDn.SetBinContent(ibin, max(0, 2*cent-up))
+                  else:
+                    test =  s.name + "_" + var 
+                    if test == altNameUp:
+                      tmpUp = s.histos[pname+ "_" + var]["total"].Clone(altNameUp).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var]["total"].Clone(altNameUp)
+                    if test == altNameDn:
+                      tmpDn = s.histos[pname+ "_" + var]["total"].Clone(altNameDn).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var]["total"].Clone(altNameDn)
+              #print(altNameUp, tmpUp.GetName(), type(tmpUp))
+              histosToSave[altNameUp] = copy.deepcopy(tmpUp)
+              histosToSave[altNameDn] = copy.deepcopy(tmpDn)
             else:
               # In this case just read nominal
               tmpUp = s[histos[pname]]["total"].Clone(altNameUp)
@@ -492,19 +699,37 @@ class plotter(object):
             backDn.Add(tmpDn)
         if systsFile[syst]["type"] == "shape" and s.isSignal() and any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]): # For signals just save
           # Then we need to find alternative histograms
-          for s in self.samples:
-            print(s.name, altNameUp, altNameDn)
-            if s.name == altNameUp:
-              s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin) if options.rebin else s.histos[pname]["total"]
-              tmpUp = s.histos[pname]["total"].Clone(altNameUp)
-            if s.name == altNameDn:
-              s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin) if options.rebin else s.histos[pname]["total"]
-              tmpDn = s.histos[pname]["total"].Clone(altNameDn)
-          histosToSave[altNameUp] = tmpUp
-          histosToSave[altNameDn] = tmpDn
-
+          tmpUp, tmpDn = None, None
+          for ss in self.samples:
+            if ss.name == altNameUp:
+              ss.histos[pname]["total"] = ss.histos[pname]["total"].Rebin(options.rebin) if options.rebin else ss.histos[pname]["total"]
+              tmpUp = ss.histos[pname]["total"].Clone(altNameUp)
+            if ss.name == altNameDn:
+              ss.histos[pname]["total"] = ss.histos[pname]["total"].Rebin(options.rebin) if options.rebin else ss.histos[pname]["total"]
+              tmpDn = ss.histos[pname]["total"].Clone(altNameDn)
+          if not(tmpUp) or not(tmpDn):
+            for var in s.variations:
+              if s.variations[var]["symmetrize"]:
+                testUp = s.name + "_" + var + "Up"
+                testDn = s.name + "_" + var + "Dn"
+                if testUp == altNameUp and altNameDn == testDn:
+                  tmpUp = s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameUp).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameUp)
+                  tmpDn = s.histos[pname+ "_" + var + "Dn"]["total"].Clone(altNameDn).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameDn)
+              else:
+                test =  s.name + "_" + var
+                if test == altNameUp:
+                  tmpUp = s.histos[pname+ "_" + var]["total"].Clone(altNameUp).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var]["total"].Clone(altNameUp)
+                if test == altNameDn:
+                  tmpDn = s.histos[pname+ "_" + var]["total"].Clone(altNameDn).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var]["total"].Clone(altNameDn)
+          if not(tmpUp) or not(tmpDn): # Catch: otherwise we wil be overwritten one histogram for each signal 
+            pass
+          else:
+            histosToSave[altNameUp] = copy.deepcopy(tmpUp)
+            histosToSave[altNameDn] = copy.deepcopy(tmpDn)
       theStacks["%sUp"%syst] = backUp
       theStacks["%sDn"%syst] = backDn
+      histosToSave["%sUp"%syst] = backUp
+      histosToSave["%sDn"%syst] = backDn
     # Here we have all systs saved in theStacks, now we add systematics bin by bin
     nomHistoSyst = nomstack.Clone(nomstack.GetName() + "_Syst")
     for ibin in range(0,nomstack.GetNbinsX()+1):
@@ -581,6 +806,7 @@ class plotter(object):
     thePlotGroups = {}
     thePlotGroupsSignal = {}
     thePlotGroupsData   = {}
+    GroupsYields = {}
     if debug: print("...Samples ordered")
     for s in self.samples:
       if "isSyst" in s.config:
@@ -590,20 +816,17 @@ class plotter(object):
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
         if not(back): back = s.histos[pname]["total"].Clone("total_background")
         else: back.Add(s.histos[pname]["total"])
-        #print(pname, s.name)
-        #s.histos[pname]["total"].Print("all")
         if not(s.config["label"] in thePlotGroups):
           thePlotGroups[s.config["label"]] = s.histos[pname]["total"].Clone(s.histos[pname]["total"].GetName().replace(s.name, s.config["label"]))
+          GroupsYields[s.config["label"]]  = s.histos[pname]["total"].Integral()
         else:
           thePlotGroups[s.config["label"]].Add(s.histos[pname]["total"])
+          GroupsYields[s.config["label"]] += s.histos[pname]["total"].Integral()
       elif s.isData:
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
-        #tl.AddEntry(s.histos[pname]["total"], s.config["label"], "pl")
         if not(s.config["label"] in thePlotGroupsData):
-          print("new data!")
           thePlotGroupsData[s.config["label"]] = s.histos[pname]["total"].Clone(s.histos[pname]["total"].GetName().replace(s.name, s.config["label"]))
         else:
-          print("more data!")
           thePlotGroupsData[s.config["label"]].Add(s.histos[pname]["total"])
       else: 
         if options.rebin and nbins % options.rebin == 0: s.histos[pname]["total"] = s.histos[pname]["total"].Rebin(options.rebin)
@@ -615,7 +838,9 @@ class plotter(object):
         else:
           thePlotGroupsSignal[s.config["label"]].Add(s.histos[pname]["total"])
     if debug: print("...Groups created")
-    for plotgroup in thePlotGroups:
+
+    orderedPlotGroups = sorted(GroupsYields.keys(), key=lambda x: GroupsYields[x])
+    for plotgroup in (orderedPlotGroups if options.ordered else thePlotGroups):
       theStack.Add(thePlotGroups[plotgroup])
       tl.AddEntry(thePlotGroups[plotgroup], plotgroup, "f")
       stacksize += thePlotGroups[plotgroup].Integral()
@@ -626,7 +851,7 @@ class plotter(object):
       theData.append(thePlotGroupsData[plotgroup])
       tl.AddEntry(thePlotGroupsData[plotgroup], plotgroup, "pl")
     backSyst = back
-    if options.systFile:
+    if self.doSyst:
       backSyst, histosToSave = self.doSystVariations(options.systFile, pname, options, back)
 
     if p["normalize"]:
@@ -654,14 +879,12 @@ class plotter(object):
       theStack.SetMinimum(p["minY"])
     if debug: print("...Max and Min set")
     theStack.Draw("hist")
-    doSyst = options.systFile # This seems so very wrong even if it works
-    print("DO SYST", doSyst)
-    if doSyst:
-      back.SetFillColor(ROOT.kBlack)
-      back.SetLineColor(ROOT.kBlack)
-      back.SetFillStyle(3244)
-      tl.AddEntry(back, "SM Unc.", "f")
-      back.Draw("E2same")
+    if self.doSyst:
+      backSyst.SetFillColor(ROOT.kBlack)
+      backSyst.SetLineColor(ROOT.kBlack)
+      backSyst.SetFillStyle(3244)
+      tl.AddEntry(backSyst, "SM Unc.", "f")
+      backSyst.Draw("E2same")
     for ind in theIndivs:
       ind.Draw("hist same")
     # Last, draw the data
@@ -699,24 +922,25 @@ class plotter(object):
     if "ratiominY" in p:
       den.SetMinimum(p["ratiominY"] if not options.rmin else float(options.rmin))
     denbar = den.Clone(den.GetName() + "_bar")
-    denbar.SetFillColor(ROOT.kCyan if doSyst else ROOT.kGray)
+    denbar.SetFillColor(ROOT.kCyan if self.doSyst else ROOT.kGray)
+    denbar.SetFillStyle(1001)
     denbar.Draw("E2")
-    if doSyst:
+    if self.doSyst:
       backratio = back.Clone("backratiostat")
       backratio.Divide(back)
       backratio.SetFillColor(ROOT.kGray)
       backratio.SetLineColor(ROOT.kGray)
       backratio.SetFillStyle(1001)
       backratio.Draw("E2 same")
-    ncolumns = 3 if doSyst else 2 
+    ncolumns = 3 if self.doSyst else 2 
     tlr = ROOT.TLegend(0.9-0.2*ncolumns,0.89,0.9,0.97)
     tlr.SetNColumns(ncolumns)
     tlr.SetBorderSize(0)
     if "legendRatioPosition" in p:
       tlr = ROOT.TLegend(p["legendRatioPosition"][0], p["legendRatioPosition"][1], p["legendRatioPosition"][2], p["legendRatioPosition"][3])
-    tlr.AddEntry(denbar, "SM syst.+stat. Unc." if doSyst else options.ratiostatlabel, "f")
-    if doSyst:
-      tlr.AddEntry(back, options.ratiostatlabel, "f")
+    tlr.AddEntry(denbar, "SM syst.+stat. Unc." if self.doSyst else options.ratiostatlabel, "f")
+    if self.doSyst:
+      tlr.AddEntry(backratio, options.ratiostatlabel, "f")
     for ib in range(0, den.GetNbinsX()+1):
       den.SetBinError(ib,0)
       den.SetBinContent(ib, 1)
@@ -724,9 +948,7 @@ class plotter(object):
     den.Draw("same")
     for num in nums:
       num.Draw("same" + ("hist" if options.noratiostat else "")) if not("Data" in num.GetName()) else num.Draw("Psame")
-      print(num.GetName())
       if "Data" in num.GetName(): 
-        print("DDDATA")
         tlr.AddEntry(num, "Data", "pl") 
     if debug: print("...Ratio done")
     tlr.Draw("same")
@@ -746,11 +968,11 @@ class plotter(object):
     # Also save as TH1 in root file 
     tf = ROOT.TFile(options.plotdir + "/" + p["plotname"] + ".root", "RECREATE")
     for s in self.samples:
-      if s.isBackground():
-        s.histos[pname]["total"].Write()
-      else:
-        s.histos[pname]["total"].Write()
+      s.histos[pname]["total"].Write()
     theStack.Write()
+    if self.doSyst:
+      for h in histosToSave:
+        histosToSave[h].Write()
     tf.Close()
     if debug: print("...File closed")
     ROOT.SetOwnership(c,False) # This magic avoids segfault due to the garbage collector collecting non garbage stuff
@@ -770,6 +992,7 @@ if __name__ == "__main__":
   parser.add_option("--dohadd", dest="dohadd", action="store_true", default=False, help="If true, will run (or read) hadded files rather than individual .root files, faster for cases with high #files")
   parser.add_option("--blind", dest="blind", action="store_true", default=False, help="Activate for blinding (no data)")
   parser.add_option("--sample", dest ="sample", default=[], action="append", help="If not none, process only this specific sample")
+  parser.add_option("--exclude", dest="exclude", default=[], action="append", help="Exclude samples matching this")
   parser.add_option("--files", dest="files", default=None, help="If not none, process only these set of comma separated files")
   parser.add_option("--queue", dest="queue", default=None, help="If not none, submit jobs to this queue")
   parser.add_option("--batchsize", dest="batchsize", default=1, help="Run this many files per batch job")
@@ -785,6 +1008,7 @@ if __name__ == "__main__":
   parser.add_option("--scaleY", dest="scaleMax", type="float", default=1., help="Scale Y axis maximum by this number (useful when plotting only signal, for example)")
   parser.add_option("--noratiostat", dest="noratiostat", action="store_true", default=False, help="Do not show stat uncertainties in ratios (i.e. if num/dem are fully correlated this would mean double counting")
   parser.add_option("--systFile", dest="systFile", type="string", default=None, help="Systematics configuration file")
+  parser.add_option("--pretend", dest="pretend", action="store_true", default=False, help="Activate pretend mode (create submit job files but don't submit)")
 
   (options, args) = parser.parse_args()
   samplesFile = imp.load_source("samples",args[0])
@@ -796,7 +1020,7 @@ if __name__ == "__main__":
     os.system("mkdir %s"%options.toSave)
   os.system("cp %s %s %s"%(args[0], args[1], options.plotdir))
   samples = samplesFile.samples
-  if False: #not(options.systFile):
+  if not(options.systFile):
     # Then we take out all systematic variations because we don't need to process them
     newsamples = {}
     for s in samples:
@@ -809,21 +1033,38 @@ if __name__ == "__main__":
         newsamples[s] = samples[s]
     samples = newsamples
 
-  if options.test:
-    for s in samples:
-      #print(s, samples[s]["files"])
-      samples[s]["files"] = [samples[s]["files"][0]]
   plots   = plotsFile.plots
   if options.sample != []:
     newsamples = {}
     for s in options.sample:
       for ss in samples.keys():
         if re.match(s, ss):
-          print("Add", ss)
+          print("Will run over:", ss)
           newsamples[ss] = samples[ss]
     samples = newsamples
-  if options.blind and "data" in samples:
-    del samples["data"]
+  if options.exclude != []:
+    newsamples = {}
+    for ss in samples.keys():
+      add = True
+      for s in options.exclude:
+        if re.match(s, ss):
+          print("Will exclude sample:", ss)
+          add = False
+      if add:
+        newsamples[ss] = samples[ss]
+    samples = newsamples
+
+  if options.test:
+    for s in samples:
+      samples[s]["files"] = [samples[s]["files"][0]]
+
+  if options.blind:
+    toDelete = []
+    for s in samples:
+      if "data" in s: 
+        toDelete.append(s)
+    for d in toDelete:
+      del samples[d]
   if len(options.singleplot) > 0:
     newplots = {p: plots[p] for p in options.singleplot}
     plots = newplots
@@ -845,6 +1086,8 @@ if __name__ == "__main__":
       os.system("mkdir %s"%options.jobname)
     if not(os.path.isdir(options.jobname+"/exec")):
       os.system("mkdir %s/exec"%options.jobname)
+    else:
+      os.system("rm %s/exec/*"%options.jobname)
     if not(os.path.isdir(options.jobname+"/batchlogs")):
       os.system("mkdir %s/batchlogs"%options.jobname)
 
@@ -863,7 +1106,7 @@ if __name__ == "__main__":
     subfile.write("+JobFlavour = \"%s\"\n"%(options.queue))
     subfile.write("queue filename matching (%s/exec/_*sh)\n"%("%s"%options.jobname))
     subfile.close()
-    os.system("condor_submit -spool submit.sub")
+    if not(options.pretend): os.system("condor_submit -spool submit.sub")
 
   else:
     thePlotter.doPlots(options)
