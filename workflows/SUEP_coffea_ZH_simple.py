@@ -32,6 +32,7 @@ class SUEP_cluster(processor.ProcessorABC):
         self.era = era
         self.isMC = isMC
         self.sample = sample
+        self.isSignal = "ZH" in sample
         self.syst_var, self.syst_suffix = (syst_var, f'_sys_{syst_var}') if do_syst and syst_var else ('', '')
         self.weight_syst = weight_syst
         self.prefixes = {"SUEP": "SUEP"}
@@ -413,7 +414,8 @@ class SUEP_cluster(processor.ProcessorABC):
             print("No events pass cut, stopping...")
             for channel in out.keys():
                 outcols.append(channel)
-                if out[channel][0] == {}:   
+                if len(out[channel][0]) == 0:
+                    print("Create empty frame") 
                     outdfs = pd.DataFrame(['empty'], columns=['empty'])
                 else:              
                     if self.isMC:
@@ -528,7 +530,8 @@ class SUEP_cluster(processor.ProcessorABC):
         self.varsToDo = [""]           # If not activated just do nominal yields
         if self.do_syst:
           self.isrweights  = self.doISRWeights(self.events)                                  # Does not change selection
-          self.jetsVar     = self.doJECJERVariations(self.events, self.jets)                 # Does change selection, entry "" is central jets, entry "JECX" is JECUp/JECDown, entry "JERX" is JERUp/JerDown
+          if self.isSignal: 
+            self.jetsVar     = self.doJECJERVariations(self.events, self.jets)                 # Does change selection, entry "" is central jets, entry "JECX" is JECUp/JECDown, entry "JERX" is JERUp/JerDown
 
           if self.doTracks: 
             print("Start Tracks!")
@@ -536,13 +539,14 @@ class SUEP_cluster(processor.ProcessorABC):
           outputsnew = {}
           for channel in outputs:
             outputsnew[channel] = outputs[channel]
-            outputsnew[channel + "_JECUP"]   = outputs[channel]
-            outputsnew[channel + "_JECDOWN"] = outputs[channel]
-            outputsnew[channel + "_JERUP"]   = outputs[channel]
-            outputsnew[channel + "_JERDOWN"] = outputs[channel]
-            outputsnew[channel + "_TRACKUP"] = outputs[channel]
+            if self.isSignal: # Only do JEC/JER for signal
+              outputsnew[channel + "_JECUP"]   = outputs[channel]
+              outputsnew[channel + "_JECDOWN"] = outputs[channel]
+              outputsnew[channel + "_JERUP"]   = outputs[channel]
+              outputsnew[channel + "_JERDOWN"] = outputs[channel]
+            outputsnew[channel + "_TRACKUP"] = outputs[channel] # Tracks done for all as they change shapes significantly
           outputs = outputsnew
-          self.varsToDo = ["", "_JECUP", "_JECDOWN", "_JERUP", "_JERDOWN", "_TRACKUP"]
+          self.varsToDo = ["", "_JECUP", "_JECDOWN", "_JERUP", "_JERDOWN", "_TRACKUP"] if self.isSignal else ["", "_TRACKUP"]
 
         # ------------------------------------------------------------------------------
         # ------------------------------- SELECTION + PLOTTING -------------------------
@@ -748,10 +752,16 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def doISRWeights(self, events):
         out = {}
-        out["PSWeight_ISRUP"]   = events.PSWeight[:,0]
-        out["PSWeight_FSRUP"]   = events.PSWeight[:,1]
-        out["PSWeight_ISRDOWN"] = events.PSWeight[:,2]
-        out["PSWeight_FSRDOWN"] = events.PSWeight[:,3]
+        if len(events.PSWeight[0,:]) > 3: 
+          out["PSWeight_ISRUP"]   = events.PSWeight[:,0]
+          out["PSWeight_FSRUP"]   = events.PSWeight[:,1]
+          out["PSWeight_ISRDOWN"] = events.PSWeight[:,2]
+          out["PSWeight_FSRDOWN"] = events.PSWeight[:,3]
+        else:
+          out["PSWeight_ISRUP"]   =  ak.Array([1.0]*len(events))
+          out["PSWeight_FSRUP"]   =  ak.Array([1.0]*len(events))
+          out["PSWeight_ISRDOWN"] =  ak.Array([1.0]*len(events))
+          out["PSWeight_FSRDOWN"] =  ak.Array([1.0]*len(events))
         return out
 
     def doPrefireWeights(self, events):
@@ -783,11 +793,17 @@ class SUEP_cluster(processor.ProcessorABC):
         weightsNom = ak.Array(weightsNom)
         weightsUp  = ak.Array(weightsUp)
         weightsDn  = ak.Array(weightsDn)
-        weightsMask = (np.array(events.Pileup.nTrueInt)).astype(int)
-        out = {}
-        out["PUWeight"] = weightsNom[weightsMask]
-        out["PUWeightUp"] = weightsUp[weightsMask]
-        out["PUWeightDn"] = weightsDn[weightsMask]
+        if hasattr(events, "Pileup"):
+          weightsMask = (np.array(events.Pileup.nTrueInt)).astype(int)
+          out = {}
+          out["PUWeight"] = weightsNom[weightsMask]
+          out["PUWeightUp"] = weightsUp[weightsMask]
+          out["PUWeightDn"] = weightsDn[weightsMask]
+        else:
+          out = {}
+          out["PUWeight"] = ak.ones_like(events.genWeight)
+          out["PUWeightUp"] = ak.ones_like(events.genWeight)
+          out["PUWeightDn"] = ak.ones_like(events.genWeight)
         return out
 
     def doTracksDropping(self, events, tracks):
@@ -869,7 +885,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
 
     def doJECJERVariations(self, events, jets):
-        jets_corrected = apply_jecs(isMC=self.isMC, Sample=self.sample, era=self.era, events=events)
+        jets_corrected = apply_jecs(isMC=self.isMC, Sample=self.sample, era=self.era, events=events, doStoc=True)
         jetsOut = {"":       self.selectByJets(events, self.leptons, jets_corrected)[1],
                    "_JECUP": self.selectByJets(events, self.leptons, jets_corrected["JES_jes"].up)[1],
                    "_JECDOWN": self.selectByJets(events, self.leptons, jets_corrected["JES_jes"].down)[1],

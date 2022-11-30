@@ -20,13 +20,15 @@ parser.add_option("--systfile", dest="systfile", type="string", default="ZH/syst
 parser.add_option("--tag", dest="tag", type="string", default="", help="Add this extra tag to separate the plotting step from others")
 parser.add_option("--var", dest="var", type="string", default="leadclusterspher", help="Make cards based on the shape of this variable")
 parser.add_option("--leptonID", dest="leptonID", action="store_true", default=False, help="Activate lepton ID optimization commands")
+parser.add_option("--btagEff", dest="btagEff", action="store_true", default=False, help="Activate bTag Efficiency commands")
 (options, args) = parser.parse_args()
 
 doWhat = args[0]
 if not(os.path.exists(options.output)):
     os.system("mkdir %s"%(options.output))
 
-era = str(options.year).replace("APV","") # The analyzer just takes the year
+era = str(options.year) # The analyzer just takes the year
+if "APV" in era: era = "2015" # Convention so it is less annoying for conversion of types
 
 if doWhat == "all" or doWhat == "dataframes":
   if options.detailed:
@@ -36,28 +38,39 @@ if doWhat == "all" or doWhat == "dataframes":
     print("  - By default commands will be given for batch submission as this should not be run locally. Which queue can be regulated with the -q option")
     print("  - On lxplus, monitoring of the jobs can be done with the condor_q command\x1b[0m")
   print("-------------------------------------------")
-  analyzer = "ZH_simple"
+  analyzer = "ZH_simple_withsyst"
   if options.leptonID: 
     analyzer = "ZH_leptonID"
     if options.plotfile == "ZH/plots_mZ.py": # If default, change to leptonID one
       options.plotfile = "ZH/plots_leptonID.py" 
+  if options.btagEff:
+    analyzer = "ZH_btagEff"
+    doWhat = "dataframes"
+    print("\x1b[0;31;40m Reminder: B tagging effiency dataframe production step is suggested to run only for TT and DY samples (--samples argument) \x1b[0m")
+
   print("[DATAFRAMES] creation step...")
   samples = open(os.getcwd() +  "/data/samples_%s.json"%options.year)
   samplesjson = json.loads(samples.read())
   for sample in samplesjson:
+    if type(samplesjson[sample]["path"]) != type( [1,2]): #Convert into list
+      samplesjson[sample]["path"] = [samplesjson[sample]["path"]]
     if (samplesjson[sample]["isData"] > 0) and not(options.unblind): continue
     if len(options.samples) == 0:
-      print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
-      if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+      for samplepath in samplesjson[sample]["path"]:
+        print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+        if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
     else:
       for filt in options.samples:
         if re.match(filt, sample):
-          print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
-          if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplesjson[sample]["path"], options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+          for samplepath in samplesjson[sample]["path"]:
+            print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+            if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
   print("-------------------------------------------")
   print("-------------------------------------------")
   print("-------------------------------------------")
-
+  if options.btagEff:
+    print("\x1b[0;31;40m After the dataframes are run, collect efficiencies with \x1b[0m")
+    print("python workflows/utils/getBTagEff.py %s %s"%(options.output, options.output + "/effs"))
 if doWhat == "all" or doWhat == "plots":
   if options.detailed:
     print("\x1b[0;31;40m The next analysis step is producing histograms from the produced dataframes this is done in two steps with the plotter_vh.py script")
