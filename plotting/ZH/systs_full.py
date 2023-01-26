@@ -111,5 +111,23 @@ systematicsAndShapes = {
             "processes": [".*"],
             "size": 1.025,
  },
+ "DYnorm": {
+            "name": "lumi",
+            "type": "lnN",
+            "processes": ["DY.*"],
+            "size": 1.2,
+ },
+ "ttnorm": {
+            "name": "lumi",
+            "type": "lnN",
+            "processes": ["TT.*"],
+            "size": 1.2,
+ },
+ "VVnorm": {
+            "name": "lumi",
+            "type": "lnN",
+            "processes": ["VV.*"],
+            "size": 1.2,
+ },
 }
 
