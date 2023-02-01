@@ -6,13 +6,13 @@
     "isDYinclusive":1
   },
   "DYToLL_M50_Pt0To50":{
-    "path":"/eos/user/j/jkil/SUEP/SUEPCoffea_dask/DY18/DYToLL_M50_Pt0To50/",
+    "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt0To50/",
     "isData":0,
     "filter":0,
     "isDYinclusive":0
   },
   "DYToLL_M50_Pt50To100":{
-    "path":"/eos/user/j/jkil/SUEP/SUEPCoffea_dask/DY18/DYToLL_M50_Pt50To100/",
+    "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt50To100/",
     "isData":0,
     "filter":0,
     "isDYinclusive":0
