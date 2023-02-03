@@ -61,7 +61,7 @@ class sample(object):
       iF +=1
       if (iF%100 == 1): print("Checking files %i/%i"%(iF, len(self.config["files"])))
       try:
-        if self.isData and options.dohadd: continue
+        #if self.isData and options.dohadd: continue
         filename = f.split("/")[-1].replace("out_","").replace(".hdf5","")
         if options.toSave: 
           fullfilename = options.toSave.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
@@ -216,6 +216,7 @@ class sample(object):
             self.norms[plotName] += self.nnorms[self.safefiles[iff]]
           if not(options.dohadd):
             filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
+            print(filename, plotName)
             self.histos[plotName]["total"].Add(self.histos[plotName][filename])
             if self.doSyst:
               for var in self.variations:
@@ -277,8 +278,8 @@ class sample(object):
             c = self.config["replaceChannel"][cpre]
         empty = True if type(f[c]) == type([]) else False # Check if there are events there
         if empty: print("Is empty!", c)
+        weights = {}
         if not(self.isData):
-          weights = {}
           if empty:
             weights[""] = []
           else:
@@ -366,11 +367,11 @@ class sample(object):
             weightsHere = weightsNom
 
           if "2D" in p["bins"][0]: 
-            root_numpy.fill_hist(self.histos[p["name"]][filename], np.array([values[""], values2[""]]), weightsHere[""])
+            root_numpy.fill_hist(self.histos[p["name"]][filename], np.vstack([values[""], values2[""]]).T, weightsHere[""])
             if self.doSyst:
               for var in self.variations:
                 if not(c in self.variations[var]["replaceChannel"]):
-                  root_numpy.fill_hist(self.histos[p["name"]+ "_" + var + ("Up" if self.variations[var]["symmetrize"] else "")][filename], np.array([values[""], values2[""]]), weightsHere[var])
+                  root_numpy.fill_hist(self.histos[p["name"]+ "_" + var + ("Up" if self.variations[var]["symmetrize"] else "")][filename], np.vstack([values[""], values2[""]]).T, weightsHere[var])
           else:
             root_numpy.fill_hist(self.histos[p["name"]][filename], values[""], weightsHere[""])
             if self.doSyst:
@@ -383,7 +384,7 @@ class sample(object):
             if "2D" in p["bins"][0]:
               for var in self.variations:
                 if var == altchan:
-                  root_numpy.fill_hist(self.histos[p["name"]+ "_" + var + ("Up" if self.variations[var]["symmetrize"] else "")][filename], np.array([values[var], values2[var]]), weightsHere[var])
+                  root_numpy.fill_hist(self.histos[p["name"]+ "_" + var + ("Up" if self.variations[var]["symmetrize"] else "")][filename], np.vstack([values[var], values2[var]]).T, weightsHere[var])
             else:
               for var in self.variations:
                 if var == altchan:
@@ -561,27 +562,28 @@ class plotter(object):
   def doColZPlots(self, pname, options):
 
     theIndivs= []
-    theData  = []
     # Background go into the stack
     stacksize = 0
     back = False
+    data = False
     if options.ordered:
       self.samples.sort(key= lambda x: x.yields[pname], reverse=False)
-    nbins = self.samples[0].histos[pname]["total"].GetNbinsX()
     for s in self.samples:
+      print(s.name, s.histos[pname]["total"].Integral())
       if s.isBackground():
         if not(back): back = s.histos[pname]["total"].Clone("total_background")
         else: back.Add(s.histos[pname]["total"])
-        self.draw2DColZ(pname, s.histos[pname]["total"], s.name, options)
-
+        if not(options.onlytotal): self.draw2DColZ(pname, s.histos[pname]["total"], s.name, options)
       elif s.isData:
-        theData.append(s.histos[pname]["total"])
-        self.draw2DColZ(pname, s.histos[pname]["total"], s.name, options)
+        if not(data): data = s.histos[pname]["total"].Clone("total_data")
+        else:         data.Add(s.histos[pname]["total"])
+        #self.draw2DColZ(pname, s.histos[pname]["total"], s.name, options)
       else:
         theIndivs.append(s.histos[pname]["total"])
         self.draw2DColZ(pname, s.histos[pname]["total"], s.name, options)
 
     self.draw2DColZ(pname, back, "background", options)
+    self.draw2DColZ(pname, data, "data", options)
 
   def draw2DColZ(self, pname, histo, sname, options):
     p = self.plots[pname]
@@ -607,7 +609,7 @@ class plotter(object):
     histo.GetYaxis().SetTitleOffset(0.72)
     histo.GetZaxis().SetTitle("Events")
     histo.GetYaxis().SetTitle(p["ylabel"])
-    histo.GetXaxis().SetTitle(p["xlabel"]) # Empty, as it goes into the ratio plot
+    histo.GetXaxis().SetTitle(p["xlabel"])
 
     CMS_lumi.writeExtraText = True
     CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.3f fb^{-1}" % options.luminosity
@@ -617,7 +619,7 @@ class plotter(object):
 
     c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".pdf")
     c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".png")
-    # Also save as TH1 in root file 
+    # Also save in root file 
     tf = ROOT.TFile(options.plotdir + "/" + p["plotname"] + ".root", "UPDATE")
     histo.Write()
     tf.Close()
@@ -838,7 +840,7 @@ class plotter(object):
         else:
           thePlotGroupsSignal[s.config["label"]].Add(s.histos[pname]["total"])
     if debug: print("...Groups created")
-
+    print(thePlotGroupsSignal)
     orderedPlotGroups = sorted(GroupsYields.keys(), key=lambda x: GroupsYields[x])
     for plotgroup in (orderedPlotGroups if options.ordered else thePlotGroups):
       theStack.Add(thePlotGroups[plotgroup])
@@ -1009,7 +1011,7 @@ if __name__ == "__main__":
   parser.add_option("--noratiostat", dest="noratiostat", action="store_true", default=False, help="Do not show stat uncertainties in ratios (i.e. if num/dem are fully correlated this would mean double counting")
   parser.add_option("--systFile", dest="systFile", type="string", default=None, help="Systematics configuration file")
   parser.add_option("--pretend", dest="pretend", action="store_true", default=False, help="Activate pretend mode (create submit job files but don't submit)")
-
+  parser.add_option("--onlytotal", dest="onlytotal", action="store_true", default=False, help="For colz plots, only plot total background")
   (options, args) = parser.parse_args()
   samplesFile = imp.load_source("samples",args[0])
   plotsFile   = imp.load_source("plots",  args[1])

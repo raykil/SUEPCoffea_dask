@@ -6,13 +6,13 @@
     "isDYinclusive":1
   },
   "DYToLL_M50_Pt0To50":{
-    "path":"/eos/user/j/jkil/SUEP/SUEPCoffea_dask/DY18/DYToLL_M50_Pt0To50/",
+    "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt0To50/",
     "isData":0,
     "filter":0,
     "isDYinclusive":0
   },
   "DYToLL_M50_Pt50To100":{
-    "path":"/eos/user/j/jkil/SUEP/SUEPCoffea_dask/DY18/DYToLL_M50_Pt50To100/",
+    "path":"/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt50To100/",
     "isData":0,
     "filter":0,
     "isDYinclusive":0
@@ -149,55 +149,55 @@
     "filter":0,
     "isDYinclusive":0
   },
-  "SUEP_generic_mS125":{
+  "PRIVATE_SUEP_generic_mS125":{
     "path":"/eos/user/c/cericeci/SUEP_signals/UL18_withgeninfo/ZHleptonicpythia_generic_M125_MD2_T2_HT0.0_new_propergen/NANOAOD/",
     "isData":0,
     "filter":"total",
     "isDYinclusive":0
   },
-  "SUEP_generic_mS125_mD2_T2":{
+  "PRIVATE_SUEP_generic_mS125_mD2_T2":{
     "path": "/eos/cms/store/user/cericeci/SUEPS/private_samples/UL18/ZHleptonicpythia_generic_M125_MD2_T2_HT-1_/NANOAOD/",
     "isData":0,
     "filter": "total",
     "isDYinclusive": 0
   },
-  "SUEP_generic_new_mS125_mD2_T2":{
+  "PRIVATE_SUEP_generic_new_mS125_mD2_T2":{
     "path": "/eos/cms/store/user/cericeci/SUEPS/private_samples/UL18/ZHleptonicpythia_generic_new_M125_MD2_T2_HT-1_/NANOAOD/",
     "isData":0,
     "filter": "total",
     "isDYinclusive": 0
   },
-  "SUEP_leptonic_mS125_mD2_T2":{
+  "PRIVATE_SUEP_leptonic_mS125_mD2_T2":{
     "path": "/eos/cms/store/user/cericeci/SUEPS/private_samples/UL18/ZHleptonicpythia_leptonic_M125_MD2_T2_HT-1_/NANOAOD/",
     "isData":0,
     "filter": "total",
     "isDYinclusive": 0
   },
-  "SUEP_hadronic_mS125_mD2_T2":{
+  "PRIVATE_SUEP_hadronic_mS125_mD2_T2":{
     "path": "/eos/cms/store/user/cericeci/SUEPS/private_samples/UL18/ZHleptonicpythia_hadronic_M125_MD2_T2_HT-1_/NANOAOD/",
     "isData":0,
     "filter": "total",
     "isDYinclusive": 0
   },
-  "SUEP_generic_new_mS125_mD2_T1":{
+  "PRIVATE_SUEP_generic_new_mS125_mD2_T1":{
     "path": "/eos/cms/store/user/cericeci/SUEPS/private_samples/UL18/ZHleptonicpythia_generic_new_M125_MD2_T1_HT-1_/NANOAOD/",
     "isData":0,
     "filter": "total",
     "isDYinclusive": 0
   },
-  "SUEP_generic_new_mS125_mD2_T4":{
+  "PRIVATE_SUEP_generic_new_mS125_mD2_T4":{
     "path": "/eos/cms/store/user/cericeci/SUEPS/private_samples/UL18/ZHleptonicpythia_generic_new_M125_MD2_T4_HT-1_/NANOAOD/",
     "isData":0,
     "filter": "total",
     "isDYinclusive": 0
   },
-  "SUEP_generic_new_mS125_mD1_T2":{
+  "PRIVATE_SUEP_generic_new_mS125_mD1_T2":{
     "path": "/eos/cms/store/user/cericeci/SUEPS/private_samples/UL18/ZHleptonicpythia_generic_new_M125_MD1_T2_HT-1_/NANOAOD/",
     "isData":0,
     "filter": "total",
     "isDYinclusive": 0
   },
-  "SUEP_generic_new_mS125_mD4_T2":{
+  "PRIVATE_SUEP_generic_new_mS125_mD4_T2":{
     "path": "/eos/cms/store/user/cericeci/SUEPS/private_samples/UL18/ZHleptonicpythia_generic_new_M125_MD4_T2_HT-1_/NANOAOD/",
     "isData":0,
     "filter": "total",
