@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 import fastjet
 from coffea import hist, processor, lookup_tools
-import pickle
+import pickle5 as pickle
 import vector
 from typing import List, Optional
 import correctionlib
@@ -254,7 +254,7 @@ class SUEP_cluster(processor.ProcessorABC):
         else:
             cutHasTwoMuons = (ak.num(selMuons, axis=1)==2) & (ak.max(selMuons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selMuons.charge,axis=1) == 0)
             cutHasTwoElecs = (ak.num(selElectrons, axis=1)==2) & (ak.max(selElectrons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selElectrons.charge,axis=1) == 0)
-            cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 4)
+            cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 3)
             cutHasTwoLeps  = ((cutHasTwoMuons) | (cutHasTwoElecs)) & cutTwoLeps
             ### Cut the events, also return the selected leptons for operation down the line
             events = events[cutHasTwoLeps]
@@ -520,6 +520,7 @@ class SUEP_cluster(processor.ProcessorABC):
           self.btagweights = self.doBTagWeights(self.events, self.jets, "L") # Does not change selection 
           self.puweights   = self.doPUWeights(self.events)                                   # Does not change selection
           self.l1preweights= self.doPrefireWeights(self.events)
+          self.triggerSFs = self.doTriggerSFs(self.electrons, self.muons)
 
         # ------------------------------------------------------------------------------
         # ------------------------------- UNCERTAINTIES --------------------------------
@@ -651,6 +652,8 @@ class SUEP_cluster(processor.ProcessorABC):
             for var in self.l1preweights:
                 self.l1preweights[var]  = self.l1preweights[var][cut]
 
+            for var in self.triggerSFs:
+                self.triggerSFs[var]  = self.triggerSFs[var][cut]
 
         if self.doTracks:
             self.tracks  = self.tracks[cut]
@@ -686,6 +689,9 @@ class SUEP_cluster(processor.ProcessorABC):
             self.safel1preweights = {}
             for var in self.l1preweights:
                 self.safel1preweights[var]  = self.l1preweights[var]
+            self.safetriggerSFs = {}
+            for var in self.triggerSFs:
+                self.safetriggerSFs[var]  = self.triggerSFs[var]
 
         if self.doTracks:
             self.safetracks  = self.tracks
@@ -715,6 +721,8 @@ class SUEP_cluster(processor.ProcessorABC):
                 self.puweights[var]  = self.safepuweights[var]
             for var in self.l1preweights:
                 self.l1preweights[var]  = self.safel1preweights[var]
+            for var in self.triggerSFs:
+                self.triggerSFs[var]  = self.safetriggerSFs[var]
 
 
         if self.doTracks:
@@ -821,11 +829,39 @@ class SUEP_cluster(processor.ProcessorABC):
         passHighPtTracks = highPtTracks[(randomHigh > probsHighPt[self.era])]
         # And then broadcast them together again
         return {"":tracks, "_TRACKUP":ak.concatenate([passLowPtTracks, passHighPtTracks], axis=1)}
-        
+    
+    def doTriggerSFs(self, electrons, muons):
+        ceval = correctionlib.CorrectionSet.from_file("/eos/user/g/gdecastr/SUEPCoffea_dask/triggerEfficiencyStudy/masterJSON.json") ## Need to fill in path
+        year = str(self.era)
+        SF = {}
+
+        #Add flag indicating which Flavor was selected
+        leps = ak.concatenate([electrons.pt, -muons.pt], axis = 1)
+        #Split into Leading and Subleading Lepton
+        leps0temp, leps1temp= np.array(leps[:, 0]), np.array(leps[:, 1])
+        #Convert out-of-bounds pTs to maximum bin's value
+        leps0 = np.select([np.abs(leps0temp) > 200, np.abs(leps0temp) <= 200], [np.sign(leps0temp)*199.0, leps0temp])
+        leps1 = np.select([np.abs(leps1temp) > 200, np.abs(leps1temp) <= 200], [np.sign(leps1temp)*199.0, leps1temp])
+        if self.do_syst:
+            SF['TrigSF'] = np.where(leps0 > 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf","Electron", np.abs(leps1), np.abs(leps0)), #Check if Electron
+                           np.where(leps0 < 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf","Muon", np.abs(leps1), np.abs(leps0)), -999  #Check if Muon, if not insert invalid value
+                           ))
+            SF['TrigSFDn'] = np.where(leps0 > 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf-down","Electron", np.abs(leps1), np.abs(leps0)), #Check if Electron
+                           np.where(leps0 < 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf-down","Muon", np.abs(leps1), np.abs(leps0)), -999  #Check if Muon, if not insert invalid value
+                           ))
+            SF['TrigSFUp'] = np.where(leps0 > 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf-up","Electron", np.abs(leps1), np.abs(leps0)), #Check if Electron
+                           np.where(leps0 < 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf-up","Muon", np.abs(leps1), np.abs(leps0)), -999  #Check if Muon, if not insert invalid value
+                           ))
+        else:
+            SF['TrigSF'] = np.where(leps0 > 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf","Electron", np.abs(leps1), np.abs(leps0)), #Check if Electron
+                           np.where(leps0 < 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf","Muon", np.abs(leps1), np.abs(leps0)), -999  #Check if Muon, if not insert invalid value
+                           ))
+        return SF
+   
     def doBTagWeights(self, events, jetsPre, wp="L"):
-        jets, njets = ak.flatten(jetsPre), ak.num(jetsPre)
-        hadronFlavourLightAsB = np.where(jets.hadronFlavour == 0, 5, jets.hadronFlavour)
-        hadronFlavourBCAsLight= np.where(jets.hadronFlavour != 0, 0, jets.hadronFlavour)
+        jets, njets = ak.flatten(jetsPre), np.array(ak.num(jetsPre))
+        hadronFlavourLightAsB = np.array(np.where(jets.hadronFlavour == 0, 5, jets.hadronFlavour))
+        hadronFlavourBCAsLight= np.array(np.where(jets.hadronFlavour != 0, 0, jets.hadronFlavour))
         if self.era == 2015:
             btagfile = "data/BTagUL16APV/btagging.json.gz"
             btagfileL = "data/BTagUL16/btagging.json.gz"
@@ -841,17 +877,19 @@ class SUEP_cluster(processor.ProcessorABC):
         corrector = correctionlib.CorrectionSet.from_file(btagfile)
         correctorL = correctionlib.CorrectionSet.from_file(btagfileL)
         SF = {}
-        SF["central"] = corrector["deepJet_comb"].evaluate("central", wp, hadronFlavourLightAsB, np.abs(jets.eta),jets.pt) # SF per jet, later argument is dummy as will be overwritten next
-        SF["central"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("central", wp, hadronFlavourBCAsLight, np.abs(jets.eta),jets.pt) ,SF["central"])
+        flattened_pt = np.array(jets.pt)
+        flattened_eta = np.array(np.abs(jets.eta))
+        SF["central"] = corrector["deepJet_comb"].evaluate("central", wp, hadronFlavourLightAsB, flattened_eta, flattened_pt) # SF per jet, later argument is dummy as will be overwritten next
+        SF["central"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("central", wp, hadronFlavourBCAsLight, flattened_eta,flattened_pt) ,SF["central"])
         if self.do_syst:
-            SF["HFcorrelated_Up"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("up_correlated", wp, hadronFlavourLightAsB,np.abs(jets.eta),jets.pt), SF["central"])
-            SF["HFcorrelated_Dn"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("down_correlated", wp, hadronFlavourLightAsB,np.abs(jets.eta),jets.pt), SF["central"]) 
-            SF["HFuncorrelated_Up"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("up_uncorrelated", wp, hadronFlavourLightAsB,np.abs(jets.eta),jets.pt), SF["central"])
-            SF["HFuncorrelated_Dn"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("down_uncorrelated", wp, hadronFlavourLightAsB,np.abs(jets.eta),jets.pt), SF["central"])
-            SF["LFcorrelated_Up"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("up_correlated", wp, hadronFlavourBCAsLight,np.abs(jets.eta),jets.pt), SF["central"])
-            SF["LFcorrelated_Dn"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("down_correlated", wp, hadronFlavourBCAsLight,np.abs(jets.eta),jets.pt), SF["central"])
-            SF["LFuncorrelated_Up"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("up_uncorrelated", wp, hadronFlavourBCAsLight,np.abs(jets.eta),jets.pt), SF["central"])
-            SF["LFuncorrelated_Dn"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("down_uncorrelated", wp, hadronFlavourBCAsLight,np.abs(jets.eta),jets.pt), SF["central"])
+            SF["HFcorrelated_Up"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("up_correlated", wp, hadronFlavourLightAsB,flattened_eta,flattened_pt), SF["central"])
+            SF["HFcorrelated_Dn"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("down_correlated", wp, hadronFlavourLightAsB,flattened_eta,flattened_pt), SF["central"]) 
+            SF["HFuncorrelated_Up"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("up_uncorrelated", wp, hadronFlavourLightAsB,flattened_eta,flattened_pt), SF["central"])
+            SF["HFuncorrelated_Dn"] = np.where((abs(jets.hadronFlavour) == 4) | (abs(jets.hadronFlavour) == 5), corrector["deepJet_comb"].evaluate("down_uncorrelated", wp, hadronFlavourLightAsB,flattened_eta,flattened_pt), SF["central"])
+            SF["LFcorrelated_Up"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("up_correlated", wp, hadronFlavourBCAsLight,flattened_eta,flattened_pt), SF["central"])
+            SF["LFcorrelated_Dn"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("down_correlated", wp, hadronFlavourBCAsLight,flattened_eta,flattened_pt), SF["central"])
+            SF["LFuncorrelated_Up"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("up_uncorrelated", wp, hadronFlavourBCAsLight,flattened_eta,flattened_pt), SF["central"])
+            SF["LFuncorrelated_Dn"] = np.where(abs(jets.hadronFlavour) == 0, correctorL["deepJet_incl"].evaluate("down_uncorrelated", wp, hadronFlavourBCAsLight,flattened_eta,flattened_pt), SF["central"])
         effs = self.getBTagEffs(events, jets, wp)
         wps = {"L": "Loose", "M": "Medium", "T":"Tight"} # For safe conversion
         weights = {}
@@ -944,7 +982,7 @@ class SUEP_cluster(processor.ProcessorABC):
            out["bTagWeight"] = self.btagweights["central"][:]
            out["PUWeight"]               = self.puweights["PUWeight"][:]
            out["L1prefireWeight"]        = self.l1preweights["L1prefire_nom"][:]
-
+           out["TrigSF"] = self.triggerSFs["TrigSF"][:]
 
         if self.var == "" and self.do_syst:
            out["bTagWeight_HFCorr_Up"]   = self.btagweights["HFcorrelated_Up"][:]
@@ -967,6 +1005,8 @@ class SUEP_cluster(processor.ProcessorABC):
            out["FSRWeight_Up"]           = self.isrweights["PSWeight_FSRUP"][:]
            out["FSRWeight_Dn"]           = self.isrweights["PSWeight_FSRDOWN"][:]
 
+           out["TrigSF_Up"]               = self.triggerSFs["TrigSFUp"][:]
+           out["TrigSF_Dn"]               = self.triggerSFs["TrigSFDn"][:]
 
         if self.doTracks:
             out["ntracks"]     = ak.num(self.tracks, axis=1)[:]
