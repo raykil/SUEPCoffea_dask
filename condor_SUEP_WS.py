@@ -36,9 +36,6 @@ elif options.analyzer == "ZH_simple":
 elif options.analyzer == "ZH_simple_withsyst":
   from workflows.SUEP_coffea_ZH_simple import *
   modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_triggerSFs":
-  from workflows.SUEP_coffea_ZH_triggerSFs import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
 elif options.analyzer == "ZH_simple_fortests":
   from workflows.SUEP_coffea_ZH_simple_fortests import *
   modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=0,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
