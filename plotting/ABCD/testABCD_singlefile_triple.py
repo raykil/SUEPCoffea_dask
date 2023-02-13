@@ -5,7 +5,7 @@ import os
 
 ROOT.gStyle.SetOptStat(0)
 ddir = sys.argv[1] #pd.HDFStore(sys.argv[1], "r")
-var1eval  = eval(sys.argv[2])
+var1eval1  = eval(sys.argv[2])
 var2eval1  = eval(sys.argv[3])
 var1eval2 = eval(sys.argv[4])
 var2eval2 = eval(sys.argv[5]) 
@@ -38,7 +38,7 @@ for f in os.listdir(ddir):
   #print(i, len(dic))
   #if filt and (dic["leadcluster_ntracks"][i] < 20): continue
   #print(dic[var1][i], dic[var2][i])
-  if var1eval(dic[var1][i]):
+  if var1eval1(dic[var1][i]):
     if var2eval1(dic[var2][i]):
       tha.Fill(dic[var1][i])
     elif var2eval2(dic[var2][i]):
@@ -237,4 +237,5 @@ rABCD_6Y.Draw("P same")
 rABCD_4.Draw("P same")
 
 c.SaveAs("/eos/user/c/cericeci/www/%s.pdf"%sys.argv[10])
+c.SaveAs("/eos/user/c/cericeci/www/%s.png"%sys.argv[10])
 
