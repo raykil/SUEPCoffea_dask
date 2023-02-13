@@ -216,7 +216,7 @@ class sample(object):
             self.norms[plotName] += self.nnorms[self.safefiles[iff]]
           if not(options.dohadd):
             filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
-            print(filename, plotName)
+            #print(filename, plotName)
             self.histos[plotName]["total"].Add(self.histos[plotName][filename])
             if self.doSyst:
               for var in self.variations:
@@ -549,15 +549,15 @@ class plotter(object):
 
   def doStackPlots(self, options):
     for plotName in self.plots:
-      try:
+      if True: #try:
         print("...Plotting %s"%plotName)
         mode = "stack"
         if "mode" in self.plots[plotName]: mode = self.plots[plotName]["mode"]
         if mode == "stack": self.doStackPlot(plotName, options)
         if mode == "colz": self.doColZPlots(plotName, options)
         ## More to be implemented
-      except Exception as e:
-        print("Something went wrong with %s: "%plotName, e)
+      #except Exception as e:
+      #  print("Something went wrong with %s: "%plotName, e)
 
   def doColZPlots(self, pname, options):
 
@@ -569,7 +569,7 @@ class plotter(object):
     if options.ordered:
       self.samples.sort(key= lambda x: x.yields[pname], reverse=False)
     for s in self.samples:
-      print(s.name, s.histos[pname]["total"].Integral())
+      #print(s.name, s.histos[pname]["total"].Integral())
       if s.isBackground():
         if not(back): back = s.histos[pname]["total"].Clone("total_background")
         else: back.Add(s.histos[pname]["total"])
@@ -653,8 +653,8 @@ class plotter(object):
               tmpDn.Scale(1./systsFile[syst]["size"])
        
           if systsFile[syst]["type"] == "shape":
-            altNameUp = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst) + systsFile[syst]["up"]
-            altNameDn = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst) + systsFile[syst]["down"]
+            altNameUp = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst).replace("[VAR]_[CHANNEL]", pname).replace("[VAR]", pname) + systsFile[syst]["up"]
+            altNameDn = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst).replace("[VAR]_[CHANNEL]", pname).replace("[VAR]", pname) + systsFile[syst]["down"]
             tmpUp, tmpDn = None, None
             if any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]): 
               # Then we need to find alternative histograms, they can be configured through alternative samples (i.e. alternative files) or through variations of a sample, so it is tricky to find
@@ -691,8 +691,8 @@ class plotter(object):
               histosToSave[altNameDn] = copy.deepcopy(tmpDn)
             else:
               # In this case just read nominal
-              tmpUp = s[histos[pname]]["total"].Clone(altNameUp)
-              tmpDn = s[histos[pname]]["total"].Clone(altNameDn)
+              tmpUp = s.histos[pname]["total"].Clone(altNameUp)
+              tmpDn = s.histos[pname]["total"].Clone(altNameDn)
           if not(backUp):
             backUp = tmpUp.Clone().Clone("total_background_%sUp"%syst)
             backDn = tmpDn.Clone().Clone("total_background_%sUp"%syst)
@@ -702,7 +702,10 @@ class plotter(object):
         if systsFile[syst]["type"] == "shape" and s.isSignal() and any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]): # For signals just save
           # Then we need to find alternative histograms
           tmpUp, tmpDn = None, None
+          altNameUp = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst).replace("[VAR]_[CHANNEL]_", "").replace("[VAR]_", "") + systsFile[syst]["up"]
+          altNameDn = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst).replace("[VAR]_[CHANNEL]_", "").replace("[VAR]_", "") + systsFile[syst]["down"]
           for ss in self.samples:
+            #print(ss.name, altNameUp, altNameDn)
             if ss.name == altNameUp:
               ss.histos[pname]["total"] = ss.histos[pname]["total"].Rebin(options.rebin) if options.rebin else ss.histos[pname]["total"]
               tmpUp = ss.histos[pname]["total"].Clone(altNameUp)
@@ -732,6 +735,7 @@ class plotter(object):
       theStacks["%sDn"%syst] = backDn
       histosToSave["%sUp"%syst] = backUp
       histosToSave["%sDn"%syst] = backDn
+    print(histosToSave)
     # Here we have all systs saved in theStacks, now we add systematics bin by bin
     nomHistoSyst = nomstack.Clone(nomstack.GetName() + "_Syst")
     for ibin in range(0,nomstack.GetNbinsX()+1):
@@ -760,7 +764,7 @@ class plotter(object):
   def doStackPlot(self, pname, options):
    debug = True
    if debug: print("Do stack plot")
-   try:
+   if True: # try:
     p = self.plots[pname]
     c = ROOT.TCanvas(pname,pname, 800,1050)
     # Set pads
@@ -972,14 +976,15 @@ class plotter(object):
     for s in self.samples:
       s.histos[pname]["total"].Write()
     theStack.Write()
+    back.Write()
     if self.doSyst:
       for h in histosToSave:
         histosToSave[h].Write()
     tf.Close()
     if debug: print("...File closed")
     ROOT.SetOwnership(c,False) # This magic avoids segfault due to the garbage collector collecting non garbage stuff
-   except Exception as e:
-     print("Something went wrong, skipping plot...", e)
+   #except Exception as e:
+   #  print("Something went wrong, skipping plot...", e)
 
 if __name__ == "__main__":
   print("Starting plotting script...")
