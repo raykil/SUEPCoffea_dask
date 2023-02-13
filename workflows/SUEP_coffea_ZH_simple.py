@@ -226,7 +226,7 @@ class SUEP_cluster(processor.ProcessorABC):
         ###  Muons: loose ID + dxy dz cuts mimicking the medium prompt ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
         ###  Electrons: loose ID + dxy dz cuts for promptness https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification
         cutMuons     = (events.Muon.looseId) & (events.Muon.pt >= 10) & (abs(events.Muon.dxy) <= 0.02) & (abs(events.Muon.dz) <= 0.1) & (events.Muon.pfIsoId >= 2)
-        cutElectrons = (events.Electron.cutBased >= 2) & (events.Electron.pt >= 15) & (events.Electron.mvaFall17V2Iso_WP90) & ( abs(events.Electron.dxy) < 0.05 + 0.05*(events.Electron.eta > 1.479)) & (abs(events.Electron.dz) <  0.10 + 0.10*(events.Electron.eta > 1.479)) & ((abs(events.Electron.eta) < 1.444) | (abs(events.Electron.eta) > 1.566))
+        cutElectrons = (events.Electron.pt >= 10) & (events.Electron.mvaFall17V2Iso_WP90) & ( abs(events.Electron.dxy) < (0.05 + 0.05*(abs(events.Electron.eta) > 1.479))) & (abs(events.Electron.dz) < (0.10 + 0.10*(events.Electron.eta > 1.479))) & ((abs(events.Electron.eta) < 1.444) | (abs(events.Electron.eta) > 1.566))
 
         ### Apply the cuts
         # Object selection. selMuons contain only the events that are filtered by cutMuons criteria.
@@ -240,7 +240,7 @@ class SUEP_cluster(processor.ProcessorABC):
         #  Second, pt of the muons is greater than 25.
         #  Third, Sum of charge of muons should be 0. (because it originates from Z)
         if self.doOF:
-            # Only for the OF sideband for tt/WW/Fakes estimation
+            # Only for the OF sideband
             templeps = ak.concatenate([selMuons,selElectrons], axis=1)
             cutHasOFLeps =  (ak.num(templeps, axis=1)==2) & (ak.max(templeps.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(templeps.charge,axis=1) == 0) 
             events = events[cutHasOFLeps]
@@ -254,14 +254,13 @@ class SUEP_cluster(processor.ProcessorABC):
         else:
             cutHasTwoMuons = (ak.num(selMuons, axis=1)==2) & (ak.max(selMuons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selMuons.charge,axis=1) == 0)
             cutHasTwoElecs = (ak.num(selElectrons, axis=1)==2) & (ak.max(selElectrons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selElectrons.charge,axis=1) == 0)
-            cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 4)
+            cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 3)
             cutHasTwoLeps  = ((cutHasTwoMuons) | (cutHasTwoElecs)) & cutTwoLeps
             ### Cut the events, also return the selected leptons for operation down the line
             events = events[cutHasTwoLeps]
             selElectrons = selElectrons[cutHasTwoLeps]
             selMuons = selMuons[cutHasTwoLeps]
-          
-        return events, selElectrons, selMuons #, [coll[cutHasTwoLeps] for coll in extraColls]
+        return events, selElectrons, selMuons 
 
     def selectByJets(self, events, leptons = [],  altJets = [], extraColls = []):
         # These are just standard jets, as available in the nanoAOD
@@ -307,7 +306,7 @@ class SUEP_cluster(processor.ProcessorABC):
         cutPF = (events.PFCands.fromPV > 1) & \
             (events.PFCands.trkPt >= 1) & \
             (abs(events.PFCands.trkEta) <= 2.5) & \
-            (abs(events.PFCands.dz) < 10) & \
+            (abs(events.PFCands.dz) < 0.05) & \
             (abs(events.PFCands.d0) < 0.05) & \
             (events.PFCands.puppiWeight > 0.1)
             #(events.PFCands.dzErr < 0.05)
@@ -324,8 +323,8 @@ class SUEP_cluster(processor.ProcessorABC):
 
         cutLost = (events.lostTracks.fromPV > 1) & \
             (events.lostTracks.pt >= 1) & \
-            (abs(events.lostTracks.eta) <= 2.5) \
-            & (abs(events.lostTracks.dz) < 0.05) & \
+            (abs(events.lostTracks.eta) <= 2.5) & \
+            (abs(events.lostTracks.dz) < 0.05) & \
             (abs(events.lostTracks.d0) < 0.05) & \
             (events.lostTracks.puppiWeight > 0.1)
             #(events.lostTracks.dzErr < 0.05)
@@ -341,7 +340,8 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def clusterizeTracks(self, events, tracks):
         # anti-kt, dR=1.5 jets
-        smallEvents = len(events) < 5000
+        nSmallEvents = 10000
+        smallEvents = len(events) < nSmallEvents
         if not smallEvents:
           jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)        
           cluster = fastjet.ClusterSequence(tracks, jetdef)
@@ -349,7 +349,7 @@ class SUEP_cluster(processor.ProcessorABC):
           ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
           return events, ak15_jets, ak15_consts
         else: #With few events/file the thing crashes because of FastJet so we are going to create "fake" events
-          ncopies     = round(5000/(len(events)))
+          ncopies     = round(nSmallEvents/(len(events)))
           oldtracks   = tracks
           for i in range(ncopies):
             tracks = ak.concatenate([tracks, oldtracks], axis=0) # I.e. duplicate our events until we are feeding 1000 events to the clusterizer
@@ -389,7 +389,7 @@ class SUEP_cluster(processor.ProcessorABC):
             "pdgId": events.GenPart.pdgId,
         }, with_name="Momentum4D")
         if self.isDY:
-            # Build the Zpt from leptons. Somehow awkward but needed as gammastar is not saved...
+            # Build the Zpt from leptons for the DY sample bug. Somehow awkward but needed as gammastar is not saved...
             cutgenLepsNeg = (events.GenPart.pdgId >= 11) & (events.GenPart.pdgId <= 16) & (abs(events.GenPart.status - 25) < 6) # Leptons from the hard scattering
             cutgenLepsPos = (events.GenPart.pdgId >= -16) & (events.GenPart.pdgId <= -11) & (abs(events.GenPart.status - 25) < 6) # Antileptons from the hard scattering
             cutgenZ    = (events.GenPart.pdgId == 23) & (events.GenPart.status == 22)
@@ -977,6 +977,8 @@ class SUEP_cluster(processor.ProcessorABC):
                     out["leadcluster_eta"]     = self.clusters.eta[:,0]
                     out["leadcluster_phi"]     = self.clusters.phi[:,0]
                     out["leadcluster_ntracks"] = ak.num(self.constituents[:,0], axis = 1)
+                    out["leadcluster_m"]     = self.clusters.mass[:,0]
+
                     boost_leading = ak.zip({
                       "px": self.clusters[:,0].px*-1,
                       "py": self.clusters[:,0].py*-1,
