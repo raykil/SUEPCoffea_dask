@@ -8,7 +8,7 @@ systematicsAndShapes = {
  "ElSF"  : {
             "name": "ElSF",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -16,7 +16,7 @@ systematicsAndShapes = {
  "MuSF"  : {
             "name": "MuSF",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -24,7 +24,7 @@ systematicsAndShapes = {
  "PU"  : {
             "name": "PU",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -32,7 +32,7 @@ systematicsAndShapes = {
  "L1"  : {
             "name": "L1",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -40,7 +40,7 @@ systematicsAndShapes = {
  "ISR"  : {
             "name": "ISR",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -48,7 +48,7 @@ systematicsAndShapes = {
  "FSR"  : {
             "name": "FSR",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -56,7 +56,7 @@ systematicsAndShapes = {
  "LFCorr"  : {
             "name": "LFCorr",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -64,7 +64,7 @@ systematicsAndShapes = {
  "LFUnCorr"  : {
             "name": "LFUnCorr",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -72,7 +72,7 @@ systematicsAndShapes = {
  "HFCorr"  : {
             "name": "HFCorr",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -80,7 +80,7 @@ systematicsAndShapes = {
  "HFUnCorr"  : {
             "name": "HFUnCorr",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -88,7 +88,7 @@ systematicsAndShapes = {
  "Track"  : {
             "name": "Track",
             "type": "shape",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
             "down": "Dn",
@@ -96,38 +96,38 @@ systematicsAndShapes = {
  "JES"  : {
             "name": "JES",
             "type": "lnN",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "size": 1.01,
  },
  "JER"  : {
             "name": "JER",
             "type": "lnN",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "size": 1.01,
  },
  "lumi"  : {
             "name": "lumi",
             "type": "lnN",
-            "processes": [".*"],
+            "processes": ["SUEP_.*"],
             "size": 1.025,
  },
- "DYnorm": {
-            "name": "lumi",
-            "type": "lnN",
-            "processes": ["DY.*"],
-            "size": 1.2,
- },
- "ttnorm": {
-            "name": "lumi",
-            "type": "lnN",
-            "processes": ["TT.*"],
-            "size": 1.2,
- },
- "VVnorm": {
-            "name": "lumi",
-            "type": "lnN",
-            "processes": ["VV.*"],
-            "size": 1.2,
- },
+# "DYnorm": {
+#            "name": "lumi",
+#            "type": "lnN",
+#            "processes": ["DYSUEP_.*"],
+#            "size": 1SUEP_.2,
+# },
+# "ttnorm": {
+#            "name": "lumi",
+#            "type": "lnN",
+#            "processes": ["TTSUEP_.*"],
+#            "size": 1SUEP_.2,
+# },
+# "VVnorm": {
+#            "name": "lumi",
+#            "type": "lnN",
+#            "processes": ["VVSUEP_.*"],
+#            "size": 1SUEP_.2,
+# },
 }
 

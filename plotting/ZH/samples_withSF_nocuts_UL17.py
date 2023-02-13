@@ -310,10 +310,714 @@ samples = {
          "files"    : hdf5inpath(main_path + "SUEP_hadronic_mS125_mD2_T2/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
   },
+#  "SUEP_generic_mS125_mD2.00_T0.50": {
+#         "name"     : "SUEP_generic_mS125_mD2.00_T0.50", #Here plain text
+#         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "linecolor": ROOT.kGreen,
+#         "fillcolor": ROOT.kGreen,
+#         "isSig"    : True,
+#         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD2.00_T0.50/"),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+#  },
+  "SUEP_leptonic_mS125_mD1.00_T0.25": {
+         "name"     : "SUEP_leptonic_mS125_mD1.00_T0.25", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD1.00_T0.25/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD1.40_T0.35": {
+         "name"     : "SUEP_hadronic_mS125_mD1.40_T0.35", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD1.40_T0.35/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD2.00_T1.00": {
+         "name"     : "SUEP_generic_mS125_mD2.00_T1.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD2.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+#  "SUEP_leptonic_mS125_mD1.00_T0.50": {
+#         "name"     : "SUEP_leptonic_mS125_mD1.00_T0.50", #Here plain text
+#         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "linecolor": ROOT.kGreen,
+#         "fillcolor": ROOT.kGreen,
+#         "isSig"    : True,
+#         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD1.00_T0.50/"),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+#  },
+  "SUEP_hadronic_mS125_mD1.40_T0.70": {
+         "name"     : "SUEP_hadronic_mS125_mD1.40_T0.70", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD1.40_T0.70/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD2.00_T2.00": {
+         "name"     : "SUEP_generic_mS125_mD2.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD2.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD1.00_T1.00": {
+         "name"     : "SUEP_leptonic_mS125_mD1.00_T1.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD1.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD1.40_T1.40": {
+         "name"     : "SUEP_hadronic_mS125_mD1.40_T1.40", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD1.40_T1.40/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD2.00_T4.00": {
+         "name"     : "SUEP_generic_mS125_mD2.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD2.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD1.00_T2.00": {
+         "name"     : "SUEP_leptonic_mS125_mD1.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD1.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD1.40_T2.80": {
+         "name"     : "SUEP_hadronic_mS125_mD1.40_T2.80", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD1.40_T2.80/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD2.00_T8.00": {
+         "name"     : "SUEP_generic_mS125_mD2.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD2.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD1.00_T4.00": {
+         "name"     : "SUEP_leptonic_mS125_mD1.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD1.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD1.40_T5.60": {
+         "name"     : "SUEP_hadronic_mS125_mD1.40_T5.60", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD1.40_T5.60/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+#  "SUEP_leptonic_mS125_mD2.00_T0.50": {
+#         "name"     : "SUEP_leptonic_mS125_mD2.00_T0.50", #Here plain text
+#         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "linecolor": ROOT.kGreen,
+#         "fillcolor": ROOT.kGreen,
+#         "isSig"    : True,
+#         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD2.00_T0.50/"),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+#  },
+#  "SUEP_hadronic_mS125_mD2.00_T0.50": {
+#         "name"     : "SUEP_hadronic_mS125_mD2.00_T0.50", #Here plain text
+#         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "linecolor": ROOT.kGreen,
+#         "fillcolor": ROOT.kGreen,
+#         "isSig"    : True,
+#         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD2.00_T0.50/"),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+#  },
+  "SUEP_leptonic_mS125_mD2.00_T1.00": {
+         "name"     : "SUEP_leptonic_mS125_mD2.00_T1.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD2.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD2.00_T1.00": {
+         "name"     : "SUEP_hadronic_mS125_mD2.00_T1.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD2.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD2.00_T2.00": {
+         "name"     : "SUEP_leptonic_mS125_mD2.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD2.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD2.00_T2.00": {
+         "name"     : "SUEP_hadronic_mS125_mD2.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD2.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD2.00_T4.00": {
+         "name"     : "SUEP_leptonic_mS125_mD2.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD2.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD2.00_T4.00": {
+         "name"     : "SUEP_hadronic_mS125_mD2.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD2.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD2.00_T8.00": {
+         "name"     : "SUEP_leptonic_mS125_mD2.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD2.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD2.00_T8.00": {
+         "name"     : "SUEP_hadronic_mS125_mD2.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD2.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD3.00_T0.75": {
+         "name"     : "SUEP_generic_mS125_mD3.00_T0.75", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD3.00_T0.75/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD3.00_T0.75": {
+         "name"     : "SUEP_leptonic_mS125_mD3.00_T0.75", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD3.00_T0.75/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD3.00_T0.75": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T0.75", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD3.00_T0.75/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD3.00_T1.50": {
+         "name"     : "SUEP_generic_mS125_mD3.00_T1.50", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD3.00_T1.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD3.00_T1.50": {
+         "name"     : "SUEP_leptonic_mS125_mD3.00_T1.50", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD3.00_T1.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD3.00_T1.50": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T1.50", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD3.00_T1.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD3.00_T3.00": {
+         "name"     : "SUEP_generic_mS125_mD3.00_T3.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD3.00_T3.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD3.00_T3.00": {
+         "name"     : "SUEP_leptonic_mS125_mD3.00_T3.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD3.00_T3.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD3.00_T3.00": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T3.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD3.00_T3.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD3.00_T6.00": {
+         "name"     : "SUEP_generic_mS125_mD3.00_T6.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD3.00_T6.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD3.00_T6.00": {
+         "name"     : "SUEP_leptonic_mS125_mD3.00_T6.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD3.00_T6.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD3.00_T6.00": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T6.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD3.00_T6.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD3.00_T12.00": {
+         "name"     : "SUEP_generic_mS125_mD3.00_T12.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD3.00_T12.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD3.00_T12.00": {
+         "name"     : "SUEP_leptonic_mS125_mD3.00_T12.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD3.00_T12.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD3.00_T12.00": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T12.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD3.00_T12.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD4.00_T1.00": {
+         "name"     : "SUEP_generic_mS125_mD4.00_T1.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD4.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD4.00_T1.00": {
+         "name"     : "SUEP_leptonic_mS125_mD4.00_T1.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD4.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD4.00_T1.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T1.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD4.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD4.00_T2.00": {
+         "name"     : "SUEP_generic_mS125_mD4.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD4.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD4.00_T2.00": {
+         "name"     : "SUEP_leptonic_mS125_mD4.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD4.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD4.00_T2.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD4.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD4.00_T4.00": {
+         "name"     : "SUEP_generic_mS125_mD4.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD4.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD4.00_T4.00": {
+         "name"     : "SUEP_leptonic_mS125_mD4.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD4.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD4.00_T4.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD4.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD4.00_T8.00": {
+         "name"     : "SUEP_generic_mS125_mD4.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD4.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD4.00_T8.00": {
+         "name"     : "SUEP_leptonic_mS125_mD4.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD4.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD4.00_T8.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD4.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD4.00_T16.00": {
+         "name"     : "SUEP_generic_mS125_mD4.00_T16.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD4.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD4.00_T16.00": {
+         "name"     : "SUEP_leptonic_mS125_mD4.00_T16.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD4.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD4.00_T16.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T16.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD4.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD8.00_T2.00": {
+         "name"     : "SUEP_generic_mS125_mD8.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD8.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD8.00_T2.00": {
+         "name"     : "SUEP_leptonic_mS125_mD8.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD8.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD8.00_T2.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T2.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD8.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD8.00_T4.00": {
+         "name"     : "SUEP_generic_mS125_mD8.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD8.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD8.00_T4.00": {
+         "name"     : "SUEP_leptonic_mS125_mD8.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD8.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD8.00_T4.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD8.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD8.00_T8.00": {
+         "name"     : "SUEP_generic_mS125_mD8.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD8.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD8.00_T8.00": {
+         "name"     : "SUEP_leptonic_mS125_mD8.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD8.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD8.00_T8.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD8.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD8.00_T16.00": {
+         "name"     : "SUEP_generic_mS125_mD8.00_T16.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD8.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD8.00_T16.00": {
+         "name"     : "SUEP_leptonic_mS125_mD8.00_T16.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD8.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD8.00_T16.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T16.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD8.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_generic_mS125_mD8.00_T32.00": {
+         "name"     : "SUEP_generic_mS125_mD8.00_T32.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_generic_mS125_mD8.00_T32.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_leptonic_mS125_mD8.00_T32.00": {
+         "name"     : "SUEP_leptonic_mS125_mD8.00_T32.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_leptonic_mS125_mD8.00_T32.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
+  "SUEP_hadronic_mS125_mD8.00_T32.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T32.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2017/SUEP_hadronic_mS125_mD8.00_T32.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+  },
 }
 
 for sample in samples:
   if "data" in sample: continue
+  if not(samples[sample]["isSig"]): 
+    samples[sample]["variations"] = {}
+    continue
+
   samples[sample]["variations"] = {
   "ElSFUp": {
            "name"            :   "ElSFUp",
