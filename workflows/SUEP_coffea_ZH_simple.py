@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 import fastjet
 from coffea import hist, processor, lookup_tools
-import pickle5 as pickle
+import pickle
 import vector
 from typing import List, Optional
 import correctionlib
@@ -27,7 +27,7 @@ class SUEP_cluster(processor.ProcessorABC):
         self.output_location = output_location
         self.doOF = doOF
         self.isDY = isDY # We need to save this to remove the overlap between the inclusive DY sample and the pT binned ones
-        self.do_syst = do_syst
+        self.do_syst = (do_syst and isMC!=0)
         self.gensumweight = 1.0
         self.era = era
         self.isMC = isMC
@@ -184,9 +184,9 @@ class SUEP_cluster(processor.ProcessorABC):
     def selectByFilters(self, events):
         ### Apply MET filter selection (see https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2)
         if self.era == 2018 or self.era == 2017:
-           cutAnyFilter = (events.Flag.goodVertices) | (events.Flag.globalSuperTightHalo2016Filter) | (events.Flag.HBHENoiseFilter) | (events.Flag.HBHENoiseIsoFilter) | (events.Flag.EcalDeadCellTriggerPrimitiveFilter) | (events.Flag.BadPFMuonFilter) | (events.Flag.BadPFMuonDzFilter) | (events.Flag.eeBadScFilter) | (events.Flag.ecalBadCalibFilter)
+           cutAnyFilter = (events.Flag.goodVertices) & (events.Flag.globalSuperTightHalo2016Filter) & (events.Flag.HBHENoiseFilter) & (events.Flag.HBHENoiseIsoFilter) & (events.Flag.EcalDeadCellTriggerPrimitiveFilter) & (events.Flag.BadPFMuonFilter) & (events.Flag.BadPFMuonDzFilter) & (events.Flag.eeBadScFilter) & (events.Flag.ecalBadCalibFilter)
         if self.era == 2016 or self.era == 2015: # 2015==2016APV
-           cutAnyFilter = (events.Flag.goodVertices) | (events.Flag.globalSuperTightHalo2016Filter) | (events.Flag.HBHENoiseFilter) | (events.Flag.HBHENoiseIsoFilter) | (events.Flag.EcalDeadCellTriggerPrimitiveFilter) | (events.Flag.BadPFMuonFilter) | (events.Flag.BadPFMuonDzFilter) | (events.Flag.eeBadScFilter)
+           cutAnyFilter = (events.Flag.goodVertices) & (events.Flag.globalSuperTightHalo2016Filter) & (events.Flag.HBHENoiseFilter) & (events.Flag.HBHENoiseIsoFilter) & (events.Flag.EcalDeadCellTriggerPrimitiveFilter) & (events.Flag.BadPFMuonFilter) & (events.Flag.BadPFMuonDzFilter) & (events.Flag.eeBadScFilter)
         return events[cutAnyFilter]
 
 
@@ -225,8 +225,8 @@ class SUEP_cluster(processor.ProcessorABC):
         ###  Some very simple selections on ID ###
         ###  Muons: loose ID + dxy dz cuts mimicking the medium prompt ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
         ###  Electrons: loose ID + dxy dz cuts for promptness https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification
-        cutMuons     = (events.Muon.looseId) & (events.Muon.pt >= 10) & (abs(events.Muon.dxy) <= 0.02) & (abs(events.Muon.dz) <= 0.1) & (events.Muon.pfIsoId >= 2)
-        cutElectrons = (events.Electron.pt >= 10) & (events.Electron.mvaFall17V2Iso_WP90) & ( abs(events.Electron.dxy) < (0.05 + 0.05*(abs(events.Electron.eta) > 1.479))) & (abs(events.Electron.dz) < (0.10 + 0.10*(events.Electron.eta > 1.479))) & ((abs(events.Electron.eta) < 1.444) | (abs(events.Electron.eta) > 1.566))
+        cutMuons     = (events.Muon.looseId) & (events.Muon.pt >= 10) & (abs(events.Muon.dxy) <= 0.02) & (abs(events.Muon.dz) <= 0.1) & (events.Muon.pfIsoId >= 2) & (abs(events.Muon.eta) < 2.4)
+        cutElectrons = (events.Electron.pt >= 10) & (events.Electron.mvaFall17V2Iso_WP90) & ( abs(events.Electron.dxy) < (0.05 + 0.05*(abs(events.Electron.eta) > 1.479))) & (abs(events.Electron.dz) < (0.10 + 0.10*(events.Electron.eta > 1.479))) & ((abs(events.Electron.eta) < 1.444) | (abs(events.Electron.eta) > 1.566)) & (abs(events.Electron.eta) < 2.5)
 
         ### Apply the cuts
         # Object selection. selMuons contain only the events that are filtered by cutMuons criteria.
@@ -483,6 +483,10 @@ class SUEP_cluster(processor.ProcessorABC):
         self.leptons = ak.concatenate([self.electrons, self.muons], axis=1)
         highpt_leptons = ak.argsort(self.leptons.pt, axis=1, ascending=False, stable=True)
         self.leptons = self.leptons[highpt_leptons]
+        self.electrons = self.electrons[ak.argsort(self.electrons.pt, axis=1, ascending=False, stable=True)]
+        self.muons     = self.muons[ak.argsort(self.muons.pt, axis=1, ascending=False, stable=True)]
+
+
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass trigger cuts. Selecting jets..."%len(self.events))
 
@@ -520,8 +524,8 @@ class SUEP_cluster(processor.ProcessorABC):
           self.btagweights = self.doBTagWeights(self.events, self.jets, "L") # Does not change selection 
           self.puweights   = self.doPUWeights(self.events)                                   # Does not change selection
           self.l1preweights= self.doPrefireWeights(self.events)
-          self.triggerSFs = self.doTriggerSFs(self.electrons, self.muons)
-
+          self.triggerSFs  = self.doTriggerSFs(self.electrons, self.muons)
+          self.leptonSFs   = self.doLeptonSFs(self.electrons, self.muons)
         # ------------------------------------------------------------------------------
         # ------------------------------- UNCERTAINTIES --------------------------------
         # ------------------------------------------------------------------------------
@@ -655,6 +659,8 @@ class SUEP_cluster(processor.ProcessorABC):
             for var in self.triggerSFs:
                 self.triggerSFs[var]  = self.triggerSFs[var][cut]
 
+            for var in self.leptonSFs:
+                self.leptonSFs[var]   = self.leptonSFs[var][cut]
         if self.doTracks:
             self.tracks  = self.tracks[cut]
             if self.doClusters:
@@ -692,6 +698,9 @@ class SUEP_cluster(processor.ProcessorABC):
             self.safetriggerSFs = {}
             for var in self.triggerSFs:
                 self.safetriggerSFs[var]  = self.triggerSFs[var]
+            self.safeleptonSFs = {}
+            for var in self.leptonSFs:
+                self.safeleptonSFs[var]   = self.leptonSFs[var]
 
         if self.doTracks:
             self.safetracks  = self.tracks
@@ -723,7 +732,8 @@ class SUEP_cluster(processor.ProcessorABC):
                 self.l1preweights[var]  = self.safel1preweights[var]
             for var in self.triggerSFs:
                 self.triggerSFs[var]  = self.safetriggerSFs[var]
-
+            for var in self.leptonSFs:
+                self.leptonSFs[var] = self.safeleptonSFs[var]
 
         if self.doTracks:
             self.tracks  = self.safetracks
@@ -831,7 +841,7 @@ class SUEP_cluster(processor.ProcessorABC):
         return {"":tracks, "_TRACKUP":ak.concatenate([passLowPtTracks, passHighPtTracks], axis=1)}
     
     def doTriggerSFs(self, electrons, muons):
-        ceval = correctionlib.CorrectionSet.from_file("/eos/user/g/gdecastr/SUEPCoffea_dask/triggerEfficiencyStudy/masterJSON.json") ## Need to fill in path
+        ceval = correctionlib.CorrectionSet.from_file("data/TriggerSF/masterJSON.json") ## Assuming we always run from root dir
         year = str(self.era)
         SF = {}
 
@@ -840,8 +850,8 @@ class SUEP_cluster(processor.ProcessorABC):
         #Split into Leading and Subleading Lepton
         leps0temp, leps1temp= np.array(leps[:, 0]), np.array(leps[:, 1])
         #Convert out-of-bounds pTs to maximum bin's value
-        leps0 = np.select([np.abs(leps0temp) > 200, np.abs(leps0temp) <= 200], [np.sign(leps0temp)*199.0, leps0temp])
-        leps1 = np.select([np.abs(leps1temp) > 200, np.abs(leps1temp) <= 200], [np.sign(leps1temp)*199.0, leps1temp])
+        leps0 = np.select([np.abs(leps0temp) > 199, np.abs(leps0temp) <= 199], [np.sign(leps0temp)*199.0, leps0temp])
+        leps1 = np.select([np.abs(leps1temp) > 199, np.abs(leps1temp) <= 199], [np.sign(leps1temp)*199.0, leps1temp])
         if self.do_syst:
             SF['TrigSF'] = np.where(leps0 > 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf","Electron", np.abs(leps1), np.abs(leps0)), #Check if Electron
                            np.where(leps0 < 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf","Muon", np.abs(leps1), np.abs(leps0)), -999  #Check if Muon, if not insert invalid value
@@ -857,7 +867,53 @@ class SUEP_cluster(processor.ProcessorABC):
                            np.where(leps0 < 0, ceval['UL-PtPt-Trigger-SFs'].evaluate(year,"sf","Muon", np.abs(leps1), np.abs(leps0)), -999  #Check if Muon, if not insert invalid value
                            ))
         return SF
-   
+
+    def doLeptonSFs(self, electrons, muons):
+        if self.era == 2015:
+           tag = "16APV"
+           etag = "2016preVFP"
+        elif self.era == 2016:
+           tag = "16"
+           etag = "2016postVFP"
+        elif self.era == 2017:
+           tag = "17"
+           etag = "2017"
+        elif self.era == 2018:
+           tag = "18"
+           etag = "2018"
+
+        elecs, nelecs = ak.flatten(electrons), np.array(ak.num(electrons))
+        mus,     nmus = ak.flatten(muons), np.array(ak.num(muons))
+
+
+        elall  = correctionlib.CorrectionSet.from_file("data/EGammaUL%s/electron.json"%tag)["UL-Electron-ID-SF"]
+        muid  = correctionlib.CorrectionSet.from_file("data/MuUL%s/muon_Z.json"%tag)["NUM_LooseID_DEN_TrackerMuons"]
+        muiso =  correctionlib.CorrectionSet.from_file("data/MuUL%s/muon_Z.json"%tag)["NUM_LooseRelIso_DEN_LooseID"]
+        
+        elSF   = np.where(elecs.pt > 20, elall.evaluate(etag,"sf","RecoAbove20", elecs.eta, np.where(elecs.pt <= 20, 20.001, elecs.pt)), elall.evaluate(etag,"sf","RecoBelow20", elecs.eta, np.where(abs(elecs.pt-15) >= 4.999, 15, elecs.pt) ))*elall.evaluate(etag,"sf","wp90iso", elecs.eta, elecs.pt)
+        elSFUp   = np.where(elecs.pt > 20, elall.evaluate(etag,"sfup","RecoAbove20", elecs.eta, np.where(elecs.pt <= 20, 20.001, elecs.pt)), elall.evaluate(etag,"sfup","RecoBelow20", elecs.eta, np.where(abs(elecs.pt-15) >= 4.999, 15, elecs.pt)))*elall.evaluate(etag,"sfup","wp90iso", elecs.eta, elecs.pt)
+        elSFDown = np.where(elecs.pt > 20, elall.evaluate(etag,"sfdown","RecoAbove20", elecs.eta, np.where(elecs.pt <= 20, 20.001, elecs.pt)), elall.evaluate(etag,"sfdown","RecoBelow20", elecs.eta, np.where(abs(elecs.pt-15) >= 4.999, 15, elecs.pt)))*elall.evaluate(etag,"sfdown","wp90iso", elecs.eta, elecs.pt)
+
+        muSF     = muid.evaluate(etag + "_UL", abs(mus.eta), np.where(mus.pt <= 15, 15.001, mus.pt), "sf")*muiso.evaluate(etag + "_UL", abs(mus.eta), np.where(mus.pt <= 15, 15.001, mus.pt), "sf")
+        muSFUp   = muid.evaluate(etag + "_UL", abs(mus.eta), np.where(mus.pt <= 15, 15.001, mus.pt), "systup")*muiso.evaluate(etag + "_UL", abs(mus.eta), np.where(mus.pt <= 15, 15.001, mus.pt), "systup")
+        muSFDown = muid.evaluate(etag + "_UL", abs(mus.eta), np.where(mus.pt <= 15, 15.001, mus.pt), "systdown")*muiso.evaluate(etag + "_UL", abs(mus.eta), np.where(mus.pt <= 15, 15.001, mus.pt), "systdown")
+
+        elSF     = ak.unflatten(elSF, nelecs)
+        elSFUp   = ak.unflatten(elSFUp, nelecs)
+        elSFDown = ak.unflatten(elSFDown, nelecs)
+        muSF     = ak.unflatten(muSF, nmus)
+        muSFUp   = ak.unflatten(muSFUp, nmus)
+        muSFDown = ak.unflatten(muSFDown, nmus)
+
+        lepSF = {}
+        lepSF["LepSF"]       = ak.prod(ak.concatenate([elSF, muSF]    , axis=1), axis = 1)
+        lepSF["LepSFElUp"]   = ak.prod(ak.concatenate([elSFUp, muSF]  , axis=1), axis = 1)
+        lepSF["LepSFElDown"] = ak.prod(ak.concatenate([elSFDown, muSF], axis=1), axis = 1)
+        lepSF["LepSFMuUp"]   = ak.prod(ak.concatenate([elSF, muSFUp]  , axis=1), axis = 1)
+        lepSF["LepSFMuDown"] = ak.prod(ak.concatenate([elSF, muSFDown], axis=1), axis = 1)
+        return lepSF
+
+
     def doBTagWeights(self, events, jetsPre, wp="L"):
         jets, njets = ak.flatten(jetsPre), np.array(ak.num(jetsPre))
         hadronFlavourLightAsB = np.array(np.where(jets.hadronFlavour == 0, 5, jets.hadronFlavour))
@@ -983,6 +1039,7 @@ class SUEP_cluster(processor.ProcessorABC):
            out["PUWeight"]               = self.puweights["PUWeight"][:]
            out["L1prefireWeight"]        = self.l1preweights["L1prefire_nom"][:]
            out["TrigSF"] = self.triggerSFs["TrigSF"][:]
+           out["LepSF"]  = self.leptonSFs["LepSF"][:]
 
         if self.var == "" and self.do_syst:
            out["bTagWeight_HFCorr_Up"]   = self.btagweights["HFcorrelated_Up"][:]
@@ -1007,6 +1064,12 @@ class SUEP_cluster(processor.ProcessorABC):
 
            out["TrigSF_Up"]               = self.triggerSFs["TrigSFUp"][:]
            out["TrigSF_Dn"]               = self.triggerSFs["TrigSFDn"][:]
+
+           out["LepSF_ElUp"]  = self.leptonSFs["LepSFElUp"][:]
+           out["LepSF_ElDn"]  = self.leptonSFs["LepSFElDown"][:]
+           out["LepSF_MuUp"]  = self.leptonSFs["LepSFMuUp"][:]
+           out["LepSF_MuDn"]  = self.leptonSFs["LepSFMuDown"][:]
+
 
         if self.doTracks:
             out["ntracks"]     = ak.num(self.tracks, axis=1)[:]
