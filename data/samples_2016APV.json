@@ -1,6 +1,6 @@
 {
   "data":{
-    "path":["/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_B1/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_B2/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_F/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_B1/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_B2/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_F/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_B1/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_B2/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_F/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_B1/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_B2/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_F/"],
+    "path":[ "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_B2/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleMuon_F/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_B2/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/SingleElectron_F/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_B2/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleMuon_F/", "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_B2/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_C/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_D/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_E/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DoubleEG_F/"],
     "isData":1,
     "filter":0,
     "isDYinclusive":0
@@ -148,24 +148,6 @@
     "isData":0,
     "filter":0,
     "isDYinclusive":0
-  },
-  "PRIVATE_SUEP_generic_new_mS125_mD2_T2":{
-    "path": "/eos/cms/store/group/phys_exotica/SUEPs/signals/UL16APV/ZHleptonicpythia_generic_new_M125_MD2_T2_HT-1_UL16APV_signal/NANOAOD/",
-    "isData":0,
-    "filter": "total",
-    "isDYinclusive": 0
-  },
-  "PRIVATE_SUEP_leptonic_mS125_mD2_T2":{
-    "path": "/eos/cms/store/group/phys_exotica/SUEPs/signals/UL16APV/ZHleptonicpythia_leptonic_M125_MD2_T2_HT-1_UL16APV_signal/NANOAOD/",
-    "isData":0,
-    "filter": "total",
-    "isDYinclusive": 0
-  },
-  "PRIVATE_SUEP_hadronic_mS125_mD2_T2":{
-    "path": "/eos/cms/store/group/phys_exotica/SUEPs/signals/UL16APV/ZHleptonicpythia_hadronic_M125_MD2_T2_HT-1_UL16APV_signal/NANOAOD/",
-    "isData":0,
-    "filter": "total",
-    "isDYinclusive": 0
   },
   "SUEP_generic_mS125_mD2.00_T0.50":{
     "path": "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/unskimmed/ZSUEP_ZToLL_T0p50_TuneCP5_13TeV-pythia8/",
