@@ -26,6 +26,10 @@ def haddFiles(x):
   return output
 
 def haddAll(inputFiles, outputFil):
+  if len(inputFiles) == 1:
+    print("One file, automatic merge")
+    uniformizeNames([outputFil,inputFiles[0]])
+    return
   tStart = time.time()
   nThreads = 10
   nSteps   = max(10, min(len(inputFiles)/(nThreads**2), 100))  # This means we will run always 3 iterations of the hadder N => N/nStep => N/nStep**2 => 1
