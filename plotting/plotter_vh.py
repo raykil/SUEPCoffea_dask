@@ -27,7 +27,7 @@ class sample(object):
     self.safefiles=[]
     self.nnorms = {}
     self.norms  = {}
-    self.isData = ("data" in self.name) or ("Data" in self.name)
+    self.isData = (("data" in self.name) or ("Data" in self.name)) and not ("HEM" in self.name)
     self.histos  = {}
     self.plots   = {}
     self.channels= []
@@ -37,6 +37,10 @@ class sample(object):
     self.doSyst     = options.systFile
     #self.altChannels= {}
     self.variations = {} 
+    self.noWeights = False
+    if "noWeight" in self.config:
+      print("Will not add weights for %s"%self.name)
+      self.noWeights = self.config["noWeight"]
     if self.doSyst and not(self.isData): # Then we collect all possible channel alternatives
       self.variations = {}
       for var in self.config["variations"]:
@@ -77,12 +81,12 @@ class sample(object):
             a = pd.HDFStore(f, "r")
           if not("skim" in self.config) and not(self.isData):
             #print(a.get_storer("SR").attrs.metadata)
-            self.nnorms[f] = a.get_storer("twoleptons").attrs.metadata["gensumweight"]
+            self.nnorms[f] = a.get_storer("SR").attrs.metadata["gensumweight"]
           if not(options.queue) and not(options.toLoad):
             b = {}
             if len(a.keys()) == 0: #Empty file
               a.close()
-              print("No keys!")
+              print("No keys in %s!"%f)
               continue
             for k in a.keys():
               try:
@@ -136,8 +140,12 @@ class sample(object):
        run, luminosityBlock, event= f.split("/")[-1].replace("out_","").replace(".hdf5","").split("_")
        tt = rf.Get("Runs_"+str(event)+ "_" + str(luminosityBlock) + "_" + str(run))
        for ev in tt:
-         out[f] = ev.genEventSumw
-         norm += ev.genEventSumw
+         if self.noWeights:
+           out[f] = 1 
+           norm   += 1
+         else:
+           out[f] = ev.genEventSumw
+           norm += ev.genEventSumw
          break
     return out, norm
 
@@ -178,7 +186,7 @@ class sample(object):
         self.histos[plotName]["total"] = ROOT.TH2F(plotName + "_" + self.name, plotName + "_" + self.name, p["bins"][1], p["bins"][2], p["bins"][3], p["bins"][4], p["bins"][5], p["bins"][6])
       elif p["bins"][0] == "2Dlimits":
         self.histos[plotName] = {}
-        self.histos[plotName]["total"] = ROOT.TH2F(plotName + "_" + self.name, plotName + "_" + self.name, array.array('f', p["bins"][1]), array.array('f', p["bins"][2]))
+        self.histos[plotName]["total"] = ROOT.TH2F(plotName + "_" + self.name, plotName + "_" + self.name, p["bins"][1], array.array('f', p["bins"][2]), p["bins"][3],  array.array('f', p["bins"][4]))
 
       if not(self.isData): self.norms[plotName] = 0 if not("skim" in self.config) else self.norm
       if self.doSyst:
@@ -245,15 +253,27 @@ class sample(object):
         #      self.histos[plotName+ "_" + var]["total"].Sumw2()
 
         if not(self.isData) and (self.norms[plotName] > 0): 
-          self.histos[plotName]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+          #print(self.name, plotName)
+          if not(self.noWeights):
+            self.histos[plotName]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+        if "scale" in self.config:
+          self.histos[plotName]["total"].Scale(self.config["scale"])
         self.yields[plotName] = self.histos[plotName]["total"].Integral()
         if self.doSyst:
           for var in self.variations:
             if self.variations[var]["symmetrize"]:
-              self.histos[plotName+ "_" + var + "Up"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
-              self.histos[plotName+ "_" + var + "Dn"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+              if not(self.noWeights):
+                self.histos[plotName+ "_" + var + "Up"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+                self.histos[plotName+ "_" + var + "Dn"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+              if "scale" in self.config:
+                self.histos[plotName+ "_" + var + "Up"]["total"].Scale(self.config["scale"])
+                self.histos[plotName+ "_" + var + "Dn"]["total"].Scale(self.config["scale"])
             else:
-              self.histos[plotName+ "_" + var]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+              if not(self.noWeights):
+                #print(var, plotName, self.name)
+                self.histos[plotName+ "_" + var]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+              if "scale" in self.config:
+                self.histos[plotName+ "_" + var]["total"].Scale(self.config["scale"])
 
   def getRawHistogramsAndNormsOneFile(self, g):
     f, safefile, options = g[0], g[1], g[2]
@@ -279,7 +299,7 @@ class sample(object):
         empty = True if type(f[c]) == type([]) else False # Check if there are events there
         if empty: print("Is empty!", c)
         weights = {}
-        if not(self.isData):
+        if not(self.isData or self.noWeights):
           if empty:
             weights[""] = []
           else:
@@ -549,15 +569,17 @@ class plotter(object):
 
   def doStackPlots(self, options):
     for plotName in self.plots:
-      if True: #try:
+      try:
+      #if True:
         print("...Plotting %s"%plotName)
         mode = "stack"
         if "mode" in self.plots[plotName]: mode = self.plots[plotName]["mode"]
         if mode == "stack": self.doStackPlot(plotName, options)
         if mode == "colz": self.doColZPlots(plotName, options)
         ## More to be implemented
-      #except Exception as e:
-      #  print("Something went wrong with %s: "%plotName, e)
+      except Exception as e:
+        if options.debug: raise
+        print("Something went wrong with %s: "%plotName, e)
 
   def doColZPlots(self, pname, options):
 
@@ -602,7 +624,7 @@ class plotter(object):
     p1.Draw()
     p1.cd()
     histo.SetTitle("")
-    histo.Draw("colz")
+    histo.Draw("textcolz")
     histo.GetXaxis().SetLabelSize(0.03)
     histo.GetYaxis().SetLabelSize(0.03)
     #histo.GetYaxis().SetTitleSize(0.08)
@@ -612,6 +634,7 @@ class plotter(object):
     histo.GetXaxis().SetTitle(p["xlabel"])
 
     CMS_lumi.writeExtraText = True
+
     CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.3f fb^{-1}" % options.luminosity
     CMS_lumi.extraText  = "Preliminary"
     CMS_lumi.lumi_sqrtS = "13"
@@ -619,6 +642,24 @@ class plotter(object):
 
     c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".pdf")
     c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".png")
+    if len(options.addLines) > 0:
+      tlines = []
+      for l in options.addLines:
+        x1, y1, x2, y2 = [float(x) for x in l.split(",")]
+        tlines.append(ROOT.TLine(x1, y1, x2, y2))
+        tlines[-1].SetLineStyle(3)
+        tlines[-1].SetLineWidth(3)
+        tlines[-1].SetLineColor(ROOT.kBlack)
+        tlines[-1].Draw("same")
+    if len(options.addText) > 0:
+      ttext = []
+      for l in options.addText:
+        text, coords, size = l.split(":")
+        coords = [float(x) for x in coords.split(",")]
+        ttext.append(ROOT.TText(coords[0], coords[1], text))
+        ttext[-1].SetTextColor(ROOT.kBlack)
+        ttext[-1].SetTextSize(float(size))
+        ttext[-1].Draw("same")
     # Also save in root file 
     tf = ROOT.TFile(options.plotdir + "/" + p["plotname"] + ".root", "UPDATE")
     histo.Write()
@@ -649,9 +690,14 @@ class plotter(object):
             tmpUp = s.histos[pname]["total"].Clone("tmp%s%sUp"%(s.name, syst))
             tmpDn = s.histos[pname]["total"].Clone("tmp%s%sDn"%(s.name, syst))
             if any([re.match(pr, s.name) for pr in systsFile[syst]["processes"]]):
-              tmpUp.Scale(systsFile[syst]["size"])
-              tmpDn.Scale(1./systsFile[syst]["size"])
-       
+              sizeHere  = 1.
+              sizeinCfg = systsFile[syst]["size"]
+              if type(sizeinCfg) == type(1.0001):
+                sizeHere = sizeinCfg
+              else: 
+                sizeHere = 1. # TODO: do proper reading here 
+              tmpUp.Scale(sizeHere)
+              tmpDn.Scale(1./sizeHere)
           if systsFile[syst]["type"] == "shape":
             altNameUp = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst).replace("[VAR]_[CHANNEL]", pname).replace("[VAR]", pname) + systsFile[syst]["up"]
             altNameDn = systsFile[syst]["match"].replace("$PROCESS", s.name).replace("$SYSTEMATIC", syst).replace("[VAR]_[CHANNEL]", pname).replace("[VAR]", pname) + systsFile[syst]["down"]
@@ -672,7 +718,9 @@ class plotter(object):
                   if s.variations[var]["symmetrize"]:
                     testUp = s.name + "_" + var + "Up"
                     testDn = s.name + "_" + var + "Dn"
-                    if testUp == altNameUp and altNameDn == testDn:
+                    #print(testUp, altNameUp, testDn, altNameDn)
+                    if testUp == altNameUp or altNameDn == testDn:
+                      #print("Pass and save")
                       tmpUp = s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameUp).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameUp)
                       tmpDn = s.histos[pname+ "_" + var + "Dn"]["total"].Clone(altNameDn).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var + "Dn"]["total"].Clone(altNameDn)
                       tmpNom = s.histos[pname]["total"]
@@ -694,6 +742,7 @@ class plotter(object):
               tmpUp = s.histos[pname]["total"].Clone(altNameUp)
               tmpDn = s.histos[pname]["total"].Clone(altNameDn)
           if not(backUp):
+            #print(s.name, syst, pname)
             backUp = tmpUp.Clone().Clone("total_background_%sUp"%syst)
             backDn = tmpDn.Clone().Clone("total_background_%sUp"%syst)
           else: 
@@ -735,7 +784,7 @@ class plotter(object):
       theStacks["%sDn"%syst] = backDn
       histosToSave["%sUp"%syst] = backUp
       histosToSave["%sDn"%syst] = backDn
-    print(histosToSave)
+    #print(histosToSave)
     # Here we have all systs saved in theStacks, now we add systematics bin by bin
     nomHistoSyst = nomstack.Clone(nomstack.GetName() + "_Syst")
     for ibin in range(0,nomstack.GetNbinsX()+1):
@@ -764,7 +813,8 @@ class plotter(object):
   def doStackPlot(self, pname, options):
    debug = True
    if debug: print("Do stack plot")
-   if True: # try:
+   #if True:
+   try:
     p = self.plots[pname]
     c = ROOT.TCanvas(pname,pname, 800,1050)
     # Set pads
@@ -844,7 +894,7 @@ class plotter(object):
         else:
           thePlotGroupsSignal[s.config["label"]].Add(s.histos[pname]["total"])
     if debug: print("...Groups created")
-    print(thePlotGroupsSignal)
+    print(thePlotGroupsSignal, thePlotGroupsData, thePlotGroups)
     orderedPlotGroups = sorted(GroupsYields.keys(), key=lambda x: GroupsYields[x])
     for plotgroup in (orderedPlotGroups if options.ordered else thePlotGroups):
       theStack.Add(thePlotGroups[plotgroup])
@@ -862,8 +912,11 @@ class plotter(object):
 
     if p["normalize"]:
       for index in range(len(theIndivs)):
-        theIndivs[index].Scale(1./theIndivs[index].Integral())
+        theIndivs[index].Scale(1./max(0.000001,theIndivs[index].Integral()))
       theStack = ROOT.THStack(pname+"_stack_norm", pname+ "_norm")
+      print(back, backSyst)
+      back.Scale(1./max(0.000001,back.Integral()))
+      backSyst.Scale(1./max(0.0000001, backSyst.Integral()))
       for s in self.samples:
         if s.isBackground():
           s.histos[pname]["total"].Scale(1./stacksize)
@@ -904,16 +957,21 @@ class plotter(object):
 
     # By default S/B, data/MC, TODO: add more options
     den  = backSyst.Clone("backsyst_ratio")
+    denForDivide = den.Clone("forDivide")
     nums = []
     for ind in  theIndivs + theData:
       try:
         nums.append(ind.Clone(ind.GetName()+ "_ratio"))
       except:
+        if options.debug: raise
         print("Something went wrong in the ratio...")
     #nums = [ind.Clone(ind.GetName()+ "_ratio") for ind in  theIndivs + theData]
+    for ib in range(0, den.GetNbinsX()+1):
+      denForDivide.SetBinError(ib,0)
     for num in nums: 
-      num.Divide(den)
-    den.Divide(den)
+      num.Divide(denForDivide)
+        
+    den.Divide(denForDivide)
     den.SetLineColor(ROOT.kBlack) #ROOT.kCyan if doSyst else ROOT.kGray)
     den.SetTitle("")
     den.GetYaxis().SetTitle(options.ratioylabel)
@@ -960,6 +1018,8 @@ class plotter(object):
     tlr.Draw("same")
     CMS_lumi.writeExtraText = True
     CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.0f pb^{-1}" % (options.luminosity*1000)
+    if p["normalize"]: 
+      CMS_lumi.lumi_13TeV = ""
     CMS_lumi.extraText  = "Preliminary"
     CMS_lumi.lumi_sqrtS = "13"
     if debug: print("...CMS_lumi configured")
@@ -983,8 +1043,8 @@ class plotter(object):
     tf.Close()
     if debug: print("...File closed")
     ROOT.SetOwnership(c,False) # This magic avoids segfault due to the garbage collector collecting non garbage stuff
-   #except Exception as e:
-   #  print("Something went wrong, skipping plot...", e)
+   except Exception as e:
+     print("Something went wrong, skipping plot...", e)
 
 if __name__ == "__main__":
   print("Starting plotting script...")
@@ -1017,6 +1077,10 @@ if __name__ == "__main__":
   parser.add_option("--systFile", dest="systFile", type="string", default=None, help="Systematics configuration file")
   parser.add_option("--pretend", dest="pretend", action="store_true", default=False, help="Activate pretend mode (create submit job files but don't submit)")
   parser.add_option("--onlytotal", dest="onlytotal", action="store_true", default=False, help="For colz plots, only plot total background")
+  parser.add_option("--addLines", dest="addLines", default=[], action="append", help="Add lines in these coordinates (only 2D plots). Syntax is --addLines 'x1,y1,x2,y2'.")
+  parser.add_option("--addText", dest="addText", default=[], action="append", help="Add text in these coordinates (only 2D plots). Syntax is --addText 'title:x1,y1:size'.")
+  parser.add_option("--debug", dest="debug", default =False, action="store_true", help="If activated, turn off exception catching for full debugging")
+
   (options, args) = parser.parse_args()
   samplesFile = imp.load_source("samples",args[0])
   plotsFile   = imp.load_source("plots",  args[1])
@@ -1057,6 +1121,15 @@ if __name__ == "__main__":
         if re.match(s, ss):
           print("Will exclude sample:", ss)
           add = False
+      if add:
+        newsamples[ss] = samples[ss]
+    samples = newsamples
+  if options.toLoad:
+    newsamples = {}
+    for ss in samples.keys():
+      add = True
+      if "doPlot" in samples[ss]:
+        add = samples[ss]["doPlot"]
       if add:
         newsamples[ss] = samples[ss]
     samples = newsamples
