@@ -20,6 +20,9 @@ parser.add_option("--systfile", dest="systfile", type="string", default="ZH/syst
 parser.add_option("--tag", dest="tag", type="string", default="", help="Add this extra tag to separate the plotting step from others")
 parser.add_option("--var", dest="var", type="string", default="leadclusterspher", help="Make cards based on the shape of this variable")
 parser.add_option("--leptonID", dest="leptonID", action="store_true", default=False, help="Activate lepton ID optimization commands")
+parser.add_option("--muonID", dest="muonID", action="store_true", default=False, help="To check Muon IP cuts")
+parser.add_option("--jetID", dest="jetID", action="store_true", default=False, help="To check relaxed jet ID cuts")
+parser.add_option("--PU", dest="PU", action="store_true", default=False, help="To check PU splitting")
 parser.add_option("--btagEff", dest="btagEff", action="store_true", default=False, help="Activate bTag Efficiency commands")
 (options, args) = parser.parse_args()
 
@@ -43,11 +46,16 @@ if doWhat == "all" or doWhat == "dataframes":
     analyzer = "ZH_leptonID"
     if options.plotfile == "ZH/plots_mZ.py": # If default, change to leptonID one
       options.plotfile = "ZH/plots_leptonID.py" 
+  if options.jetID:
+    analyzer = "checkJetID"
   if options.btagEff:
     analyzer = "ZH_btagEff"
     doWhat = "dataframes"
     print("\x1b[0;31;40m Reminder: B tagging effiency dataframe production step is suggested to run only for TT and DY samples (--samples argument) \x1b[0m")
-
+  if options.muonID:
+    analyzer = "MuonID"
+  if options.PU:
+    analyzer = "ntracksplit"
   print("[DATAFRAMES] creation step...")
   samples = open(os.getcwd() +  "/data/samples_%s.json"%options.year)
   samplesjson = json.loads(samples.read())
