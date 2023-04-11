@@ -340,7 +340,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def clusterizeTracks(self, events, tracks):
         # anti-kt, dR=1.5 jets
-        nSmallEvents = 1000
+        nSmallEvents = 5000
         smallEvents = len(events) < nSmallEvents
         if not smallEvents:
           jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)        
@@ -996,8 +996,9 @@ class SUEP_cluster(processor.ProcessorABC):
         out = {}
         # Define outputs for plotting
         if debug: print("Saving reco variables for channel %s"%channel)
-        out["run"]           = self.events.run[:]
+
         # Object: leptons
+        out["nTrueInt"]      = self.events.Pileup.nTrueInt[:]
         out["leadlep_pt"]    = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
         out["leadlep_eta"]   = self.leptons.eta[:,0]

@@ -288,7 +288,7 @@ class SUEP_cluster(processor.ProcessorABC):
             }, with_name="Momentum4D")
  
         # Minimimum pT, eta requirements + jet-lepton recleaning
-        jetCut = (Jets.pt > 30) & (abs(Jets.eta)<2.5) & (Jets.deltaR(leptons[:,0])>= 0.4) & (Jets.deltaR(leptons[:,1])>= 0.4) & (Jets.jetId >= 6)
+        jetCut = (Jets.pt > 30) & (abs(Jets.eta)<2.5) & (Jets.deltaR(leptons[:,0])>= 0.4) & (Jets.deltaR(leptons[:,1])>= 0.4) & (Jets.jetId >= 2)
         jets = Jets[jetCut]
         # The following is the collection of events and of jets
         return events, jets, [coll for coll in extraColls]
@@ -996,7 +996,7 @@ class SUEP_cluster(processor.ProcessorABC):
         out = {}
         # Define outputs for plotting
         if debug: print("Saving reco variables for channel %s"%channel)
-        out["run"]           = self.events.run[:]
+
         # Object: leptons
         out["leadlep_pt"]    = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
