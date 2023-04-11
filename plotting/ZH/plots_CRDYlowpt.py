@@ -408,6 +408,21 @@ plots = {
              "xlabel"   : "#phi^{SUEP}",
              "vars"     : ["leadcluster_phi"]
   },
+  "leadclustermass": {
+             "name"     : "leadclustermass",
+             "bins"     : ["uniform", 50, 0, 200],
+             "channel"  : "onecluster",
+             "value"    : lambda x, y : (x["leadcluster_m"], y*cut(x)),
+             "logY"     : True,
+             "normalize": False,
+             "maxY"     : 1e9,
+             "minY"     : 1e0,
+             "ratiomaxY": 2.,
+             "ratiominY": 0.,
+             "plotname" : "leadclustermass",
+             "xlabel"   : "m^{SUEP}",
+             "vars"     : ["leadcluster_m"]
+  },
   "leadclustertracks": {
              "name"     : "leadclustertracks",
              "bins"     : ["uniform", 200, 0, 200],

@@ -11,7 +11,7 @@ def hdf5inpath(path):
   return ret
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_withsysts/"
+main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_ANv4/"
 samples = {
   "data": {
          "name" : "data",
@@ -20,7 +20,7 @@ samples = {
          "lineColor": ROOT.kBlack,
          "fillcolor": ROOT.kBlack,
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5/data/"),#+ hdf5inpath(main_path + "data_RunB/")+hdf5inpath(main_path + "data_RunC/")+hdf5inpath(main_path + "data_RunD/"),
+         "files"    : hdf5inpath(main_path + "data/"),#+ hdf5inpath(main_path + "data_RunB/")+hdf5inpath(main_path + "data_RunC/")+hdf5inpath(main_path + "data_RunD/"),
          "markerstyle": 20,
          "markersize" : 1,
   },
@@ -31,7 +31,7 @@ samples = {
          "linecolor"  : ROOT.kBlack,
          "fillcolor"  : 7, # White
          "isSig"      : False,
-         "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18) , 
+         "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"], 
          "files"      : hdf5inpath(main_path + "DY_nano_Autumn18/"),
   },      
   "DY_Pt0To50": {
@@ -41,7 +41,7 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 7, # Light blue
          "isSig"    : False,
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt0To50/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt0To50/skims.root"
   },
@@ -54,7 +54,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt50To100/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt50To100/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "DY_Pt100To250": {
          "name"     : "DY_Pt100To250", #Here plain text
@@ -65,7 +65,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt100To250/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt100To250/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "DY_Pt250To400": {
          "name"     : "DY_Pt250To400", #Here plain text
@@ -76,7 +76,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt250To400/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt250To400/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "DY_Pt400To650": {
          "name"     : "DY_Pt400To650", #Here plain text
@@ -87,7 +87,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt400To650/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt400To650/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "DY_Pt650ToInf": {
          "name"     : "DY_Pt650ToInf", #Here plain text
@@ -98,7 +98,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt650ToInf/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DYToLL_M50_Pt650ToInf/skims.root", 
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "ttto2l": {
          "name"     : "ttto2l", #Here plain text
@@ -109,7 +109,7 @@ samples = {
          "isSig"    : False,
          "files"    :  hdf5inpath(main_path + "TTTo2L2Nu/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTTo2L2Nu/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "tW": {
          "name"     : "tW", #Here plain text
@@ -120,7 +120,7 @@ samples = {
          "isSig"    : False,
          "files"    :  hdf5inpath(main_path + "tW/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/tW/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "DY_lowmass": {
          "name"     : "DY_lowmass", #Here plain text
@@ -131,7 +131,7 @@ samples = {
          "isSig"    : False,
          "files"    :  hdf5inpath(main_path + "DY_lowmass/"),
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/DY_lowmass/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
 
   "ttto1l": {
@@ -142,7 +142,7 @@ samples = {
          "fillcolor": 5, # Yellow
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTTo1L1Nu2Q/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTTo1L1Nu2Q/skims.root",
   },
 #  "Wjets": {
@@ -154,7 +154,7 @@ samples = {
 #         "isSig"    : False,
 #         "files"    : hdf5inpath(main_path + "WJets/"), 
 #         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WJets/skims.root",
-#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
 #  },
 
   "WW": {
@@ -166,7 +166,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "WWTo2L2Nu/"),
          "WW"       : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WWTo2L2Nu/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "WZ2l2q": {
          "name"     : "WZ2l2q", #Here plain text
@@ -176,7 +176,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "WZTo2l2Q/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WZTo2l2Q/skims.root"
   },
   "WZ3lnu": {
@@ -187,7 +187,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "WZTo3LNu/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/WZTo3LNu/skims.root"
   },
   "ZZ2l2q": {
@@ -198,7 +198,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "ZZTo2L2Q/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo2L2Q/skims.root"
   },
   "ZZ2l2nu": {
@@ -209,7 +209,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "ZZTo2L2Nu/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo2L2Nu/skims.root"
   },
 
@@ -221,7 +221,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "ZZTo4L/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZZTo4L/skims.root"
   },
   "ZG": {
@@ -232,7 +232,7 @@ samples = {
          "fillcolor": 3, # Green
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "ZG/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/ZG/skims.root"
   },
   "ttZll": {
@@ -243,7 +243,7 @@ samples = {
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTZToLL/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTZToLL/skims.root"
   },
   "ttWlnu": {
@@ -254,7 +254,7 @@ samples = {
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTWToLNu/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTWToLNu/skims.root"
   },
   "ttWqq": {
@@ -265,7 +265,7 @@ samples = {
          "fillcolor": 9, # Dark blue
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTWToQQ/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL18/skim_2l_20_10/TTWToQQ/skims.root"
   },
 
@@ -276,39 +276,43 @@ samples = {
 #         "linecolor": ROOT.kBlack,
 #         "fillcolor": ROOT.kBlack,
 #         "isSig"    : True,
+#         "doPlot"   : False,
 #         "files"    : hdf5inpath(main_path + "SUEP_generic_mS125_mD2_T2/"),
-#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
 #  },
-  "SUEP_ZH_generic_new": {
-         "name"     : "SUEP_ZH_generic", #Here plain text
-         "label"    : "ZS^{gen}, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kRed,
-         "fillcolor": ROOT.kRed,
-         "isSig"    : True,
-         "files"    : hdf5inpath(main_path + "SUEP_generic_new_mS125_mD2_T2/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
-  },
-  "SUEP_ZH_leptonic": {
-         "name"     : "SUEP_ZH_leptonic", #Here plain text
-         "label"    : "ZS^{lep}, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kBlue,
-         "fillcolor": ROOT.kBlue,
-         "isSig"    : True,
-         "files"    : hdf5inpath(main_path + "SUEP_leptonic_mS125_mD2_T2/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
-  },
-  "SUEP_ZH_hadronic": {
-         "name"     : "SUEP_ZH_hadronic", #Here plain text
-         "label"    : "ZS^{had}, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "files"    : hdf5inpath(main_path + "SUEP_hadronic_mS125_mD2_T2/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
-  },
+#  "SpUEP_ZH_generic_new": {
+#         "name"     : "SUEP_ZH_generic", #Here plain text
+#         "label"    : "ZS^{gen}, m_{S} = 125 GeV", #Here we can use weird glyphs
+#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "linecolor": ROOT.kRed,
+#         "fillcolor": ROOT.kRed,
+#         "isSig"    : True,
+#         "doPlot"   : False,
+#         "files"    : hdf5inpath(main_path + "SUEP_generic_new_mS125_mD2_T2/"),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+#  },
+#  "SUEP_ZH_leptonic": {
+#         "name"     : "SUEP_ZH_leptonic", #Here plain text
+#         "label"    : "ZS^{lep}, m_{S} = 125 GeV", #Here we can use weird glyphs
+#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "linecolor": ROOT.kBlue,
+#         "fillcolor": ROOT.kBlue,
+#         "isSig"    : True,
+#         "doPlot"   : False,
+#         "files"    : hdf5inpath(main_path + "SUEP_leptonic_mS125_mD2_T2/"),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+#  },
+#  "SUEP_ZH_hadronic": {
+#         "name"     : "SUEP_ZH_hadronic", #Here plain text
+#         "label"    : "ZS^{had}, m_{S} = 125 GeV", #Here we can use weird glyphs
+##         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "linecolor": ROOT.kGreen,
+#         "fillcolor": ROOT.kGreen,
+#         "isSig"    : True,
+#         "doPlot"   : False,
+#         "files"    : hdf5inpath(main_path + "SUEP_hadronic_mS125_mD2_T2/"),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+#  },
   "SUEP_generic_mS125_mD2.00_T0.50": {
          "name"     : "SUEP_generic_mS125_mD2.00_T0.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
@@ -316,8 +320,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD2.00_T0.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T0.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T0.25": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T0.25", #Here plain text
@@ -326,8 +331,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD1.00_T0.25/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T0.25/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T0.35": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T0.35", #Here plain text
@@ -336,18 +342,20 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD1.40_T0.35/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T0.35/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T1.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T1.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, generic, T=1, m_{\phi}=2 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "linecolor": ROOT.kOrange,
+         "fillcolor": ROOT.kOrange,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD2.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T0.50": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T0.50", #Here plain text
@@ -356,8 +364,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD1.00_T0.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T0.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T0.70": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T0.70", #Here plain text
@@ -366,18 +375,20 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD1.40_T0.70/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T0.70/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, generic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "linecolor": ROOT.kBlack,
+         "fillcolor": ROOT.kBlack,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD2.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T1.00": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T1.00", #Here plain text
@@ -386,8 +397,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD1.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T1.40": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T1.40", #Here plain text
@@ -396,18 +408,20 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD1.40_T1.40/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T1.40/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T4.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T4.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, generic, T=4, m_{\phi}=2 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "linecolor": ROOT.kViolet,
+         "fillcolor": ROOT.kViolet,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD2.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T2.00", #Here plain text
@@ -416,8 +430,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD1.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T2.80": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T2.80", #Here plain text
@@ -426,8 +441,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD1.40_T2.80/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T2.80/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T8.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T8.00", #Here plain text
@@ -436,8 +452,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD2.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T4.00": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T4.00", #Here plain text
@@ -446,8 +463,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD1.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T5.60": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T5.60", #Here plain text
@@ -456,8 +474,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD1.40_T5.60/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T5.60/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T0.50": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T0.50", #Here plain text
@@ -466,8 +485,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD2.00_T0.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T0.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T0.50": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T0.50", #Here plain text
@@ -476,8 +496,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD2.00_T0.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T0.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T1.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T1.00", #Here plain text
@@ -486,8 +507,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD2.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T1.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T1.00", #Here plain text
@@ -496,28 +518,31 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD2.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    :  "ZS, leptonic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "linecolor": ROOT.kBlue,
+         "fillcolor": ROOT.kBlue,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD2.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, hadronic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "linecolor": ROOT.kRed,
+         "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD2.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T4.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T4.00", #Here plain text
@@ -526,8 +551,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD2.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T4.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T4.00", #Here plain text
@@ -536,8 +562,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD2.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T8.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T8.00", #Here plain text
@@ -546,8 +573,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD2.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T8.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T8.00", #Here plain text
@@ -556,8 +584,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD2.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T0.75": {
          "name"     : "SUEP_generic_mS125_mD3.00_T0.75", #Here plain text
@@ -566,8 +595,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD3.00_T0.75/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T0.75/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T0.75": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T0.75", #Here plain text
@@ -576,8 +606,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD3.00_T0.75/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T0.75/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T0.75": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T0.75", #Here plain text
@@ -586,8 +617,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD3.00_T0.75/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T0.75/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T1.50": {
          "name"     : "SUEP_generic_mS125_mD3.00_T1.50", #Here plain text
@@ -596,8 +628,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD3.00_T1.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T1.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T1.50": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T1.50", #Here plain text
@@ -606,8 +639,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD3.00_T1.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T1.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T1.50": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T1.50", #Here plain text
@@ -616,8 +650,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD3.00_T1.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T1.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T3.00": {
          "name"     : "SUEP_generic_mS125_mD3.00_T3.00", #Here plain text
@@ -626,8 +661,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD3.00_T3.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T3.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T3.00": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T3.00", #Here plain text
@@ -636,8 +672,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD3.00_T3.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T3.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T3.00": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T3.00", #Here plain text
@@ -646,8 +683,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD3.00_T3.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T3.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T6.00": {
          "name"     : "SUEP_generic_mS125_mD3.00_T6.00", #Here plain text
@@ -656,8 +694,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD3.00_T6.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T6.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T6.00": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T6.00", #Here plain text
@@ -666,8 +705,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD3.00_T6.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T6.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T6.00": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T6.00", #Here plain text
@@ -676,8 +716,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD3.00_T6.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T6.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T12.00": {
          "name"     : "SUEP_generic_mS125_mD3.00_T12.00", #Here plain text
@@ -686,8 +727,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD3.00_T12.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T12.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T12.00": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T12.00", #Here plain text
@@ -696,8 +738,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD3.00_T12.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T12.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T12.00": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T12.00", #Here plain text
@@ -706,8 +749,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD3.00_T12.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T12.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T1.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T1.00", #Here plain text
@@ -716,8 +760,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD4.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T1.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T1.00", #Here plain text
@@ -726,8 +771,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD4.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T1.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T1.00", #Here plain text
@@ -736,18 +782,20 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD4.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T1.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T2.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T2.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, generic, T=2, m_{\phi}=4 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD4.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T2.00", #Here plain text
@@ -756,8 +804,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD4.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T2.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T2.00", #Here plain text
@@ -766,8 +815,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD4.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T4.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T4.00", #Here plain text
@@ -776,8 +826,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD4.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T4.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T4.00", #Here plain text
@@ -786,8 +837,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD4.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T4.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T4.00", #Here plain text
@@ -796,8 +848,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD4.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T8.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T8.00", #Here plain text
@@ -806,8 +859,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD4.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T8.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T8.00", #Here plain text
@@ -816,8 +870,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD4.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T8.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T8.00", #Here plain text
@@ -826,8 +881,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD4.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T16.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T16.00", #Here plain text
@@ -836,8 +892,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD4.00_T16.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T16.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T16.00", #Here plain text
@@ -846,8 +903,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD4.00_T16.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T16.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T16.00", #Here plain text
@@ -856,8 +914,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD4.00_T16.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T2.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T2.00", #Here plain text
@@ -866,8 +925,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD8.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T2.00", #Here plain text
@@ -876,8 +936,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD8.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T2.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T2.00", #Here plain text
@@ -886,8 +947,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD8.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T2.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T4.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T4.00", #Here plain text
@@ -896,8 +958,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD8.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T4.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T4.00", #Here plain text
@@ -906,8 +969,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD8.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T4.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T4.00", #Here plain text
@@ -916,8 +980,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD8.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T8.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T8.00", #Here plain text
@@ -926,8 +991,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD8.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T8.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T8.00", #Here plain text
@@ -936,8 +1002,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD8.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T8.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T8.00", #Here plain text
@@ -946,8 +1013,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD8.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T8.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T16.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T16.00", #Here plain text
@@ -956,8 +1024,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD8.00_T16.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T16.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T16.00", #Here plain text
@@ -966,8 +1035,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD8.00_T16.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T16.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T16.00", #Here plain text
@@ -976,8 +1046,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD8.00_T16.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T16.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T32.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T32.00", #Here plain text
@@ -986,8 +1057,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_generic_mS125_mD8.00_T32.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T32.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T32.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T32.00", #Here plain text
@@ -996,8 +1068,9 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_leptonic_mS125_mD8.00_T32.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T32.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T32.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T32.00", #Here plain text
@@ -1006,44 +1079,59 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/signalscan_2018/SUEP_hadronic_mS125_mD8.00_T32.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,18),
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T32.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
 }
 
 for sample in samples:
   if "data" in sample: continue
-  if not(samples[sample]["isSig"]): 
-    samples[sample]["variations"] = {}
-    continue
+  #if not(samples[sample]["isSig"]): 
+  #  samples[sample]["variations"] = {}
+  #  continue
 
   samples[sample]["variations"] = {
+  "TrigSFUp": {
+           "name"            :   "TrigSFUp",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: (x["TrigSF"]+x["TrigSF_Up"])/x["TrigSF"], # Relative to central
+           "symmetrize"      :      False, 
+  },
+  "TrigSFDn": {
+           "name"            :   "TrigSFDn",
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
+           "extraWeights"    :   lambda x: (x["TrigSF"]-x["TrigSF_Dn"])/x["TrigSF"], # Relative to central
+           "symmetrize"      :      False,
+  },
   "ElSFUp": {
            "name"            :   "ElSFUp",
            "isSyst"          :       True,
            "replaceChannel"  :         {},
-           "extraWeights"    :   lambda x: SF(x,18, 2)/SF(x,18, 0), # Relative to central
+           "extraWeights"    :   lambda x: x["LepSF_ElUp"]/x["LepSF"], # Relative to central
            "symmetrize"      :      False,
   },
   "ElSFDn": {
            "name"            :   "ElSFDn",
            "isSyst"          :       True,
            "replaceChannel"  :         {},
-           "extraWeights"    :   lambda x: SF(x,18, -2)/SF(x,18, 0),
+           "extraWeights"    :   lambda x: x["LepSF_ElDn"]/x["LepSF"],
            "symmetrize"      :      False,
   },
   "MuSFUp": {
            "name"            :   "MuSFUp",
            "isSyst"          :       True,
            "replaceChannel"  :         {},
-           "extraWeights"    :   lambda x: SF(x,18, 1)/SF(x,18, 0),
+           "extraWeights"    :   lambda x: x["LepSF_MuUp"]/x["LepSF"],
            "symmetrize"      :      False,
   },
   "MuSFDn": {
            "name"            :   "MuSFDn",
            "isSyst"          :       True,
            "replaceChannel"  :         {},
-           "extraWeights"    :   lambda x: SF(x,18, -1)/SF(x,18, 0),
+           "extraWeights"    :   lambda x: x["LepSF_MuDn"]/x["LepSF"],
            "symmetrize"      :      False,
   },
   "PUUp": {

@@ -8,12 +8,11 @@ plots = {
 }
 
 var = {
-"S_C" : ["leadclusterSpher_C", "S^{SUEP}", 100, 0, 1.],
-"N_C" : ["leadcluster_ntracks", "N_{tracks}^{SUEP}", 100, 0, 100],
-"jet1pt":["leadjet_pt", "p_{T}^{jet1} [GeV]", 200, 0, 1000],
-"S_pt": ["leadcluster_pt", "p_{T}^{SUEP} [GeV]", 200, 0, 1000],
-"N" : ["ntracks", "N_{tracks}", 200, 0, 200],
-"MET_pt": ["MET_pt", "p_{T}^{miss} [GeV]", 200, 0, 200],
+"leadlep_pt" : ["leadlep_pt", "p_{T}^{l1} [GeV]", 10, [10, 15, 20, 30, 40, 60, 80, 100, 125, 150, 200]],
+"leadlep_eta" : ["leadlep_eta", "#eta^{l1}", 6, [-2.4, -1.2, -0.8, 0, 0.8, 1.2, 2.4]],
+"subleadlep_pt" : ["subleadlep_pt", "p_{T}^{l2} [GeV]", 10, [10, 15, 20, 30, 40, 60, 80, 100, 125, 150, 200]],
+"subleadlep_eta" : ["subleadlep_eta", "#eta^{l2}", 6, [-2.4, -1.2, -0.8, 0, 0.8, 1.2, 2.4]],
+
 }
 
 for v1 in var:
@@ -21,7 +20,7 @@ for v1 in var:
     name = "2D_%s_%s"%(v1,v2)
     plots[name] = {}
     plots[name]["name"]    = name
-    plots[name]["bins"]    = ["2Duniform", var[v1][2], var[v1][3], var[v1][4], var[v2][2], var[v2][3], var[v2][4]]
+    plots[name]["bins"]    = ["2Dlimits", var[v1][2], var[v1][3], var[v2][2], var[v2][3]]
     plots[name]["channel"] = "SR"
     plots[name]["value"]   = lambda x, y, v1=v1, v2=v2: (x[var[v1][0]], x[var[v2][0]], y*cut(x))
     plots[name]["logY"     ]= True
@@ -36,5 +35,4 @@ for v1 in var:
     plots[name]["vars"]     = [var[v1][0], var[v2][0]]
     plots[name]["mode"]     = "colz"
 
-print(plots)
 
