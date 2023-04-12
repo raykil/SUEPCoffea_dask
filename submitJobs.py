@@ -3,7 +3,7 @@ import os
 import sys
 
 conda_source  = "/afs/cern.ch/user/%s/%s/miniconda3/etc/profile.d/conda.sh"%(os.getlogin()[0], os.getlogin())
-doSingularity = True 
+doSingularity = False 
 print()
 print('START')
 print()
@@ -13,7 +13,7 @@ NumberOfJobs= int(sys.argv[1]) # number of jobs to be submitted
 FileFolder  = sys.argv[2]      # File folder with all the files
 OutputDir   = sys.argv[3]      # Where to put the stuff
 queue       = sys.argv[4]      # Which queue to use: expresso (20min), microcentury (1h), longlunch (2h), workday (8h), tomorrow (1d), testmatch (3d), nextweek (1w)
-doSubmit    = sys.argv[5]      # Whether to submit or not
+doSubmit    = (sys.argv[5] != "0")     # Whether to submit or not
 analyzer    = sys.argv[6]
 era         = sys.argv[7]
 isData      = bool(int(sys.argv[8]))
@@ -21,38 +21,43 @@ interval    = int(sys.argv[9])
 doSRonly    = bool(int(sys.argv[10]))
 filt = None
 isDY = False
-resubmission = False
+resubmission = True
+#doSubmit = 0
 if len(sys.argv) > 11:
   filt = sys.argv[11]
 if len(sys.argv) > 12:
   if int(sys.argv[12])==1:  
     isDY = True
 files = [FileFolder + "/" + f for f in os.listdir(FileFolder)] # list with all the files  
+newfiles = []
+for f in files:
+  if ".json" in f or (f=="skims.root"): continue
+  newfiles.append(f)
+files = newfiles
+
 if filt:
   newfiles = []
   for f in files:
     if filt in f: newfiles.append(f)
   print("Filtered files to %i/%i"%(len(newfiles), len(files)))
   files =  newfiles
+
 if resubmission:
+  import json 
+  with open(FileFolder + "/tags.json", "r") as read:
+    tags = json.load(read)
+  #print(tags)
   newfiles = []
-  import ROOT
   for iff, f in enumerate(files):
-    print("%i/%i"%(iff, len(files)))
-    tf = ROOT.TFile(f,"READ")
-    tt = tf.Get("Events")
-    run, lum, eve = 0, 0, 0
-    for ev in tt:
-      run = ev.run
-      lum = ev.luminosityBlock
-      eve = ev.event
-      break
-    tf.Close()
-    testout = "out_%i_%i_%i.hdf5"%(eve, lum, run)
+    #print(f)
+    if not("root" in f) or ("skims.root" in f): continue
+    testout = "out_%s.hdf5"%(tags[("/".join(f.split("/")[-3:])).replace("//","/")])
     if not(os.path.isfile(OutputDir +"/" + testout)):
       newfiles.append(f)
+    elif doSubmit != 0:
+      print("File %s already exists, won't resubmit"%(OutputDir +"/" + testout))
   files = newfiles
-
+  print("%i files will be ran"%(len(files)))
 tag=OutputDir
 
 if NumberOfJobs == -1: NumberOfJobs = len(files)
@@ -63,13 +68,14 @@ path = os.getcwd()
 print()
 print('do not worry about folder creation:')
 os.system("mkdir %s" %OutputDir)
-os.system("rm -rf %s/tmp"%tag)
-os.system("rm -rf %s/exec"%tag)
-os.system("rm -rf %s/batchlogs"%tag)
-os.system("mkdir %s/tmp"%tag)
-os.system("mkdir %s/exec"%tag)
+os.system("rm %s/tmp/*"%tag)
+os.system("rm %s/exec/*"%tag)
+os.system("rm %s/batchlogs/*"%tag)
+if not os.path.isdir("%s/tmp"%tag): os.system("mkdir %s/tmp"%tag)
+if not os.path.isdir("%s/exec"%tag): os.system("mkdir %s/exec"%tag)
 print()
 
+    
 ##### loop for creating and sending jobs #####
 ifile = 0
 ijob  = 1
@@ -83,7 +89,8 @@ while ifile < NumberOfJobs:
         fout.write("cd "+str(path)+"\n")
         if not(doSingularity): # If you are not running on singularity, need to load the coffea environment
           fout.write("source %s\n\n"%conda_source)
-          fout.write("conda activate coffea\n")
+          fout.write("conda activate base\n")
+          fout.write("export HOME=\"/afs/cern.ch/user/c/cericeci\"\n")
         for i in range(interval):
           if ifile == NumberOfJobs: continue # Last one will have less
           fout.write("python condor_SUEP_WS.py  --isMC=%i --era=%s --dataset=DY --analyzer=%s --infile=%s --outputdir=%s %s %s\n"%(0 if isData else 1, era, analyzer, files[ifile], OutputDir, "--isDY" if isDY else "", "--SR" if doSRonly else "")) 
@@ -98,7 +105,7 @@ while ifile < NumberOfJobs:
 
 ###### create submit.sub file ####
     
-os.mkdir("%s/batchlogs"%tag)
+if not os.path.isdir("%s/batchlogs"%tag): os.mkdir("%s/batchlogs"%tag)
 with open('submit.sub', 'w') as fout:
     fout.write("executable              = $(filename)\n")
     fout.write("arguments               = $(Proxy_path) $(ClusterId)$(ProcId)\n")
@@ -111,13 +118,13 @@ with open('submit.sub', 'w') as fout:
     fout.write("queue filename matching (%s/exec/job_*sh)\n"%tag)
     
 ###### sends bjobs ######
-if int(doSubmit) > 0:
+if int(doSubmit) > 0 and NumberOfJobs > 0:
   os.system("echo submit.sub")
   os.system("condor_submit -spool submit.sub")
    
 print()
 print("your jobs:")
-os.system("condor_q")
+#os.system("condor_q")
 print()
 print('END')
 print()
