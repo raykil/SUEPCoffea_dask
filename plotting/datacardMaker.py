@@ -2,6 +2,7 @@ import ROOT
 import imp
 import copy
 import re 
+import os
 
 ROOT.gErrorIgnoreLevel = ROOT.kError
 
@@ -22,47 +23,120 @@ class datacardMaker(object):
     for s in self.samples:
       if "isSig" in self.samples[s]:
         if self.samples[s]["isSig"]:
+          if self.options.thispoint:
+            if s != self.options.thispoint: continue
           print("Create card for signal process %s..."%(s))
           self.createDatacard(s)
+    return self.nbins
   def createDatacard(self, s):
     if not(self.options.ABCD):
-      newcard = open(self.output + "/" + self.samples[s]["name"] + ".txt","w")
+
+      processes = [s] + self.backgr
+      bins      = ["1"]
+      empty = ["-"]*len(processes)
+      newcard = open(self.output + "/" + self.options.region +  self.samples[s]["name"] + ".txt","w")
       newcard.write("imax *\njmax *\nkmax *\n")
 
       if self.isShape:
-        newcard.write("shapes * * ./" + self.samples[s]["name"] + "_shapes.root $PROCESS\n")
+        newcard.write("shapes * * ./" + options.region + self.samples[s]["name"] + "_shapes.root $PROCESS$SYSTEMATIC\n")
       newcard.write("bin %s\n"%self.channel)
       newcard.write("observation -1\n")
       newcard.write("bin " + " ".join(["%s"%self.channel for i in range(len(self.backgr)+1)])+ "\n")
       newcard.write("process " + s + " " + " ".join(self.backgr)+"\n")
       newcard.write("process " + " ".join([str(i) for i in range(len(self.backgr)+1)])+"\n")
       newcard.write("rate " + " ".join(["-1" for i in range(len(self.backgr)+1)])+"\n")
-      for syst in self.systs:
-        if self.systs[syst]["type"] == "lnN":
-          effects = ["-" for i in range(len(self.backgr)+1)]
-          for pr in self.systs[syst]["processes"]:
-            if re.match(pr, s):
-              effects[0] = str(self.systs[syst]["size"])
-            for ib, b in enumerate(self.backgr):
-              if re.match(pr, b):
-                effects[ib+1] = str(self.systs[syst]["size"])
-          # Now format the line
-          newcard.write(self.systs[syst]["name"] + " lnN " + " ".join(effects)+ "\n")
+
+      for syst in self.systs: # Now the fun begins:
+        if self.systs[syst]["type"] == "lnN" or self.systs[syst]["type"] == "gmN":
+          onlychannel = None
+          if "onlychannel" in self.systs[syst]: 
+            onlychannel = self.systs[syst]["onlychannel"]
+          if onlychannel:
+            if self.channel != onlychannel:
+              print("Will skip %s for channel %s"%(syst, self.channel)) 
+              continue
+          size = "-"
+          name = syst
+          for corrScheme in self.systs[syst]["corrs"]:
+            if options.year in self.systs[syst]["corrs"][corrScheme]:
+              name = syst + "_" + corrScheme
+              for iyear, yearcorr in enumerate(self.systs[syst]["corrs"][corrScheme]):
+                if options.year == yearcorr:
+                  if size == "-": 
+                    if type(self.systs[syst]["size"]) == type({"a":1}):
+                      size = "%1.3f"%self.systs[syst]["size"][corrScheme][iyear] 
+                    else:
+                      size = "%1.3f"%self.systs[syst]["size"]
+          if len(self.systs[syst]["corrs"]) == 1: 
+            name = syst
+
+          perbin = False
+          if "perbin" in self.systs[syst]: 
+            perbin = self.systs[syst]["perbin"]
+          if not(perbin):
+            #print(processes)
+            effect = [size if any([re.match(princfg, princard)  for princfg in self.systs[syst]["processes"]]) else "-" for princard in processes]
+            #print(size, effect, processes,  self.systs[syst]["processes"])
+            if effect == empty:
+              print("......lnN/gmN Systematic %s has no effect, will skip it"%(name))
+            else:
+              newcard.write("%s %s "%(name, self.systs[syst]["type"]) + " ".join(effect)+ " \n")
+          else:
+            basename = name
+            for ibin in range(1, self.nbins+1):
+              name = basename + "_bin"+str(ibin)
+              effect = [size if any([re.match(princfg, processes[ientry]) and (("%sbin%i"%(self.channel,ibin)) == bins[ientry])  for princfg in self.systs[syst]["processes"]]) else "-" for ientry in range(len(processes))]
+              if effect == empty:
+                print("......lnN/gmN Systematic %s has no effect, will skip it"%(name))
+                continue
+              else:
+                newcard.write("%s %s "%(name, self.systs[syst]["type"]) + " ".join(effect)+ " \n")
+
+        elif self.systs[syst]["type"] == "shape":
+          onlychannel = None
+          name = syst
+          if hasattr(self.systs[syst], "onlychannel"):
+            onlychannel = self.systs[syst]["onlychannel"]
+          if onlychannel:
+            if self.channel != onlychannel:
+              continue
+          size = "-"
+          for corrScheme in self.systs[syst]["corrs"]:
+            if options.year in self.systs[syst]["corrs"][corrScheme]:
+              name = syst + "_" + corrScheme
+              size = "1"
+          if len(self.systs[syst]["corrs"]) == 1: 
+            name = syst
+          effect = [size if any([re.match(princfg, princard)  for princfg in self.systs[syst]["processes"]]) else "-" for princard in processes]
+          if effect == empty:
+            print("......Shape Systematic %s has no effect, will skip it"%(name))
+            continue
+          newcard.write("%s %s "%(name, self.systs[syst]["type"]) + " ".join(effect)+ " \n")
+          #print(size, effect, processes,  self.systs[syst]["processes"])
+          for pr in processes:
+            if re.match(princfg, pr): 
+              #print(self.systs[syst]["match"].replace("$PROCESS", self.samples[pr]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["up"])
+              newup = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[pr]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["up"])
+              newdn = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[pr]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["down"])
+              self.th1s[pr + syst + "Up"] = copy.deepcopy(newup.Clone(pr + name + "Up"))
+              self.th1s[pr + syst + "Down"] = copy.deepcopy(newup.Clone(pr + name + "Down"))
       if self.isShape: 
         newcard.write("* autoMCStats 0\n")
-        rout = ROOT.TFile(self.output + "/" + self.samples[s]["name"] + "_shapes.root", "RECREATE")
+        rout = ROOT.TFile(self.output + "/" + options.region + self.samples[s]["name"] + "_shapes.root", "RECREATE")
         rout.cd()
-        for b in self.backgr:
-          self.th1s[b].Write()
-        self.th1s["data_obs"].Write()
-        self.th1s[s].Write()
+        #for b in self.backgr:
+        #  self.th1s[b].Write()
+        #self.th1s["data_obs"].Write()
+        #self.th1s[s].Write()
+        for h in self.th1s:
+          self.th1s[h].Write()
         rout.Close()
       newcard.close()
     else:
-      newcard = open(self.output + "/%s"%self.channel + "_" + self.samples[s]["name"] + ".txt","w")
+      newcard = open(self.output + "/" + self.options.region + "%s"%self.channel + "_" + self.samples[s]["name"] + ".txt","w")
       newcard.write("imax *\njmax *\nkmax *\n")
       if self.isShape:
-        newcard.write("shapes * * ./%s"%self.channel + "_" + self.samples[s]["name"] + "_shapes.root $PROCESS_$CHANNEL $PROCESS_$CHANNEL_$SYSTEMATIC \n")
+        newcard.write("shapes * * ./" + options.region + "%s"%self.channel + "_" + self.samples[s]["name"] + "_shapes.root $PROCESS_$CHANNEL $PROCESS_$CHANNEL_$SYSTEMATIC \n")
       newcard.write("bin " + " ".join(["%sbin%i"%(self.channel, i) for i in range(1,self.nbins+1)])  + " \n")
       newcard.write("observation " + " ".join(["-1"  for ibin in range(1, self.nbins+1)]) + " \n")
       newcard.write("bin " + " ".join([ " ".join(["%sbin%i"%(self.channel, j) for i in range(2)]) for j in range(1,self.nbins+1)])+" \n")
@@ -82,10 +156,11 @@ class datacardMaker(object):
         #print(syst)
         if self.systs[syst]["type"] == "lnN" or self.systs[syst]["type"] == "gmN":
           onlychannel = None
-          if hasattr(self.systs[syst], "onlychannel"): 
+          if "onlychannel" in self.systs[syst]: 
             onlychannel = self.systs[syst]["onlychannel"]
           if onlychannel:
-            if self.channel != onlychannel: 
+            if self.channel != onlychannel:
+              print("Will skip %s for channel %s"%(syst, self.channel)) 
               continue
           size = "-"
           name = syst
@@ -96,14 +171,14 @@ class datacardMaker(object):
                 if options.year == yearcorr:
                   if size == "-": 
                     if type(self.systs[syst]["size"]) == type({"a":1}):
-                      size = "%1.2f"%self.systs[syst]["size"][corrScheme][iyear] 
+                      size = "%1.3f"%self.systs[syst]["size"][corrScheme][iyear] 
                     else:
-                      size = "%1.2f"%self.systs[syst]["size"]
+                      size = "%1.3f"%self.systs[syst]["size"]
           if len(self.systs[syst]["corrs"]) == 1: 
             name = syst
 
           perbin = False
-          if hasattr(self.systs[syst], "perbin"): 
+          if "perbin" in self.systs[syst]: 
             perbin = self.systs[syst]["perbin"]
           if not(perbin):
             effect = [size if any([re.match(princfg, princard)  for princfg in self.systs[syst]["processes"]]) else "-" for princard in processes]
@@ -116,7 +191,7 @@ class datacardMaker(object):
             basename = name
             for ibin in range(1, self.nbins+1):
               name = basename + "_bin"+str(ibin)
-              effect = [size if any([re.match(princfg, processes[ientry]) and "bin%i"%ibin == bins[ientry]  for princfg in self.systs[syst]["processes"]]) else "-" for ientry in range(len(processes))]
+              effect = [size if any([re.match(princfg, processes[ientry]) and (("%sbin%i"%(self.channel,ibin)) == bins[ientry])  for princfg in self.systs[syst]["processes"]]) else "-" for ientry in range(len(processes))]
               if effect == empty:
                 print("......lnN/gmN Systematic %s has no effect, will skip it"%(name))
                 continue
@@ -148,7 +223,6 @@ class datacardMaker(object):
             if entry == "-": 
               continue #No effect
             # Else we have to get the shapes and save them
-            #print(self.tf,self.systs[syst]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["up"], self.systs[syst]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["down"]) 
             newup = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["up"])
             newdn = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["down"])
             for ibin in range(1, self.nbins + 1):
@@ -158,13 +232,16 @@ class datacardMaker(object):
               self.th1s_perbin[ibin][s + syst + "Down"] = ROOT.TH1F("%s_%sbin%i_%sDown"%(s, self.channel, ibin, name), "%s_%sbin%i_%sDown"%(s, self.channel, ibin, name), 1, 0 , 1)
               self.th1s_perbin[ibin][s + syst + "Down"].SetBinContent(1, max(0.0001, newdn.GetBinContent(ibin)))
               self.th1s_perbin[ibin][s + syst + "Down"].SetBinError(1, newdn.GetBinError(ibin))
-      newcard.write("* autoMCStats 0 1")
-      rout = ROOT.TFile(self.output + "/%s_"%self.channel + self.samples[s]["name"] + "_shapes.root", "RECREATE")
+      newcard.write("* autoMCStats 0 1\n")
+      rout = ROOT.TFile(self.output + "/" + options.region + "%s_"%self.channel + self.samples[s]["name"] + "_shapes.root", "RECREATE")
       rout.cd()
       for ibin in range(1, self.nbins+1):
         for h in self.th1s_perbin[ibin]:
           if s in h or "background" in h or "data" in h:
             self.th1s_perbin[ibin][h].Write()
+      for ibin in range(1, self.nbins+1):
+        if not("SR" in self.channel):
+          newcard.write("r%s%s_%s rateParam %s %s %1.3f [%1.3f,%1.3f]\n"%(self.options.year,self.options.region, bins[(ibin-1)*2], bins[(ibin-1)*2], "total_background", self.yields[ibin]["data_obs"], 0.0001, max(10.,3*self.yields[ibin]["data_obs"])))
       rout.Close()
 
 
@@ -190,6 +267,7 @@ class datacardMaker(object):
     toDelete = []
     for s in self.samples:
       print("....%s"%s)
+      print(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", options.var).replace("[CHANNEL]",self.channel))
       newth1 = self.tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", options.var).replace("[CHANNEL]",self.channel))
       if s != "data" or "data_obs" in self.th1s:
         self.th1s[s]   = copy.deepcopy(self.th1s["data_obs"] if s=="data" else newth1.Clone(s))
@@ -230,6 +308,8 @@ class datacardMaker(object):
     for s in self.samples:
       if not(self.samples[s]["isSig"]) or self.samples[s]["name"] == "data": continue
       if self.samples[s]["name"] == "data" and self.options.blind: continue
+      if self.options.thispoint:
+        if s != self.options.thispoint: continue
       #print("......Getting %s"%(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("[CHANNEL]", self.channel)))
       newth1 = self.tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("[CHANNEL]", self.channel))
       self.th1s[s]   = copy.deepcopy(newth1.Clone("data_obs") if s=="data" else newth1.Clone(s))
@@ -255,11 +335,25 @@ class datacardMaker(object):
       for s in self.signals + self.backgr + self.data:
         self.yields[ibin][s]      = max(0.1 if s in self.backgr else 0.0001, self.th1s[s].GetBinContent(ibin))
         self.th1s_perbin[ibin][s] = ROOT.TH1F("%s_%sbin%i"%(s, self.channel, ibin), "%s_%sbin%i"%(s, self.channel, ibin), 1, 0 , 1)
-        self.th1s_perbin[ibin][s].SetBinContent(1, self.yields[ibin][s])
-        self.th1s_perbin[ibin][s].SetBinError(1, min(self.yields[ibin][s], max(0.,self.th1s[s].GetBinError(1) )))
+        self.th1s_perbin[ibin][s].SetBinContent(1, self.yields[ibin][s] if not s in self.backgr else 1.)
+        self.th1s_perbin[ibin][s].SetBinError(1, min(self.yields[ibin][s] if not s in self.backgr else 1., max(0.,self.th1s[s].GetBinError(1)/self.yields[ibin][s] )))
 
         if s in self.backgr:
           self.th1s_perbin[ibin][s].SetBinError(1, 0.)
+
+def combineDatacards(samples, options, output, nbins):
+  # Get all ABCD cards, combine them and add the ABCD stuff
+  os.chdir(output)
+  for s in samples:
+    if not(samples[s]["isSig"]):  continue
+    if options.thispoint:
+      if s != options.thispoint: continue
+      names = ["%s=%s%s"%(channel,options.region,channel) + "_" + samples[s]["name"] + ".txt" for channel in ["SR","B1","B2","C1","C2","D1","D2","E1","E2"]]
+      os.system("combineCards.py %s >> %s"%(" ".join(names), "Combined" + options.region + "_"+ samples[s]["name"] + ".txt"))
+      newcard = open("Combined" + options.region +"_" + samples[s]["name"] + ".txt",'a')
+      for ibin in range(1, nbins+1):
+        newcard.write("r%s%s_%s rateParam %s %s %s %s\n"%(options.year,options.region, "SRbin%i"%ibin, "SR_SRbin%i"%ibin, "total_background", "(@0*@0*@2*@2*@5*@5*@6*@6)/(@1*@3*@7*@4*@4*@4*@4)", ",".join(["r%s%s_%s"%(options.year,options.region, "%sbin%i"%(chan,ibin if "B" in chan else 1)) for chan in ["B1","B2", "C1","C2", "D1","D2", "E1","E2"]])))
+
 
 if __name__ == "__main__":
   print("Starting plotting script...")
@@ -271,17 +365,28 @@ if __name__ == "__main__":
   parser.add_option("--var", dest="var", default="", help="Variable name in the plots file used to produce the rootfile")
   parser.add_option("--ABCD", dest="ABCD", default=False, action="store_true", help="Use ABCD background instead of directly MC")
   parser.add_option("--year", dest="year", default="2018", help="Which year the card is from")
+  parser.add_option("--region", dest="region", default="SR", help="Which region the card is from")
+  parser.add_option("--thispoint", dest="thispoint", default=None, help="Run only this point")
   (options, args) = parser.parse_args()
   samplesFile   = imp.load_source("samples",args[0])
   systsFile     = imp.load_source("systematicsAndShapes", args[1])
   outputFolder  = args[2]
   if options.blind and "data" in samplesFile.samples:
     del samplesFile.samples["data"]
+  samp = samplesFile.samples.keys()
+  for s in samp:
+    if "doPlot" in samplesFile.samples[s]:
+      if not(samplesFile.samples[s]["doPlot"]):
+        del samplesFile.samples[s]
+
   if not (options.ABCD): #Build MC based cards, simple and direct
     dM = datacardMaker(samplesFile.samples, systsFile.systematicsAndShapes, outputFolder, options)
     dM.createDatacards()
   else: # If ABCD, one card per channel
+    nToSave = -1
     for ch in systsFile.systematicsAndShapes["yields"]["extendedABCD"]:
       dM =  datacardMaker(samplesFile.samples, systsFile.systematicsAndShapes, outputFolder, options, channel = ch)
-      dM.createDatacards()
+      n = dM.createDatacards()
       del dM
+      if ch == "SR": nToSave = n
+    combineDatacards(samplesFile.samples, options, outputFolder, nToSave)
