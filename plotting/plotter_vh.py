@@ -48,7 +48,7 @@ class sample(object):
           continue
         else:
           self.variations[var] = self.config["variations"][var]
-
+    print("VARIATIONS", self.variations)
       #for var in self.variations:
       #  for orig in self.variations[var]["replaceChannel"]:
       #    if not(orig in self.altChannels):
@@ -69,14 +69,14 @@ class sample(object):
         filename = f.split("/")[-1].replace("out_","").replace(".hdf5","")
         if options.toSave: 
           fullfilename = options.toSave.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
-        if options.toLoad:
+        if options.toLoad and not(options.fromROOT):
           fullfilename = options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_" + filename + ".root"
         if options.resubmit:
           if os.path.isfile(fullfilename):
             if os.path.getsize(fullfilename) > 100: #I.e., non corrupted
               #print("Exists!")
               continue    
-        if not(options.toLoad and (("skim" in self.config) or (self.isData)) and os.path.isfile(fullfilename)):
+        if not(options.toLoad and (("skim" in self.config) or (self.isData)) and os.path.isfile(fullfilename)) and not(options.fromROOT):
           if not("skim" in self.config) and not(self.isData) or (not(options.queue) and not(options.toLoad)):
             a = pd.HDFStore(f, "r")
           if not("skim" in self.config) and not(self.isData):
@@ -208,13 +208,15 @@ class sample(object):
     elif options.dohadd: # Then, we collect from all files into a single hadd
       self.haddedfile = self.getRawHistogramsAndNormsHadd(options)
       self.haddedTFile = ROOT.TFile(self.haddedfile, "READ")
+    elif options.fromROOT:
+      self.getHistogramsAndNormsFromROOT()
     else:
       for iff, f in enumerate(self.safefiles):
         if (iff %1 == 0): print("Loading file %i/%i: %s"%(iff, len(self.safefiles), f))
         self.getRawHistogramsAndNormsOneFile(["",self.safefiles[iff], options])
 
     # After all is said and done, add up histograms and normalize to xsec
-    if options.toSave: #If only saving, no need to continue merging 
+    if options.toSave or options.fromROOT: #If only saving or if already full histograms, no need to continue merging 
       return
     for c in self.channels:
       for plotName in self.plotsinchannel[c]:
@@ -234,6 +236,7 @@ class sample(object):
                 else:
                   self.histos[plotName+ "_" + var]["total"].Add(self.histos[plotName+ "_" + var][filename])
         if options.dohadd:
+          print(plotName + "_" + self.name)
           self.histos[plotName]["total"] = self.haddedTFile.Get(plotName + "_" + self.name)
           if self.doSyst:
             for var in self.variations:
@@ -253,7 +256,7 @@ class sample(object):
         #      self.histos[plotName+ "_" + var]["total"].Sumw2()
 
         if not(self.isData) and (self.norms[plotName] > 0): 
-          #print(self.name, plotName)
+          print(self.name, plotName)
           if not(self.noWeights):
             self.histos[plotName]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
         if "scale" in self.config:
@@ -263,17 +266,30 @@ class sample(object):
           for var in self.variations:
             if self.variations[var]["symmetrize"]:
               if not(self.noWeights):
-                self.histos[plotName+ "_" + var + "Up"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
-                self.histos[plotName+ "_" + var + "Dn"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+                self.histos[plotName+ "_" + var + "Up"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/max(0.0001,self.norms[plotName]))
+                self.histos[plotName+ "_" + var + "Dn"]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/max(0.0001,self.norms[plotName]))
               if "scale" in self.config:
                 self.histos[plotName+ "_" + var + "Up"]["total"].Scale(self.config["scale"])
                 self.histos[plotName+ "_" + var + "Dn"]["total"].Scale(self.config["scale"])
             else:
               if not(self.noWeights):
                 print(var, plotName, self.name)
-                self.histos[plotName+ "_" + var]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
+                self.histos[plotName+ "_" + var]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/max(0.0001,self.norms[plotName]))
               if "scale" in self.config:
                 self.histos[plotName+ "_" + var]["total"].Scale(self.config["scale"])
+
+  def getHistogramsAndNormsFromROOT(self):
+    print("FROMROOT")
+    inROOT= ROOT.TFile(options.toLoad, "READ")
+    for c in self.channels:
+      for plotName in self.plotsinchannel[c]:
+        print("1", self.histos)
+        p = self.plots[plotName]
+        self.histos[plotName]["total"]       = copy.deepcopy(inROOT.Get(self.config["th1"][""]))
+        if not("data" in self.name):
+          self.histos[plotName+"_Up"]["total"] = copy.deepcopy(inROOT.Get(self.config["th1"]["Up"]))
+          self.histos[plotName+"_Dn"]["total"] = copy.deepcopy(inROOT.Get(self.config["th1"]["Dn"]))
+        print("2", self.histos)
 
   def getRawHistogramsAndNormsOneFile(self, g):
     f, safefile, options = g[0], g[1], g[2]
@@ -470,7 +486,7 @@ class sample(object):
     else:
       print("Will hadd %i files into %s"%(len(inputFiles), outputFil))
       # Run our paralellized hadd
-      haddAll(inputFiles, outputFil)
+      haddAll(inputFiles, outputFil, nThreads=options.jobs)
     return outputFil
 
   def setStyleOptions(self):
@@ -511,9 +527,15 @@ class plotter(object):
 
   def createJobs(self, options, command):
     iJob = 0
+    if options.toLoad: options.batchsize = 1e6 # No chunks when merging
     for s in self.samples:
       s.initAllForQueue(options)
       if len(s.safefiles) == 0: continue
+      if options.toLoad: #toLoad jobs are hadding ones, let's check if needed
+        outputFil = options.toLoad.replace("{YEAR}", s.config["year"]) + "/" + s.name + "_hadded.root"
+        if os.path.isfile(outputFil):
+          print("Hadded file %s already exists, will read from there"%outputFil)
+          continue
       sname = s.name
       nfiles = len(s.safefiles)
       options.batchsize = int(options.batchsize)
@@ -554,12 +576,13 @@ class plotter(object):
         jobfile.close()
         iJob += 1
     return iJob
+
   def doPlots(self, options):
     for s in self.samples:
       s.initAll(options)
 
     self.getRawHistogramsAndNorms(options)
-    if not options.toSave: self.doStackPlots(options)
+    if not(options.toSave): self.doStackPlots(options) # I.e., we are loading and not in a hadd job
 
   def getRawHistogramsAndNorms(self, options):
     for s in self.samples:
@@ -570,7 +593,7 @@ class plotter(object):
   def doStackPlots(self, options):
     for plotName in self.plots:
       try:
-      #if True:
+        #if True:
         print("...Plotting %s"%plotName)
         mode = "stack"
         if "mode" in self.plots[plotName]: mode = self.plots[plotName]["mode"]
@@ -643,7 +666,7 @@ class plotter(object):
     if len(options.addLines) > 0:
       tlines = []
       for l in options.addLines:
-        print("NEW LINE", l)
+        #print("NEW LINE", l)
         x1, y1, x2, y2 = [float(x) for x in l.split(",")]
         tlines.append(ROOT.TLine(x1, y1, x2, y2))
         tlines[-1].SetLineStyle(3)
@@ -653,7 +676,7 @@ class plotter(object):
     if len(options.addText) > 0:
       ttext = []
       for l in options.addText:
-        print("NEW TEXT", l)
+        #print("NEW TEXT", l)
         text, coords, size = l.split(":")
         coords = [float(x) for x in coords.split(",")]
         ttext.append(ROOT.TText(coords[0], coords[1], text))
@@ -769,9 +792,14 @@ class plotter(object):
               if s.variations[var]["symmetrize"]:
                 testUp = s.name + "_" + var + "Up"
                 testDn = s.name + "_" + var + "Dn"
-                if testUp == altNameUp and altNameDn == testDn:
+                if testUp == altNameUp or altNameDn == testDn:
                   tmpUp = s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameUp).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameUp)
                   tmpDn = s.histos[pname+ "_" + var + "Dn"]["total"].Clone(altNameDn).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var + "Up"]["total"].Clone(altNameDn)
+                  tmpNom = s.histos[pname]["total"]
+                  for ibin in range(tmpUp.GetNbinsX()+1):
+                    cent = tmpNom.GetBinContent(ibin)
+                    up   = tmpUp.GetBinContent(ibin)
+                    tmpDn.SetBinContent(ibin, max(0, 2*cent-up))
               else:
                 test =  s.name + "_" + var
                 if test == altNameUp:
@@ -781,8 +809,8 @@ class plotter(object):
           if not(tmpUp) or not(tmpDn): # Catch: otherwise we wil be overwritten one histogram for each signal 
             pass
           else:
-            histosToSave[altNameUp] = copy.deepcopy(tmpUp)
-            histosToSave[altNameDn] = copy.deepcopy(tmpDn)
+            if tmpUp: histosToSave[altNameUp] = copy.deepcopy(tmpUp)
+            if tmpDn: histosToSave[altNameDn] = copy.deepcopy(tmpDn)
       theStacks["%sUp"%syst] = backUp
       theStacks["%sDn"%syst] = backDn
       histosToSave["%sUp"%syst] = backUp
@@ -819,7 +847,7 @@ class plotter(object):
    #if True:
    try:
     p = self.plots[pname]
-    c = ROOT.TCanvas(pname,pname, 800,1050)
+    c = ROOT.TCanvas(pname,pname, 800,1050) if not(options.wide) else ROOT.TCanvas(pname,pname, 1600, 1050)
     # Set pads
     p1 = ROOT.TPad("mainpad", "mainpad", 0, 0.30, 1, 1)
     p1.SetBottomMargin(0.025)
@@ -897,7 +925,7 @@ class plotter(object):
         else:
           thePlotGroupsSignal[s.config["label"]].Add(s.histos[pname]["total"])
     if debug: print("...Groups created")
-    print(thePlotGroupsSignal, thePlotGroupsData, thePlotGroups)
+    #print(thePlotGroupsSignal, thePlotGroupsData, thePlotGroups)
     orderedPlotGroups = sorted(GroupsYields.keys(), key=lambda x: GroupsYields[x])
     for plotgroup in (orderedPlotGroups if options.ordered else thePlotGroups):
       theStack.Add(thePlotGroups[plotgroup])
@@ -917,7 +945,7 @@ class plotter(object):
       for index in range(len(theIndivs)):
         theIndivs[index].Scale(1./max(0.000001,theIndivs[index].Integral()))
       theStack = ROOT.THStack(pname+"_stack_norm", pname+ "_norm")
-      print(back, backSyst)
+      #print(back, backSyst)
       back.Scale(1./max(0.000001,back.Integral()))
       backSyst.Scale(1./max(0.0000001, backSyst.Integral()))
       for s in self.samples:
@@ -953,6 +981,25 @@ class plotter(object):
     for d in theData:
       d.Draw("P0 same")
 
+    if "lines" in p:
+      tlines = []
+      for l in p["lines"]:
+        x1, y1, x2, y2 = l[:4]
+        tlines.append(ROOT.TLine(x1, y1, x2, y2))
+        tlines[-1].SetLineStyle(l[4])
+        tlines[-1].SetLineWidth(l[5])
+        tlines[-1].SetLineColor(l[6])
+        tlines[-1].Draw("same")
+    if "text" in p:
+      ttext = []
+      for l in p["text"]:
+        text, coords, size, color = l
+        ttext.append(ROOT.TLatex(coords[0], coords[1], text))
+        ttext[-1].SetTextColor(color)
+        ttext[-1].SetTextSize(size)
+        ttext[-1].Draw("same")
+
+
     tl.Draw("same")
     if debug: print("...Main plot done")
     # Now we go to the ratio
@@ -984,6 +1031,16 @@ class plotter(object):
     den.GetXaxis().SetTitleSize(0.12)
     den.GetXaxis().SetLabelSize(0.1)
     den.GetYaxis().SetLabelSize(0.06)
+    if "xbinlabels" in p:
+      den.LabelsOption("v")
+      den.GetXaxis().SetTitleOffset(1.75)
+      for i in range(1,den.GetNbinsX()+1):
+        den.GetXaxis().SetBinLabel(i, p["xbinlabels"][i-1])
+        den.GetXaxis().SetLabelSize(0.12)
+        den.GetXaxis().SetLabelOffset(0.02)
+        #den.GetXaxis().ChangeLabel(i, -1,-1,-1,-1,-1,p["xbinlabels"][i-1])
+    den.LabelsOption("v")
+
     if "ratiomaxY" in p:
       den.SetMaximum(p["ratiomaxY"] if not options.rmax else float(options.rmax))
     if "ratiominY" in p:
@@ -1005,7 +1062,7 @@ class plotter(object):
     tlr.SetBorderSize(0)
     if "legendRatioPosition" in p:
       tlr = ROOT.TLegend(p["legendRatioPosition"][0], p["legendRatioPosition"][1], p["legendRatioPosition"][2], p["legendRatioPosition"][3])
-    tlr.AddEntry(denbar, "SM syst.+stat. Unc." if self.doSyst else options.ratiostatlabel, "f")
+    if not options.fromROOT: tlr.AddEntry(denbar, "SM syst.+stat. Unc." if self.doSyst else options.ratiostatlabel, "f")
     if self.doSyst:
       tlr.AddEntry(backratio, options.ratiostatlabel, "f")
     for ib in range(0, den.GetNbinsX()+1):
@@ -1014,10 +1071,34 @@ class plotter(object):
     den.SetFillStyle(0)	
     den.Draw("same")
     for num in nums:
+      if options.AddBOnRatio:
+        if not("Data" in num.GetName()):
+          for ib in range(1, num.GetNbinsX()+1):
+            num.SetBinContent(ib, num.GetBinContent(ib)+1)
       num.Draw("same" + ("hist" if options.noratiostat else "")) if not("Data" in num.GetName()) else num.Draw("Psame")
       if "Data" in num.GetName(): 
-        tlr.AddEntry(num, "Data", "pl") 
+        tlr.AddEntry(num, "Data", "pl")
+      elif options.AddBOnRatio:
+        tlr.AddEntry(num, "S+B", "pl") 
     if debug: print("...Ratio done")
+    if "rlines" in p:
+      rtlines = []
+      for l in p["rlines"]:
+        x1, y1, x2, y2 = l[:4]
+        rtlines.append(ROOT.TLine(x1, y1, x2, y2))
+        rtlines[-1].SetLineStyle(l[4])
+        rtlines[-1].SetLineWidth(l[5])
+        rtlines[-1].SetLineColor(l[6])
+        rtlines[-1].Draw("same")
+    if "rtext" in p:
+      rttext = []
+      for l in p["rtext"]:
+        text, coords, size, color = l
+        rttext.append(ROOT.TText(coords[0], coords[1], text))
+        rttext[-1].SetTextColor(color)
+        rttext[-1].SetTextSize(size)
+        rttext[-1].Draw("same")
+
     tlr.Draw("same")
     CMS_lumi.writeExtraText = True
     CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" % options.luminosity if options.luminosity > 1. else "%.0f pb^{-1}" % (options.luminosity*1000)
@@ -1036,6 +1117,8 @@ class plotter(object):
     if debug: print("...Files saved")
     # Also save as TH1 in root file 
     tf = ROOT.TFile(options.plotdir + "/" + p["plotname"] + ".root", "RECREATE")
+    tf.cd()
+    if debug: print("File created", tf)
     for s in self.samples:
       s.histos[pname]["total"].Write()
     theStack.Write()
@@ -1047,6 +1130,7 @@ class plotter(object):
     if debug: print("...File closed")
     ROOT.SetOwnership(c,False) # This magic avoids segfault due to the garbage collector collecting non garbage stuff
    except Exception as e:
+     if options.debug: raise
      print("Something went wrong, skipping plot...", e)
 
 if __name__ == "__main__":
@@ -1054,7 +1138,7 @@ if __name__ == "__main__":
   from optparse import OptionParser
   parser = OptionParser(usage="%prog [options] samples.py plots.py") 
   parser.add_option("-l","--luminosity", dest="luminosity", type="float", default=137, help="Luminosity")
-  parser.add_option("-j","--jobs", dest="jobs", type="int", default=-1, help="Number of jobs (cores to use)")
+  parser.add_option("-j","--jobs", dest="jobs", type="int", default=10, help="Number of jobs (cores to use)")
   parser.add_option("--toSave", dest="toSave", type="str", default=None, help="If active, instead of plotting save per file histograms in this folder")
   parser.add_option("--toLoad", dest="toLoad", type="str", default=None, help="If active, instead of reading hdf5 load per file histograms from this folder")
   parser.add_option("-p","--plotdir", dest="plotdir", type="string", default="./", help="Where to put the plots")
@@ -1084,6 +1168,9 @@ if __name__ == "__main__":
   parser.add_option("--addText", dest="addText", default=[], action="append", help="Add text in these coordinates (only 2D plots). Syntax is --addText 'title:x1,y1:size'.")
   parser.add_option("--debug", dest="debug", default =False, action="store_true", help="If activated, turn off exception catching for full debugging")
   parser.add_option("--fromROOT", dest="fromROOT", default =False, action="store_true", help="If activated, read shapes from the toLoad file directly (i.e. a file with the global TH1F already)")
+  parser.add_option("--wide", dest="wide", default =False, action="store_true", help="If activated, make long wide plots")
+  parser.add_option("--AddBOnRatio", dest="AddBOnRatio", default =False, action="store_true", help="If activated, add background on ratio")
+  parser.add_option("--plotAll", dest="plotAll", default =False, action="store_true", help="If activated, plot even those that are to be skipped")
 
   (options, args) = parser.parse_args()
   samplesFile = imp.load_source("samples",args[0])
@@ -1134,7 +1221,7 @@ if __name__ == "__main__":
       add = True
       if "doPlot" in samples[ss]:
         add = samples[ss]["doPlot"]
-      if add:
+      if add or options.plotAll:
         newsamples[ss] = samples[ss]
     samples = newsamples
 
@@ -1176,9 +1263,10 @@ if __name__ == "__main__":
       os.system("mkdir %s/batchlogs"%options.jobname)
 
     command = "python plotter_vh.py " + subprocess.list2cmdline(sys.argv[1:]).replace("--queue %s"%options.queue,"")
-    savecommand = open("%s/command.txt"%options.toSave,"w")
-    savecommand.write(command+ "\n")
-    savecommand.close()
+    if options.toSave: 
+      savecommand = open("%s/command.txt"%options.toSave,"w")
+      savecommand.write(command+ "\n")
+      savecommand.close()
     nJobs = thePlotter.createJobs(options, command)
     os.system("rm submit.sub")
     subfile = open("submit.sub", "w")
@@ -1187,6 +1275,7 @@ if __name__ == "__main__":
     subfile.write("output                  = %s/$(ClusterId).$(ProcId).out\n"%("%s/batchlogs"%options.jobname))
     subfile.write("error                   = %s/$(ClusterId).$(ProcId).err\n"%("%s/batchlogs"%options.jobname))
     subfile.write("log                     = %s/$(ClusterId).log\n"%("%s/batchlogs"%options.jobname))
+    subfile.write("RequestCPUs             = %i\n"%options.jobs)
     subfile.write("+JobFlavour = \"%s\"\n"%(options.queue))
     subfile.write("queue filename matching (%s/exec/_*sh)\n"%("%s"%options.jobname))
     subfile.close()

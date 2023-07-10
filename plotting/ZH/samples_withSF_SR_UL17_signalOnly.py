@@ -18,7 +18,7 @@ samples = {
          "linecolor": ROOT.kBlue,
          "fillcolor": ROOT.kBlue,
          "isSig"    : False, # So this is a histogram
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
   },
   "SUEP_ZH_generic_ElSFUp": {
@@ -28,7 +28,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17, 2),
   },
 
@@ -39,7 +39,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17,-2),
   },
 
@@ -50,7 +50,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17, 1),
   },
 
@@ -61,7 +61,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17,-1),
   },
 
@@ -72,7 +72,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight_Up"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
   },
 
@@ -83,7 +83,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight_Dn"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
   },
 
@@ -94,7 +94,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight_Up"]*x["bTagWeight"]*SF(x,17),
   },
 
@@ -105,7 +105,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight_Dn"]*x["bTagWeight"]*SF(x,17),
   },
 
@@ -116,7 +116,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight_HFCorr_Up"]*SF(x,17),
   },
 
@@ -127,7 +127,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight_HFCorr_Dn"]*SF(x,17),
   },
 
@@ -138,7 +138,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight_LFCorr_Up"]*SF(x,17),
   },
 
@@ -149,7 +149,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight_LFCorr_Dn"]*SF(x,17),
   },
 
@@ -160,7 +160,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight_HFUnCorr_Up"]*SF(x,17),
   },
 
@@ -171,7 +171,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight_HFUnCorr_Dn"]*SF(x,17),
   },
 
@@ -182,7 +182,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight_LFUnCorr_Up"]*SF(x,17),
   },
 
@@ -193,7 +193,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight_LFUnCorr_Dn"]*SF(x,17),
   },
 
@@ -204,7 +204,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["ISRWeight_Up"]*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
   },
 
@@ -215,7 +215,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["ISRWeight_Dn"]*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
   },
 
@@ -226,7 +226,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["FSRWeight_Up"]*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
   },
 
@@ -237,7 +237,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["FSRWeight_Dn"]*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
   },
 
@@ -248,7 +248,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
          "replaceChannel": {"SR":"SR_JECUP"}
   },
@@ -260,7 +260,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
          "replaceChannel": {"SR":"SR_JECDOWN"}
   },
@@ -272,7 +272,7 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
          "replaceChannel": {"SR":"SR_JERUP"}
   },
@@ -284,7 +284,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
          "replaceChannel": {"SR":"SR_JERDOWN"}
   },
@@ -296,8 +296,74 @@ samples = {
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testSignalSyst_UL17"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
          "replaceChannel": {"SR":"SR_TRACKUP"}
+  },
+  "SUEP_ZH_generic_ElScaleUp": {
+         "name"     : "SUEP_ZH_generic_ElScaleUp", #Here plain text
+         "label"    : "ZS^{gen}, ElScale Up", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+         "replaceChannel": {"SR":"SR_ElScaleUp"}
+  },
+  "SUEP_ZH_generic_ElScaleDown": {
+         "name"     : "SUEP_ZH_generic_ElScaleDown", #Here plain text
+         "label"    : "ZS^{gen}, ElScale Down", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kRed,
+         "fillcolor": ROOT.kRed,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+         "replaceChannel": {"SR":"SR_ElScaleDown"}
+  },
+  "SUEP_ZH_generic_ElSigmaUp": {
+         "name"     : "SUEP_ZH_generic_ElSigmaUp", #Here plain text
+         "label"    : "ZS^{gen}, ElSigma Up", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+         "replaceChannel": {"SR":"SR_ElSigmaUp"}
+  },
+  "SUEP_ZH_generic_ElSigmaDown": {
+         "name"     : "SUEP_ZH_generic_ElSigmaDown", #Here plain text
+         "label"    : "ZS^{gen}, ElSigma Down", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kRed,
+         "fillcolor": ROOT.kRed,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+         "replaceChannel": {"SR":"SR_ElSigmaDown"}
+  },
+  "SUEP_ZH_generic_MuScaleUp": {
+         "name"     : "SUEP_ZH_generic_MuScaleUp", #Here plain text
+         "label"    : "ZS^{gen}, MuScale Up", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+         "replaceChannel": {"SR":"SR_MuScaleUp"}
+  },
+  "SUEP_ZH_generic_MuScaleDown": {
+         "name"     : "SUEP_ZH_generic_MuScaleDown", #Here plain text
+         "label"    : "ZS^{gen}, MuScale Down", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "linecolor": ROOT.kRed,
+         "fillcolor": ROOT.kRed,
+         "isSig"    : True,
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/scaleTests/UL17/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*SF(x,17),
+         "replaceChannel": {"SR":"SR_MuScaleDown"}
   },
 }

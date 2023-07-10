@@ -25,13 +25,12 @@ def haddFiles(x):
   os.system("hadd %s %s >> /dev/null "%(output, " ".join(inputs))) # Verbose log is destroyed
   return output
 
-def haddAll(inputFiles, outputFil):
+def haddAll(inputFiles, outputFil, nThreads = 10):
   if len(inputFiles) == 1:
     print("One file, automatic merge")
     uniformizeNames([outputFil,inputFiles[0]])
     return
   tStart = time.time()
-  nThreads = 10
   nSteps   = max(10, min(len(inputFiles)/(nThreads**2), 100))  # This means we will run always 3 iterations of the hadder N => N/nStep => N/nStep**2 => 1
   tmpdir = "tmp_%1.5f"%time.time() # Temporary folder where we can store all the trash we are about to produce
   os.system("mkdir %s"%tmpdir)
@@ -90,8 +89,11 @@ def haddAll(inputFiles, outputFil):
       p.close()
       p.join()
       p.terminate()
-    for f in toHaddFiles: 
-      os.system("rm %s"%f)
+    for index in range(10): 
+      if subidx == 1:
+        os.system("rm temp_%i*"%index)
+      else:
+        os.system("rm temp_sub%i_%i*"%(subidx-1,index))
 
     toHaddFiles = retlist1
   if len(toHaddFiles) == 1:

@@ -12,6 +12,8 @@ def hdf5inpath(path):
 
 # Main path where samples are stored
 main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL16/hdf5_ANv4/"
+main_path_signal = "/eos/cms/store/group/phys_exotica/SUEPs/UL16/hdf5_withJECs/"
+
 samples = {
   "data": {
          "name" : "data",
@@ -321,7 +323,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T0.50/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T0.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T0.25": {
@@ -332,7 +334,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T0.25/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T0.25/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T0.35": {
@@ -343,7 +345,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T0.35/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T0.35/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T1.00": {
@@ -354,7 +356,7 @@ samples = {
          "fillcolor": ROOT.kViolet,
          "isSig"    : True,
          "doPlot"   : True,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T1.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T0.50": {
@@ -365,7 +367,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T0.50/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T0.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T0.70": {
@@ -376,7 +378,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T0.70/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T0.70/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T2.00": {
@@ -387,7 +389,7 @@ samples = {
          "fillcolor": ROOT.kBlack,
          "isSig"    : True,
          "doPlot"   : True,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T1.00": {
@@ -398,7 +400,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T1.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T1.40": {
@@ -409,7 +411,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T1.40/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T1.40/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T4.00": {
@@ -420,7 +422,7 @@ samples = {
          "fillcolor": ROOT.kOrange,
          "isSig"    : True,
          "doPlot"   : True,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T2.00": {
@@ -431,7 +433,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T2.80": {
@@ -442,7 +444,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T2.80/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T2.80/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T8.00": {
@@ -453,7 +455,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD2.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T4.00": {
@@ -464,7 +466,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD1.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD1.40_T5.60": {
@@ -475,7 +477,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD1.40_T5.60/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T5.60/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T0.50": {
@@ -486,7 +488,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T0.50/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T0.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T0.50": {
@@ -497,7 +499,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T0.50/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T0.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T1.00": {
@@ -508,7 +510,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T1.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T1.00": {
@@ -519,7 +521,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T1.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T2.00": {
@@ -530,7 +532,7 @@ samples = {
          "fillcolor": ROOT.kBlue,
          "isSig"    : True,
          "doPlot"   : True,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T2.00": {
@@ -541,7 +543,7 @@ samples = {
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
          "doPlot"   : True,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T4.00": {
@@ -552,7 +554,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T4.00": {
@@ -563,7 +565,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T8.00": {
@@ -574,7 +576,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD2.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T8.00": {
@@ -585,7 +587,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD2.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T0.75": {
@@ -596,7 +598,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T0.75/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T0.75/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T0.75": {
@@ -607,7 +609,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T0.75/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T0.75/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T0.75": {
@@ -618,7 +620,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T0.75/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T0.75/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T1.50": {
@@ -629,7 +631,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T1.50/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T1.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T1.50": {
@@ -640,7 +642,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T1.50/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T1.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T1.50": {
@@ -651,7 +653,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T1.50/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T1.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T3.00": {
@@ -662,7 +664,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T3.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T3.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T3.00": {
@@ -673,7 +675,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T3.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T3.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T3.00": {
@@ -684,7 +686,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T3.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T3.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T6.00": {
@@ -695,7 +697,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T6.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T6.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T6.00": {
@@ -706,7 +708,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T6.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T6.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T6.00": {
@@ -717,7 +719,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T6.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T6.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T12.00": {
@@ -728,7 +730,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD3.00_T12.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T12.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T12.00": {
@@ -739,7 +741,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD3.00_T12.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T12.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T12.00": {
@@ -750,7 +752,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD3.00_T12.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T12.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T1.00": {
@@ -761,7 +763,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T1.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T1.00": {
@@ -772,7 +774,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T1.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T1.00": {
@@ -783,7 +785,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T1.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T2.00": {
@@ -794,7 +796,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : True,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T2.00": {
@@ -805,7 +807,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T2.00": {
@@ -816,7 +818,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T4.00": {
@@ -827,7 +829,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T4.00": {
@@ -838,7 +840,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T4.00": {
@@ -849,7 +851,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T8.00": {
@@ -860,7 +862,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T8.00": {
@@ -871,7 +873,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T8.00": {
@@ -882,7 +884,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD4.00_T16.00": {
@@ -893,7 +895,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD4.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T16.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T16.00": {
@@ -904,7 +906,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD4.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T16.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T16.00": {
@@ -915,7 +917,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD4.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T16.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T2.00": {
@@ -926,7 +928,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T2.00": {
@@ -937,7 +939,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T2.00": {
@@ -948,7 +950,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T4.00": {
@@ -959,7 +961,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T4.00": {
@@ -970,7 +972,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T4.00": {
@@ -981,7 +983,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T8.00": {
@@ -992,7 +994,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T8.00": {
@@ -1003,7 +1005,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T8.00": {
@@ -1014,7 +1016,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T16.00": {
@@ -1025,7 +1027,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T16.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T16.00": {
@@ -1036,7 +1038,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T16.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T16.00": {
@@ -1047,7 +1049,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T16.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD8.00_T32.00": {
@@ -1058,7 +1060,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_generic_mS125_mD8.00_T32.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T32.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD8.00_T32.00": {
@@ -1069,7 +1071,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_leptonic_mS125_mD8.00_T32.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T32.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T32.00": {
@@ -1080,7 +1082,7 @@ samples = {
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T32.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T32.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
 }
@@ -1254,4 +1256,33 @@ for sample in samples:
   },
 }
 
+  if (samples[sample]["isSig"]): 
+    samples[sample]["variations"]["JECUp"] = {
+           "name"            : "JEC",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_JECUP", "onecluster":"onecluster_JECUP", "twoleptons":"twoleptons_JECUP"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :      False,
+    }
+    samples[sample]["variations"]["JECDn"] = {
+           "name"            : "JEC",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_JECDOWN", "onecluster":"onecluster_JECDOWN", "twoleptons":"twoleptons_JECDOWN"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :      False,
+    }
+    samples[sample]["variations"]["JERUp"] = {
+           "name"            : "JER",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_JERUP", "onecluster":"onecluster_JERUP", "twoleptons":"twoleptons_JERUP"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :      False,
+    }
+    samples[sample]["variations"]["JERDn"] = {
+           "name"            : "JER",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_JERDOWN", "onecluster":"onecluster_JERDOWN", "twoleptons":"twoleptons_JERDOWN"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :      False,
+    }
 
