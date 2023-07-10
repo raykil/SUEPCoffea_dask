@@ -270,7 +270,7 @@ class sample(object):
                 self.histos[plotName+ "_" + var + "Dn"]["total"].Scale(self.config["scale"])
             else:
               if not(self.noWeights):
-                #print(var, plotName, self.name)
+                print(var, plotName, self.name)
                 self.histos[plotName+ "_" + var]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
               if "scale" in self.config:
                 self.histos[plotName+ "_" + var]["total"].Scale(self.config["scale"])
@@ -624,7 +624,7 @@ class plotter(object):
     p1.Draw()
     p1.cd()
     histo.SetTitle("")
-    histo.Draw("textcolz")
+    histo.Draw("colz")
     histo.GetXaxis().SetLabelSize(0.03)
     histo.GetYaxis().SetLabelSize(0.03)
     #histo.GetYaxis().SetTitleSize(0.08)
@@ -640,11 +640,10 @@ class plotter(object):
     CMS_lumi.lumi_sqrtS = "13"
     CMS_lumi.CMS_lumi(p1, 4, 0, 0.122)
 
-    c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".pdf")
-    c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".png")
     if len(options.addLines) > 0:
       tlines = []
       for l in options.addLines:
+        print("NEW LINE", l)
         x1, y1, x2, y2 = [float(x) for x in l.split(",")]
         tlines.append(ROOT.TLine(x1, y1, x2, y2))
         tlines[-1].SetLineStyle(3)
@@ -654,12 +653,16 @@ class plotter(object):
     if len(options.addText) > 0:
       ttext = []
       for l in options.addText:
+        print("NEW TEXT", l)
         text, coords, size = l.split(":")
         coords = [float(x) for x in coords.split(",")]
         ttext.append(ROOT.TText(coords[0], coords[1], text))
         ttext[-1].SetTextColor(ROOT.kBlack)
         ttext[-1].SetTextSize(float(size))
         ttext[-1].Draw("same")
+    c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".pdf")
+    c.SaveAs(options.plotdir +  "/" + sname + "_"  +  p["plotname"] + ".png")
+
     # Also save in root file 
     tf = ROOT.TFile(options.plotdir + "/" + p["plotname"] + ".root", "UPDATE")
     histo.Write()
@@ -1080,6 +1083,7 @@ if __name__ == "__main__":
   parser.add_option("--addLines", dest="addLines", default=[], action="append", help="Add lines in these coordinates (only 2D plots). Syntax is --addLines 'x1,y1,x2,y2'.")
   parser.add_option("--addText", dest="addText", default=[], action="append", help="Add text in these coordinates (only 2D plots). Syntax is --addText 'title:x1,y1:size'.")
   parser.add_option("--debug", dest="debug", default =False, action="store_true", help="If activated, turn off exception catching for full debugging")
+  parser.add_option("--fromROOT", dest="fromROOT", default =False, action="store_true", help="If activated, read shapes from the toLoad file directly (i.e. a file with the global TH1F already)")
 
   (options, args) = parser.parse_args()
   samplesFile = imp.load_source("samples",args[0])

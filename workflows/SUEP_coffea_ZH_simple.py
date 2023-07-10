@@ -18,6 +18,7 @@ import vector
 from typing import List, Optional
 import correctionlib
 from workflows.CMS_corrections.jetmet_utils import apply_jecs
+import copy
 
 vector.register_awkward()
 
@@ -212,6 +213,11 @@ class SUEP_cluster(processor.ProcessorABC):
             "phi": events.Muon.phi,
             "mass": events.Muon.mass,
             "charge": events.Muon.pdgId/(-13),
+            "pdgId": events.Muon.pdgId,
+            "aux1": events.Muon.genPartIdx,
+            "aux2": events.Muon.pt,
+            "aux3": events.Muon.nTrackerLayers,
+            "aux4": events.Muon.pt
         }, with_name="Momentum4D")
 	
         electrons = ak.zip({
@@ -220,6 +226,11 @@ class SUEP_cluster(processor.ProcessorABC):
             "phi": events.Electron.phi,
             "mass": events.Electron.mass,
             "charge": events.Electron.pdgId/(-11),
+            "pdgId": events.Electron.pdgId,
+            "aux1": events.Electron.dEscaleUp,
+            "aux2": events.Electron.dEscaleDown,
+            "aux3": events.Electron.dEsigmaUp,
+            "aux4": events.Electron.dEsigmaDown
         }, with_name="Momentum4D")
 
         ###  Some very simple selections on ID ###
@@ -232,7 +243,6 @@ class SUEP_cluster(processor.ProcessorABC):
         # Object selection. selMuons contain only the events that are filtered by cutMuons criteria.
         selMuons     = muons[cutMuons]
         selElectrons = electrons[cutElectrons]
-
         ### Now global cuts to select events. Notice this means exactly two leptons with pT >= 10, and the leading one pT >= 25
 
         # cutHasTwoMuons imposes three conditions:
@@ -287,8 +297,8 @@ class SUEP_cluster(processor.ProcessorABC):
               "jetId": altJets.jetId
             }, with_name="Momentum4D")
  
-        # Minimimum pT, eta requirements + jet-lepton recleaning
-        jetCut = (Jets.pt > 30) & (abs(Jets.eta)<2.5) & (Jets.deltaR(leptons[:,0])>= 0.4) & (Jets.deltaR(leptons[:,1])>= 0.4) & (Jets.jetId >= 6)
+        # Minimimum pT, eta requirements + jet-lepton recleaning. We set minimum pT at 20 here to allow for the syst variations later
+        jetCut = (Jets.pt > 20) & (abs(Jets.eta)<2.5) & (Jets.deltaR(leptons[:,0])>= 0.4) & (Jets.deltaR(leptons[:,1])>= 0.4) & (Jets.jetId >= 6)
         jets = Jets[jetCut]
         # The following is the collection of events and of jets
         return events, jets, [coll for coll in extraColls]
@@ -529,14 +539,15 @@ class SUEP_cluster(processor.ProcessorABC):
         # ------------------------------------------------------------------------------
         # ------------------------------- UNCERTAINTIES --------------------------------
         # ------------------------------------------------------------------------------
-        self.jetsVar   = {"": self.jets} # If not activated, always central jet collection
+        self.jetsVar   = {"": self.jets}   # If not activated, always central jet collection
         self.tracksVar = {"": self.tracks} # If not activated, always central jet collection
-
+        self.lepsVar   = {"": self.leptons}# If not activated, always central lepton collection
         self.varsToDo = [""]           # If not activated just do nominal yields
         if self.do_syst:
           self.isrweights  = self.doISRWeights(self.events)                                  # Does not change selection
           if self.isSignal: 
             self.jetsVar     = self.doJECJERVariations(self.events, self.jets)                 # Does change selection, entry "" is central jets, entry "JECX" is JECUp/JECDown, entry "JERX" is JERUp/JerDown
+            self.lepsVar     = self.doLeptonScaleVariations(self.events, self.leptons)
 
           if self.doTracks: 
             print("Start Tracks!")
@@ -549,9 +560,16 @@ class SUEP_cluster(processor.ProcessorABC):
               outputsnew[channel + "_JECDOWN"] = outputs[channel]
               outputsnew[channel + "_JERUP"]   = outputs[channel]
               outputsnew[channel + "_JERDOWN"] = outputs[channel]
+              outputsnew[channel + "_ElScaleUp"]   = outputs[channel]
+              outputsnew[channel + "_ElScaleDown"] = outputs[channel]
+              outputsnew[channel + "_ElSigmaUp"]   = outputs[channel]
+              outputsnew[channel + "_ElSigmaDown"] = outputs[channel]
+              outputsnew[channel + "_MuScaleUp"]   = outputs[channel]
+              outputsnew[channel + "_MuScaleDown"] = outputs[channel]
+
             outputsnew[channel + "_TRACKUP"] = outputs[channel] # Tracks done for all as they change shapes significantly
           outputs = outputsnew
-          self.varsToDo = ["", "_JECUP", "_JECDOWN", "_JERUP", "_JERDOWN", "_TRACKUP"] if self.isSignal else ["", "_TRACKUP"]
+          self.varsToDo = ["", "_JECUP", "_JECDOWN", "_JERUP", "_JERDOWN", "_TRACKUP", "_ElScaleUp", "_ElScaleDown", "_ElSigmaUp", "_ElSigmaDown", "_MuScaleUp", "_MuScaleDown"] if self.isSignal else ["", "_TRACKUP"]
 
         # ------------------------------------------------------------------------------
         # ------------------------------- SELECTION + PLOTTING -------------------------
@@ -562,12 +580,25 @@ class SUEP_cluster(processor.ProcessorABC):
         for var in self.varsToDo:
             self.var = var
             # Reset collections for syst variation
-            if var != "": 
+            if len(self.varsToDo) > 1: 
                 self.resetAllCollections()
+                self.jets = self.jetsVar[""]
+                self.leptons = self.lepsVar[""]
+                self.tracks = self.tracksVar[""]
                 if var in self.jetsVar:
+                  print("Replacing jets for var %s"%var)
                   self.jets   = self.jetsVar[var]
                 if var in self.tracksVar:
                   self.tracks = self.tracksVar[var]
+                if var in self.lepsVar:
+                  print("Replacing leptons for var %s"%var)
+                  self.leptons = self.lepsVar[var]
+                self.Zcands = self.leptons[:,0] + self.leptons[:,1]
+                highpt_jets = ak.argsort(self.jets.pt, axis=1, ascending=False, stable=True)
+                self.jets = self.jets[highpt_jets]
+                self.jets = self.jets[(self.jets.pt >= 30)]
+                #leptonpt = ((ak.sum(self.leptons.pt >= 10, axis=1) >= 2) & (ak.max(self.leptons.pt, axis=1, mask_identity=False) >= 25))
+                #self.applyCutToAllCollections(leptonpt)
 
             self.isSpherable   = False # So we don't do sphericity plots until we have clusters
             self.isClusterable = False # So we don't try to compute sphericity if clusters are empty
@@ -915,6 +946,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
 
     def doBTagWeights(self, events, jetsPre, wp="L"):
+        jetsPre = jetsPre[jetsPre.pt >= 30]
         jets, njets = ak.flatten(jetsPre), np.array(ak.num(jetsPre))
         hadronFlavourLightAsB = np.array(np.where(jets.hadronFlavour == 0, 5, jets.hadronFlavour))
         hadronFlavourBCAsLight= np.array(np.where(jets.hadronFlavour != 0, 0, jets.hadronFlavour))
@@ -979,14 +1011,144 @@ class SUEP_cluster(processor.ProcessorABC):
 
 
     def doJECJERVariations(self, events, jets):
-        jets_corrected = apply_jecs(isMC=self.isMC, Sample=self.sample, era=self.era, events=events, doStoc=True)
+        jets_corrected = apply_jecs(isMC=self.isMC, Sample=self.sample, era=self.era, events=events, doStoc=False)
+        #print(jets_corrected["JES_jes"].__dict__)
         jetsOut = {"":       self.selectByJets(events, self.leptons, jets_corrected)[1],
                    "_JECUP": self.selectByJets(events, self.leptons, jets_corrected["JES_jes"].up)[1],
                    "_JECDOWN": self.selectByJets(events, self.leptons, jets_corrected["JES_jes"].down)[1],
                    "_JERUP": self.selectByJets(events, self.leptons, jets_corrected["JER"].up)[1],
                    "_JERDOWN": self.selectByJets(events, self.leptons, jets_corrected["JER"].down)[1],
                   }
+
         return jetsOut
+
+    def doLeptonScaleVariations(self, events, leptons):
+        ## First the muons
+        muonIndexes = ( abs(leptons.pdgId) == 13 )
+        muons = leptons[muonIndexes]
+        rochester_data = lookup_tools.txt_converters.convert_rochester_file(
+          "data/MuScale/roccor.Run2.v3/RoccoR%i.txt"%(self.era if self.era !=2015 else 2016), loaduncs=True
+        )
+        rochester = lookup_tools.rochester_lookup.rochester_lookup(rochester_data)
+        murand =  ak.unflatten(np.random.random(ak.sum(ak.num(muons))), ak.num(muons))
+
+        # muSF is the correction
+        muSF = rochester.kSmearMC(
+          muons.charge,
+          muons.pt,
+          muons.eta,
+          muons.phi,
+          muons.aux3,
+          murand,
+        )
+        genpt = events.GenPart.pt[ak.values_astype(ak.where(muons.aux1 >= 0, muons.aux1,0), "int64")]
+        muSF = ak.where(muons.aux1 >= 0, rochester.kSpreadMC(muons.charge, muons.pt, muons.eta, muons.phi, genpt), muSF)
+        # muSFErr is the uncertainty
+        muSFErr =  rochester.kSmearMCerror(
+          muons.charge,
+          muons.pt,
+          muons.eta,
+          muons.phi,
+          muons.aux3,
+          murand,
+        )
+        muSFErr = ak.where(muons.aux1 >= 0, rochester.kSpreadMCerror(muons.charge, muons.pt, muons.eta, muons.phi, genpt), muSFErr)
+
+        muCentral = ak.zip({
+            "pt": muons.pt*muSF,
+            "eta": muons.eta,
+            "phi": muons.phi,
+            "mass": muons.mass,
+            "charge": muons.pdgId/(-13),
+        }, with_name="Momentum4D")
+
+        muUp = ak.zip({
+            "pt": muons.pt*(muSF+muSFErr),
+            "eta": muons.eta,
+            "phi": muons.phi,
+            "mass": muons.mass,
+            "charge": muons.pdgId/(-13),
+        }, with_name="Momentum4D")
+        muDn = ak.zip({
+            "pt": muons.pt*(muSF-muSFErr),
+            "eta": muons.eta,
+            "phi": muons.phi,
+            "mass": muons.mass,
+            "charge": muons.pdgId/(-13),
+        }, with_name="Momentum4D")
+
+        ## Now the electrons
+        elecIndexes = ( abs(leptons.pdgId) == 11 )
+        electrons = leptons[elecIndexes]
+        elCentral = ak.zip({
+            "pt": electrons.pt,
+            "eta": electrons.eta,
+            "phi": electrons.phi,
+            "mass": electrons.mass,
+            "charge": electrons.pdgId/(-13),
+        }, with_name="Momentum4D")
+
+        elScaleUp = ak.zip({
+            "pt": electrons.pt*(1+electrons.aux1/electrons.E),
+            "eta": electrons.eta,
+            "phi": electrons.phi,
+            "mass": electrons.mass,
+            "charge": electrons.pdgId/(-13),
+        }, with_name="Momentum4D")
+
+        elScaleDn = ak.zip({
+            "pt": electrons.pt*(1+electrons.aux2/electrons.E),
+            "eta": electrons.eta,
+            "phi": electrons.phi,
+            "mass": electrons.mass,
+            "charge": electrons.pdgId/(-13),
+        }, with_name="Momentum4D")
+
+        elSigmaUp = ak.zip({
+            "pt": electrons.pt*(1+electrons.aux3/electrons.E),
+            "eta": electrons.eta,
+            "phi": electrons.phi,
+            "mass": electrons.mass,
+            "charge": electrons.pdgId/(-13),
+        }, with_name="Momentum4D")
+
+        elSigmaDn = ak.zip({
+            "pt": electrons.pt*(1+electrons.aux4/electrons.E),
+            "eta": electrons.eta,
+            "phi": electrons.phi,
+            "mass": electrons.mass,
+            "charge": electrons.pdgId/(-13),
+        }, with_name="Momentum4D")
+
+        # Reassign
+        leptons = ak.concatenate([muCentral,elCentral], axis=1)
+        leptons_ElScaleUp = ak.concatenate([muCentral,elScaleUp], axis=1)
+        leptons_ElScaleDn = ak.concatenate([muCentral,elScaleDn], axis=1)
+        leptons_ElSigmaUp = ak.concatenate([muCentral,elSigmaUp], axis=1)
+        leptons_ElSigmaDn = ak.concatenate([muCentral,elSigmaDn], axis=1)
+        leptons_MuScaleUp = ak.concatenate([muUp,elCentral], axis=1)
+        leptons_MuScaleDn = ak.concatenate([muDn,elCentral], axis=1)
+
+        # And sort
+        leptons = leptons[ak.argsort(leptons.pt, axis=1, ascending=False, stable=True)]
+        leptons_ElScaleUp = leptons_ElScaleUp[ak.argsort(leptons_ElScaleUp.pt, axis=1, ascending=False, stable=True)]
+        leptons_ElScaleDn = leptons_ElScaleDn[ak.argsort(leptons_ElScaleDn.pt, axis=1, ascending=False, stable=True)]
+        leptons_ElSigmaUp = leptons_ElSigmaUp[ak.argsort(leptons_ElSigmaUp.pt, axis=1, ascending=False, stable=True)]
+        leptons_ElSigmaDn = leptons_ElSigmaDn[ak.argsort(leptons_ElSigmaDn.pt, axis=1, ascending=False, stable=True)]
+        leptons_MuScaleUp = leptons_MuScaleUp[ak.argsort(leptons_MuScaleUp.pt, axis=1, ascending=False, stable=True)]
+        leptons_MuScaleDn = leptons_MuScaleDn[ak.argsort(leptons_MuScaleDn.pt, axis=1, ascending=False, stable=True)]
+
+        # Get the output
+        lepsOut = { "": leptons,
+                    "_ElScaleUp": leptons_ElScaleUp,
+                    "_ElScaleDown": leptons_ElScaleDn,
+                    "_ElSigmaUp": leptons_ElSigmaUp,
+                    "_ElSigmaDown": leptons_ElSigmaDn,
+                    "_MuScaleUp": leptons_MuScaleUp,
+                    "_MuScaleDown": leptons_MuScaleDn
+        }
+
+        return lepsOut
 
 
     def doAllPlots(self, channel, debug=True):
