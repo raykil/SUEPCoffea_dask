@@ -206,8 +206,8 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def selectByLeptons(self, events, extraColls = []):
     ###lepton selection criteria--4momenta collection for plotting
-
-        muons = ak.zip({
+        if self.isMC:
+          muons = ak.zip({
             "pt": events.Muon.pt,
             "eta": events.Muon.eta,
             "phi": events.Muon.phi,
@@ -218,9 +218,9 @@ class SUEP_cluster(processor.ProcessorABC):
             "aux2": events.Muon.pt,
             "aux3": events.Muon.nTrackerLayers,
             "aux4": events.Muon.pt
-        }, with_name="Momentum4D")
+          }, with_name="Momentum4D")
 	
-        electrons = ak.zip({
+          electrons = ak.zip({
             "pt": events.Electron.pt,
             "eta": events.Electron.eta,
             "phi": events.Electron.phi,
@@ -231,7 +231,25 @@ class SUEP_cluster(processor.ProcessorABC):
             "aux2": events.Electron.dEscaleDown,
             "aux3": events.Electron.dEsigmaUp,
             "aux4": events.Electron.dEsigmaDown
-        }, with_name="Momentum4D")
+          }, with_name="Momentum4D")
+        else:
+          muons = ak.zip({
+            "pt": events.Muon.pt,
+            "eta": events.Muon.eta,
+            "phi": events.Muon.phi,
+            "mass": events.Muon.mass,
+            "charge": events.Muon.pdgId/(-13),
+            "pdgId": events.Muon.pdgId,
+          }, with_name="Momentum4D")
+
+          electrons = ak.zip({
+            "pt": events.Electron.pt,
+            "eta": events.Electron.eta,
+            "phi": events.Electron.phi,
+            "mass": events.Electron.mass,
+            "charge": events.Electron.pdgId/(-11),
+            "pdgId": events.Electron.pdgId,
+          }, with_name="Momentum4D")
 
         ###  Some very simple selections on ID ###
         ###  Muons: loose ID + dxy dz cuts mimicking the medium prompt ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
