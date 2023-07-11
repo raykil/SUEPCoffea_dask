@@ -206,7 +206,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def selectByLeptons(self, events, extraColls = []):
     ###lepton selection criteria--4momenta collection for plotting
-        if self.isMC:
+        if self.isMC and self.isSignal:
           muons = ak.zip({
             "pt": events.Muon.pt,
             "eta": events.Muon.eta,
@@ -328,7 +328,8 @@ class SUEP_cluster(processor.ProcessorABC):
             "pt": events.PFCands.trkPt,
             "eta": events.PFCands.trkEta,
             "phi": events.PFCands.trkPhi,
-            "mass": events.PFCands.mass
+            "mass": events.PFCands.mass,
+            "pdgId": events.PFCands.pdgId
         }, with_name="Momentum4D")
 
         cutPF = (events.PFCands.fromPV > 1) & \
@@ -346,7 +347,8 @@ class SUEP_cluster(processor.ProcessorABC):
             "pt": events.lostTracks.pt,
             "eta": events.lostTracks.eta,
             "phi": events.lostTracks.phi,
-            "mass": 0.0
+            "mass": 0.0,
+            "pdgId": -99
         }, with_name="Momentum4D")
 
         cutLost = (events.lostTracks.fromPV > 1) & \
@@ -375,7 +377,8 @@ class SUEP_cluster(processor.ProcessorABC):
           cluster = fastjet.ClusterSequence(tracks, jetdef)
           ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
           ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
-          return events, ak15_jets, ak15_consts
+          clidx = cluster.constituent_index()
+          return events, ak15_jets, ak15_consts, clidx
         else: #With few events/file the thing crashes because of FastJet so we are going to create "fake" events
           ncopies     = round(nSmallEvents/(len(events)))
           oldtracks   = tracks
@@ -385,8 +388,9 @@ class SUEP_cluster(processor.ProcessorABC):
           cluster = fastjet.ClusterSequence(tracks, jetdef)
           ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
           ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
+          clidx = cluster.constituent_index()
           # But now we have to delete the repeated set of events
-          return events, ak15_jets[:len(oldtracks)], ak15_consts[:len(oldtracks)]
+          return events, ak15_jets[:len(oldtracks)], ak15_consts[:len(oldtracks)], clidx[:len(oldtracks)]
 
     def striptizeTracks(self, events, tracks, etaWidth=0.75):
         etaCenters = np.linspace(-2.5, 2.5, 50) # Scan 50 eta values
@@ -532,10 +536,19 @@ class SUEP_cluster(processor.ProcessorABC):
             if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
             if debug: print("%i events pass track cuts. Doing track clustering..."%len(self.events))
             if self.doClusters:
-                self.events, self.clusters, self.constituents  = self.clusterizeTracks(self.events, self.tracks)[:3]
+                self.events, self.clusters, self.constituents, clidx  = self.clusterizeTracks(self.events, self.tracks)[:4]
                 highpt_clusters = ak.argsort(self.clusters.pt, axis=1, ascending=False, stable=True)
                 self.clusters   = self.clusters[highpt_clusters]
                 self.constituents = self.constituents[highpt_clusters]
+                clidx = clidx[highpt_clusters]
+                self.constituents = ak.zip(
+                  {
+                  "pt": self.constituents.pt,
+                  "eta": self.constituents.eta,
+                  "phi": self.constituents.phi,
+                  "mass": self.constituents.mass,
+                  "pdgId": ak.unflatten(self.tracks.pdgId[ak.flatten(clidx,axis=2)], ak.flatten(ak.num(self.constituents, axis=2)), axis=1),
+                  }, with_name="Momentum4D")
 
         if self.doGen:
             print("Do gen!")
@@ -635,10 +648,20 @@ class SUEP_cluster(processor.ProcessorABC):
                     self.applyCutToAllCollections(cutOneCluster)
                     self.isClusterable = True # So we do cluster plots
                     if self.doClusters and self.var != "": # As tracks might have changed, need to redo this step
-                      self.events, self.clusters, self.constituents  = self.clusterizeTracks(self.events, self.tracks)[:3]
+                      self.events, self.clusters, self.constituents, clidx  = self.clusterizeTracks(self.events, self.tracks)[:4]
                       highpt_clusters = ak.argsort(self.clusters.pt, axis=1, ascending=False, stable=True)
                       self.clusters   = self.clusters[highpt_clusters]
                       self.constituents = self.constituents[highpt_clusters]
+                      clidx = clidx[highpt_clusters]
+                      self.constituents = ak.zip(
+                       {
+                       "pt": self.constituents.pt,
+                       "eta": self.constituents.eta,
+                       "phi": self.constituents.phi,
+                       "mass": self.constituents.mass,
+                       "pdgId": ak.unflatten(self.tracks.pdgId[ak.flatten(clidx,axis=2)], ak.flatten(ak.num(self.constituents, axis=2)), axis=1),
+                       }, with_name="Momentum4D")
+                      print(self.constituents.pt, self.constituents.pdgId)
 
                     outputs["onecluster"+var] = [self.doAllPlots("onecluster"+var, debug), self.events]
                     if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
@@ -1260,6 +1283,11 @@ class SUEP_cluster(processor.ProcessorABC):
                     out["leadcluster_eta"]     = self.clusters.eta[:,0]
                     out["leadcluster_phi"]     = self.clusters.phi[:,0]
                     out["leadcluster_ntracks"] = ak.num(self.constituents[:,0], axis = 1)
+                    out["leadcluster_nmuon"]   = ak.sum(abs(self.constituents.pdgId[:,0]) == 13, axis = 1)
+                    out["leadcluster_nelectron"]   = ak.sum(abs(self.constituents.pdgId[:,0]) == 11, axis = 1)
+                    out["leadcluster_npion"]   = ak.sum(abs(self.constituents.pdgId[:,0,:]) == 211, axis = 1)
+                    out["leadcluster_nkaon"]   = ak.sum((abs(self.constituents.pdgId[:,0])-310) < 15, axis = 1)
+
                     out["leadcluster_m"]     = self.clusters.mass[:,0]
 
                     boost_leading = ak.zip({
