@@ -11,7 +11,7 @@ def hdf5inpath(path):
   return ret
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL17/hdf5_ANv4/"
+main_path = "/eos/user/g/gdecastr/SUEPCoffea_dask/investigatingExcess/Control_17/"
 samples = {
   "data": {
          "name" : "data",
@@ -24,17 +24,16 @@ samples = {
          "markerstyle": 20,
          "markersize" : 1,
   },
-  "DY_Pt0": {
-         "name"       : "DY_Pt0", #Here plain text
-         "label"      : "DY",# (p_{T} = 0 GeV)", #Here we can use weird glyphs
-         "xsec"       : 5804*1000., # in fb
-         "linecolor"  : ROOT.kBlack,
-         "fillcolor"  : 7, # White
-         "isSig"      : False,
-         "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"], 
-         "files"      : hdf5inpath(main_path + "DYToLL_M50/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/DYToLL_M50/skims.root"
-  },      
+  #"DY_Pt0": {
+  #       "name"       : "DY_Pt0", #Here plain text
+  #       "label"      : "DY",# (p_{T} = 0 GeV)", #Here we can use weird glyphs
+  #       "xsec"       : 5804*1000., # in fb
+  #       "linecolor"  : ROOT.kBlack,
+  #       "fillcolor"  : 7, # White
+  #       "isSig"      : False,
+  #       "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"], 
+  #       "files"      : hdf5inpath(main_path + "DY_nano_Autumn18/"),
+  #},      
   "DY_Pt0To50": {
          "name"     : "DY_Pt0To50", #Here plain text
          "label"    : "DY",# (p_{T} < 50 GeV)", #Here we can use weird glyphs
@@ -144,7 +143,7 @@ samples = {
          "isSig"    : False,
          "files"    : hdf5inpath(main_path + "TTTo1L1Nu2Q/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/TTTo1L1Nu/skims.root",
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/TTTo1L1Nu2Q/skims.root",
   },
 #  "Wjets": {
 #         "name"     : "Wjets", #Here plain text
@@ -176,9 +175,9 @@ samples = {
          "linecolor": ROOT.kBlack,
          "fillcolor": 3, # Green
          "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "WZTo2L2Q/"),
+         "files"    : hdf5inpath(main_path + "WZTo2l2Q/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/WZTo2L2Q/skims.root"
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/WZTo2l2Q/skims.root"
   },
   "WZ3lnu": {
          "name"     : "WZ3lnu", #Here plain text
@@ -236,17 +235,6 @@ samples = {
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/ZG/skims.root"
   },
-  "WG": {
-         "name"     : "WG", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 412.70*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "WG/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/WG/skims.root"
-  },
   "ttZll": {
          "name"     : "ttZll", #Here plain text
          "label"    : "t#bar{t}X", #Here we can use weird glyphs
@@ -280,8 +268,31 @@ samples = {
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
          "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/TTWToQQ/skims.root"
   },
-#  "SUEP_ZH_generic_new": {
-#         "name"     : "SUEP_ZH_generic_new", #Here plain text
+#  "VHnonbb": {
+#         "name"     : "VHnonbb", #Here plain text
+#         "label"    : "VH", #Here we can use weird glyphs
+#         "xsec"     : 2.6*1000., # in fb
+#         "linecolor": ROOT.kBlack,
+#         "fillcolor": 46, # Dark red
+#         "isSig"    : False,
+#         "files"    : hdf5inpath(main_path + "VHnonbb/"),
+#         "extraWeights": lambda x: (x["leadjet_pt"] >= 30)*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+#         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/VHnonbb/skims.root"
+#  },
+
+#  "SUEP_ZH_generic": {
+#         "name"     : "SUEP_ZH_generic", #Here plain text
+#         "label"    : "ZS^{gen}, m_{S} = 125 GeV", #Here we can use weird glyphs
+#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "linecolor": ROOT.kBlack,
+#         "fillcolor": ROOT.kBlack,
+#         "isSig"    : True,
+#         "doPlot"   : False,
+#         "files"    : hdf5inpath(main_path + "SUEP_generic_mS125_mD2_T2/"),
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+#  },
+#  "SpUEP_ZH_generic_new": {
+#         "name"     : "SUEP_ZH_generic", #Here plain text
 #         "label"    : "ZS^{gen}, m_{S} = 125 GeV", #Here we can use weird glyphs
 #         "xsec"     : 870 * 0.0336 * 2, # in fb
 #         "linecolor": ROOT.kRed,
@@ -305,7 +316,7 @@ samples = {
 #  "SUEP_ZH_hadronic": {
 #         "name"     : "SUEP_ZH_hadronic", #Here plain text
 #         "label"    : "ZS^{had}, m_{S} = 125 GeV", #Here we can use weird glyphs
-#         "xsec"     : 870 * 0.0336 * 2, # in fb
+##         "xsec"     : 870 * 0.0336 * 2, # in fb
 #         "linecolor": ROOT.kGreen,
 #         "fillcolor": ROOT.kGreen,
 #         "isSig"    : True,
@@ -381,7 +392,7 @@ samples = {
   },
   "SUEP_generic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    :  "ZS, generic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, generic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kBlack,
@@ -535,7 +546,7 @@ samples = {
   },
   "SUEP_hadronic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    :  "ZS, hadronic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, hadronic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
@@ -1083,6 +1094,17 @@ samples = {
          "files"    : hdf5inpath(main_path+"SUEP_hadronic_mS125_mD8.00_T32.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
+  "ttH_generic_mS125_mD2.00_T2.00" :{
+         "name"     : "ttH_generic_mS125_mD2.00_T2.00", #Here plain text
+         "label"    : "ttS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 498.7, # in fb
+         "linecolor": ROOT.kBlack,
+         "fillcolor": ROOT.kBlack,
+         "isSig"    : True,
+         "doPlot"   : True,
+         "files"    : ["/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/test_ttH_unskimmed/out_1_1_1001.hdf5"], 
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  }
 }
 
 for sample in samples:
@@ -1094,15 +1116,15 @@ for sample in samples:
   samples[sample]["variations"] = {
   "TrigSFUp": {
            "name"            :   "TrigSFUp",
-           "isSyst"          :       True, 
-           "replaceChannel"  :         {}, 
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
            "extraWeights"    :   lambda x: (x["TrigSF"]+x["TrigSF_Up"])/x["TrigSF"], # Relative to central
-           "symmetrize"      :      False,
+           "symmetrize"      :      False, 
   },
   "TrigSFDn": {
            "name"            :   "TrigSFDn",
-           "isSyst"          :       True, 
-           "replaceChannel"  :         {}, 
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
            "extraWeights"    :   lambda x: (x["TrigSF"]-x["TrigSF_Dn"])/x["TrigSF"], # Relative to central
            "symmetrize"      :      False,
   },
@@ -1251,7 +1273,37 @@ for sample in samples:
            "isSyst"          :      True,
            "replaceChannel"  :  {"SR":"SR_TRACKUP", "onecluster":"onecluster_TRACKUP", "twoleptons":"twoleptons_TRACKUP"},
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
-           "symmetrize"      :      True,
+           "symmetrize"      :     True,
   },
 }
-
+"""
+  if (samples[sample]["isSig"]): 
+    samples[sample]["variations"]["JECUp"] = {
+           "name"            : "JEC",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_JECUP", "onecluster":"onecluster_JECUP", "twoleptons":"twoleptons_JECUP"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :      False,
+    }
+    samples[sample]["variations"]["JECDn"] = {
+           "name"            : "JEC",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_JECDOWN", "onecluster":"onecluster_JECDOWN", "twoleptons":"twoleptons_JECDOWN"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :      False,
+    }
+    samples[sample]["variations"]["JERUp"] = {
+           "name"            : "JER",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_JERUP", "onecluster":"onecluster_JERUP", "twoleptons":"twoleptons_JERUP"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :      False,
+    }
+    samples[sample]["variations"]["JERDn"] = {
+           "name"            : "JER",
+           "isSyst"          :      True,
+           "replaceChannel"  :  {"SR":"SR_JERDOWN", "onecluster":"onecluster_JERDOWN", "twoleptons":"twoleptons_JERDOWN"},
+           "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
+           "symmetrize"      :      False,
+    }
+"""

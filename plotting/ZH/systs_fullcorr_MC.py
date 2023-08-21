@@ -2,8 +2,8 @@ systematicsAndShapes = {
  "yields": { # This always needs to be defined
            "name": "yields",
            "type": "yieldsWithShapes",
-           "file": "[ROOTFILE]_[CHANNEL].root",
-           "match": "[VAR]_[CHANNEL]_$PROCESS",
+           "file": "[ROOTFILE]",
+           "match": "[VAR]_$PROCESS",
            "extendedABCD": {"SR": "_SR", "B1": "_B1", "B2":"_B2", "C1":"_C1", "C2":"_C2", "D1":"_D1", "D2":"_D2","E1":"_E1", "E2":"_E2"}
  },
  "TrigSF"  : {
@@ -106,15 +106,15 @@ systematicsAndShapes = {
             "down": "Dn",
             "corrs": {"2016":["2016"], "2016APV":["2016APV"],"2017":["2017"], "2018":["2018"]},
  },
- "Track"  : {
-            "name": "Track",
-            "type": "shape",
-            "processes": [".*"],
-            "match": "$PROCESS_$SYSTEMATIC",
-            "up"  : "Up",
-            "down": "Up",
-            "corrs": {"RunII":["2016","2016APV","2017","2018"]},
- },
+ #"Track"  : {
+ #           "name": "Track",
+ #           "type": "shape",
+ #           "processes": [".*"],
+ #           "match": "$PROCESS_$SYSTEMATIC",
+ #           "up"  : "Up",
+ #           "down": "Up",
+ #           "corrs": {"RunII":["2016","2016APV","2017","2018"]},
+ #},
  "JES"  : {
             "name": "JES",
             "type": "lnN",
@@ -164,12 +164,12 @@ systematicsAndShapes = {
             "size": {"RunII":[1.006, 1.002]},
             "corrs": {"RunII":["2017", "2018"]},
  },
- "closure" : {
-            "name": "closure",
-            "type": "lnN",
-            "processes": [".*"],
-            "size": 1.2,
- },
+# "closure" : {
+#            "name": "closure",
+#            "type": "lnN",
+#            "processes": [".*"],
+#            "size": 1.2,
+# },
 # "DYnorm": {
 #            "name": "lumi",
 #            "type": "lnN",

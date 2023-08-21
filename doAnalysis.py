@@ -24,6 +24,7 @@ parser.add_option("--muonID", dest="muonID", action="store_true", default=False,
 parser.add_option("--jetID", dest="jetID", action="store_true", default=False, help="To check relaxed jet ID cuts")
 parser.add_option("--PU", dest="PU", action="store_true", default=False, help="To check PU splitting")
 parser.add_option("--btagEff", dest="btagEff", action="store_true", default=False, help="Activate bTag Efficiency commands")
+parser.add_option("--analyzer", dest="analyzer", type="string", default="ZH_simple_withsyst", help="Choose default analyzer")
 (options, args) = parser.parse_args()
 
 doWhat = args[0]
@@ -44,7 +45,7 @@ if doWhat == "all" or doWhat == "dataframes":
     print("  - By default commands will be given for batch submission as this should not be run locally. Which queue can be regulated with the -q option")
     print("  - On lxplus, monitoring of the jobs can be done with the condor_q command\x1b[0m")
   print("-------------------------------------------")
-  analyzer = "ZH_simple_withsyst"
+  analyzer = options.analyzer
   if options.leptonID: 
     analyzer = "ZH_leptonID"
     if options.plotfile == "ZH/plots_mZ.py": # If default, change to leptonID one
@@ -130,4 +131,3 @@ if doWhat == "all" or doWhat == "cards":
   print("-------------------------------------------")
   print("-------------------------------------------")
   print("-------------------------------------------")
-
