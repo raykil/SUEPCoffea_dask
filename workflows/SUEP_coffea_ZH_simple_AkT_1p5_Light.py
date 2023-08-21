@@ -594,6 +594,7 @@ class SUEP_cluster(processor.ProcessorABC):
                     outputs["onecluster"+var] = [self.doAllPlots("onecluster"+var, debug), self.events]
                     if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                     if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))
+                    '''
                     cutZm  = (abs(self.Zcands.mass - 90) < 30)
                     self.applyCutToAllCollections(cutZm)
                     if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
@@ -602,7 +603,6 @@ class SUEP_cluster(processor.ProcessorABC):
                     self.applyCutToAllCollections(cut0tag)
                     if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                     if debug: print("%i events pass 1tag cuts. Doing more stuff..."%len(self.events))
-                    '''
                     cutZpt = (self.Zcands.pt > 25)
                     self.applyCutToAllCollections(cutZpt)
                     if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
