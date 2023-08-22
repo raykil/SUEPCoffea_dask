@@ -20,6 +20,7 @@ ROOT.gROOT.SetBatch(True)
 
 class sample(object):
   def __init__(self, sampledict, options):
+    self.dohadd = options.dohadd
     self.config  = sampledict
     if not("year" in self.config): self.config["year"] = "" # Safety replace 
     self.name    = sampledict["name"]
@@ -79,7 +80,7 @@ class sample(object):
         if not(options.toLoad and (("skim" in self.config) or (self.isData)) and os.path.isfile(fullfilename)) and not(options.fromROOT):
           if not("skim" in self.config) and not(self.isData) or (not(options.queue) and not(options.toLoad)):
             a = pd.HDFStore(f, "r")
-          if not("skim" in self.config) and not(self.isData):
+          if not("skim" in self.config) and not(self.isData) and not(self.noWeights):
             #print(a.get_storer("SR").attrs.metadata)
             self.nnorms[f] = a.get_storer("SR").attrs.metadata["gensumweight"]
           if not(options.queue) and not(options.toLoad):
@@ -102,7 +103,7 @@ class sample(object):
         print("File %s broken, will skip loading it"%f)
         print(str(e))
 
-    #print(self.name, self.safefiles)
+    #print("SAFE FILES:", self.name, self.safefiles)
     if "skim" in self.config and not(self.isData):
       self.unskimmedyields, self.norm = self.getUnskimmedYields()
 
@@ -205,15 +206,23 @@ class sample(object):
       for iff, f in enumerate(self.hdfiles):
         if (iff %1 == 0): print("Loading file %i/%i : %s"%(iff, len(self.hdfiles),self.safefiles[iff]))
         self.getRawHistogramsAndNormsOneFile([f,self.safefiles[iff], options])
-    elif options.dohadd: # Then, we collect from all files into a single hadd
+    elif self.dohadd: # Then, we collect from all files into a single hadd
       self.haddedfile = self.getRawHistogramsAndNormsHadd(options)
       self.haddedTFile = ROOT.TFile(self.haddedfile, "READ")
     elif options.fromROOT:
       self.getHistogramsAndNormsFromROOT()
     else:
-      for iff, f in enumerate(self.safefiles):
-        if (iff %1 == 0): print("Loading file %i/%i: %s"%(iff, len(self.safefiles), f))
-        self.getRawHistogramsAndNormsOneFile(["",self.safefiles[iff], options])
+      # Collect all filenames 
+      outputFil = options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_hadded.root"
+
+      if os.path.isfile(outputFil):
+        print("Hadded file %s already exists, will read from there"%outputFil)
+        self.haddedTFile = ROOT.TFile(outputFil, "READ")
+        self.dohadd = True
+      else:
+        for iff, f in enumerate(self.safefiles):
+          if (iff %1 == 0): print("Loading file %i/%i: %s"%(iff, len(self.safefiles), f))
+          self.getRawHistogramsAndNormsOneFile(["",self.safefiles[iff], options])
 
     # After all is said and done, add up histograms and normalize to xsec
     if options.toSave or options.fromROOT: #If only saving or if already full histograms, no need to continue merging 
@@ -222,20 +231,39 @@ class sample(object):
       for plotName in self.plotsinchannel[c]:
         p = self.plots[plotName]
         for iff, f in enumerate(self.safefiles):
-          if options.toLoad and not("skim" in self.config) and not(self.isData): # If loading and unskimmed, need to set the norm here
+          if options.toLoad and not("skim" in self.config) and not(self.isData) and not(self.noWeights): # If loading and unskimmed, need to set the norm here
             self.norms[plotName] += self.nnorms[self.safefiles[iff]]
-          if not(options.dohadd):
+          elif self.noWeights: self.norms[plotName] = 1
+          if not(self.dohadd):
             filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
-            #print(filename, plotName)
+            #print(filename, plotName, self.histos[plotName][filename].Integral())
             self.histos[plotName]["total"].Add(self.histos[plotName][filename])
+            del self.histos[plotName][filename]
             if self.doSyst:
               for var in self.variations:
                 if self.variations[var]["symmetrize"]:
                   self.histos[plotName+ "_" + var + "Up"]["total"].Add(self.histos[plotName+ "_" + var + "Up"][filename])
                   self.histos[plotName+ "_" + var + "Dn"]["total"].Add(self.histos[plotName+ "_" + var + "Dn"][filename])
+                  del self.histos[plotName+ "_" + var + "Up"][filename]
+                  del self.histos[plotName+ "_" + var + "Dn"][filename]
                 else:
                   self.histos[plotName+ "_" + var]["total"].Add(self.histos[plotName+ "_" + var][filename])
-        if options.dohadd:
+                  del self.histos[plotName+ "_" + var][filename]
+        if not(self.dohadd):
+          #print("Creating hadded file")
+          outputFil = options.toLoad.replace("{YEAR}", self.config["year"]) + "/" + self.name + "_hadded.root"
+          self.haddedTFile = ROOT.TFile(outputFil, "UPDATE")
+          self.haddedTFile.cd()
+          self.histos[plotName]["total"].Write()
+          if self.doSyst:
+            for var in self.variations:
+              if self.variations[var]["symmetrize"]:
+                self.histos[plotName+ "_" + var + "Up"]["total"].Write()
+                self.histos[plotName+ "_" + var + "Dn"]["total"].Write()
+              else:
+                self.histos[plotName+ "_" + var]["total"].Write()
+          self.haddedTFile.Close()
+        if self.dohadd:
           print(plotName + "_" + self.name)
           self.histos[plotName]["total"] = self.haddedTFile.Get(plotName + "_" + self.name)
           if self.doSyst:
@@ -261,6 +289,7 @@ class sample(object):
             self.histos[plotName]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/self.norms[plotName])
         if "scale" in self.config:
           self.histos[plotName]["total"].Scale(self.config["scale"])
+
         self.yields[plotName] = self.histos[plotName]["total"].Integral()
         if self.doSyst:
           for var in self.variations:
@@ -277,7 +306,7 @@ class sample(object):
                 self.histos[plotName+ "_" + var]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/max(0.0001,self.norms[plotName]))
               if "scale" in self.config:
                 self.histos[plotName+ "_" + var]["total"].Scale(self.config["scale"])
-
+    
   def getHistogramsAndNormsFromROOT(self):
     print("FROMROOT")
     inROOT= ROOT.TFile(options.toLoad, "READ")
@@ -352,7 +381,7 @@ class sample(object):
                 extraweights[var] = self.variations[var]["extraWeights"](f[self.variations[var]["replaceChannel"][c]])
         for plotName in self.plotsinchannel[cpre]:
           p = self.plots[plotName]
-          if not("skim" in self.config) and not(self.isData):
+          if not("skim" in self.config) and not(self.isData) and not(self.noWeights):
             self.norms[plotName] += self.nnorms[safefile]
           if "2D" in p["bins"][0]:
             values, values2, weightsNom = {}, {} , {}
@@ -637,7 +666,7 @@ class plotter(object):
     p1.SetBottomMargin(0.1)
     p1.SetTopMargin(0.1)
     p1.SetLeftMargin(0.12)
-    p1.SetRightMargin(0.1)
+    p1.SetRightMargin(0.15)
     if "margins" in p:
       p1.SetBottomMargin(p["margins"][0])
       p1.SetTopMargin(p["margins"][1])
@@ -646,6 +675,15 @@ class plotter(object):
     p1.SetLogz(True)
     p1.Draw()
     p1.cd()
+    if "maxZ" in p:
+      histo.SetMaximum(p["maxZ"])
+    if "minZ" in p:
+      histo.SetMaximum(p["minZ"])
+
+    for ibin in range(1, histo.GetNbinsX()+1):
+      for jbin in range(1, histo.GetNbinsY()+1):
+        if histo.GetBinContent(ibin, jbin) < 0:
+           histo.SetBinContent(ibin, jbin, 0)
     histo.SetTitle("")
     histo.Draw("colz")
     histo.GetXaxis().SetLabelSize(0.03)
@@ -655,6 +693,17 @@ class plotter(object):
     histo.GetZaxis().SetTitle("Events")
     histo.GetYaxis().SetTitle(p["ylabel"])
     histo.GetXaxis().SetTitle(p["xlabel"])
+
+    if "normalizeX" in p:
+      if p["normalizeX"]:
+        p1.SetLogz(False)
+        projY  = histo.ProjectionY() 
+        for i in range(1,histo.GetNbinsX()+1):
+          for j in range(1,histo.GetNbinsY()+1):
+            histo.SetBinContent(i, j, histo.GetBinContent(i,j)/(max(projY.GetBinContent(j), 0.00001)))
+        histo.SetMaximum(0.25)
+        histo.SetMinimum(0.)
+        histo.GetZaxis().SetTitle("Events/All events at %s band"%p["ylabel"])
 
     CMS_lumi.writeExtraText = True
 
