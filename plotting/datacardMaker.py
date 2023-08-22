@@ -38,7 +38,7 @@ class datacardMaker(object):
       newcard.write("imax *\njmax *\nkmax *\n")
 
       if self.isShape:
-        newcard.write("shapes * * ./" + options.region + self.samples[s]["name"] + "_shapes.root $PROCESS$SYSTEMATIC\n")
+        newcard.write("shapes * * ./" + options.region + self.samples[s]["name"] + "_shapes.root $PROCESS $PROCESS$SYSTEMATIC\n")
       newcard.write("bin %s\n"%self.channel)
       newcard.write("observation -1\n")
       newcard.write("bin " + " ".join(["%s"%self.channel for i in range(len(self.backgr)+1)])+ "\n")
@@ -85,6 +85,7 @@ class datacardMaker(object):
             basename = name
             for ibin in range(1, self.nbins+1):
               name = basename + "_bin"+str(ibin)
+              print(name, len(processes), len(bins))
               effect = [size if any([re.match(princfg, processes[ientry]) and (("%sbin%i"%(self.channel,ibin)) == bins[ientry])  for princfg in self.systs[syst]["processes"]]) else "-" for ientry in range(len(processes))]
               if effect == empty:
                 print("......lnN/gmN Systematic %s has no effect, will skip it"%(name))
@@ -114,8 +115,8 @@ class datacardMaker(object):
           newcard.write("%s %s "%(name, self.systs[syst]["type"]) + " ".join(effect)+ " \n")
           #print(size, effect, processes,  self.systs[syst]["processes"])
           for pr in processes:
-            if re.match(princfg, pr): 
-              #print(self.systs[syst]["match"].replace("$PROCESS", self.samples[pr]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["up"])
+            if any([re.match(princfg, princard)  for princfg in self.systs[syst]["processes"]]): 
+              print(self.systs[syst]["match"].replace("$PROCESS", self.samples[pr]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["up"])
               newup = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[pr]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["up"])
               newdn = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[pr]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["down"])
               self.th1s[pr + syst + "Up"] = copy.deepcopy(newup.Clone(pr + name + "Up"))
@@ -229,20 +230,24 @@ class datacardMaker(object):
           for ientry, entry in enumerate(effect):
             if entry == "-": 
               continue #No effect
+
+            ss = processes[ientry]
             factor = 1
-            if s in self.signals: factor = options.scaleS
+            if ss in self.signals: factor = options.scaleS
             # Else we have to get the shapes and save them
 
-            newup = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["up"])
-            newdn = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["down"]) #if self.systs[syst]["down"] != "" else self.th1s_perbin[ibin][s]
-            #print(s, syst,  self.th1s_perbin[ibin][s], newdn.Print("all"))
+            newup = self.tf.Get((self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst)) + self.systs[syst]["up"])
+            newdn = self.tf.Get((self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst)) + self.systs[syst]["down"])
+            print((self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst )) + self.systs[syst]["up"], (self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst)) + self.systs[syst]["down"])
+            #newdn = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["down"]) #if self.systs[syst]["down"] != "" else self.th1s_perbin[ibin][s]
+            print(ss, syst,  self.th1s_perbin[ibin][ss], newdn.Print("all"))
             for ibin in range(1, self.nbins + 1):
-              self.th1s_perbin[ibin][s + syst + "Up"] = ROOT.TH1F("%s_%sbin%i_%sUp"%(s, self.channel, ibin, name), "%s_%sbin%i_%sUp"%(s, self.channel, ibin, name), 1, 0 , 1)
-              self.th1s_perbin[ibin][s + syst + "Up"].SetBinContent(1, max(0.0001, factor*newup.GetBinContent(ibin)))
-              self.th1s_perbin[ibin][s + syst + "Up"].SetBinError(ibin, newup.GetBinError(ibin)*factor)
-              self.th1s_perbin[ibin][s + syst + "Down"] = ROOT.TH1F("%s_%sbin%i_%sDown"%(s, self.channel, ibin, name), "%s_%sbin%i_%sDown"%(s, self.channel, ibin, name), 1, 0 , 1)
-              self.th1s_perbin[ibin][s + syst + "Down"].SetBinContent(1, max(0.0001, factor*newdn.GetBinContent(ibin) if self.systs[syst]["down"] != "" else self.th1s_perbin[ibin][s].GetBinContent(1)))
-              self.th1s_perbin[ibin][s + syst + "Down"].SetBinError(1, factor*newdn.GetBinError(ibin) if self.systs[syst]["down"] != "" else self.th1s_perbin[ibin][s].GetBinError(1))
+              self.th1s_perbin[ibin][ss + syst + "Up"] = ROOT.TH1F("%s_%sbin%i_%sUp"%(ss, self.channel, ibin, name), "%s_%sbin%i_%sUp"%(ss, self.channel, ibin, name), 1, 0 , 1)
+              self.th1s_perbin[ibin][ss + syst + "Up"].SetBinContent(1, max(0.0001, factor*newup.GetBinContent(ibin)))
+              self.th1s_perbin[ibin][ss + syst + "Up"].SetBinError(ibin, newup.GetBinError(ibin)*factor)
+              self.th1s_perbin[ibin][ss + syst + "Down"] = ROOT.TH1F("%s_%sbin%i_%sDown"%(ss, self.channel, ibin, name), "%s_%sbin%i_%sDown"%(ss, self.channel, ibin, name), 1, 0 , 1)
+              self.th1s_perbin[ibin][ss + syst + "Down"].SetBinContent(1, max(0.0001, factor*newdn.GetBinContent(ibin) if self.systs[syst]["down"] != "" else self.th1s_perbin[ibin][ss].GetBinContent(1)))
+              self.th1s_perbin[ibin][ss + syst + "Down"].SetBinError(1, factor*newdn.GetBinError(ibin) if self.systs[syst]["down"] != "" else self.th1s_perbin[ibin][ss].GetBinError(1))
       newcard.write("* autoMCStats 0 1\n")
       rout = ROOT.TFile(self.output + "/" + options.region + "%s_"%self.channel + self.samples[s]["name"] + "_shapes.root", "RECREATE")
       rout.cd()
@@ -251,7 +256,7 @@ class datacardMaker(object):
           if s in h or "background" in h or "data" in h:
             self.th1s_perbin[ibin][h].Write()
       for ibin in range(1, self.nbins+1):
-        if not("SR" in self.channel):
+        if not("SR" in self.channel) and not(options.MCABCD):
           newcard.write("r%s%s_%s rateParam %s %s %1.3f [%1.3f,%1.3f]\n"%(self.options.year,self.options.region, bins[(ibin-1)*2], bins[(ibin-1)*2], "total_background", max(self.yields[ibin]["data_obs"],1), 0.001, max(10.,3*self.yields[ibin]["data_obs"])))
       rout.Close()
 
@@ -262,6 +267,7 @@ class datacardMaker(object):
       self.nbins = 1
     elif self.systs["yields"]["type"] == "yieldsWithShapes" and not(options.ABCD):
       self.collectYieldsShapes()
+      #self.collectYieldsPerBin()
       self.nbins = 1
     elif options.ABCD:
       self.collectYieldsPerBin()
@@ -277,15 +283,18 @@ class datacardMaker(object):
     self.yields = {}
     toDelete = []
     for s in self.samples:
-      print("....%s"%s)
-      newth1 = self.tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", options.var).replace("[CHANNEL]",self.channel))
+      print("....%s"%s, self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", options.var).replace("[CHANNEL]",self.channel) if not ("total_background" == s) else "total_background")
+      newth1 = self.tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", options.var).replace("[CHANNEL]",self.channel) if not ("total_background" == s) else "total_background") 
       if s != "data" or "data_obs" in self.th1s:
         self.th1s[s] = copy.deepcopy(self.th1s["data_obs"] if s=="data" else newth1.Clone(s))
+      else:
+        self.th1s["data_obs"] = copy.deepcopy(newth1.Clone("data_obs"))
+
       self.yields[s] = newth1.Integral()
-      if self.yields[s] == 0: 
-        print("Process %s has 0 yields, skipping..."%s)
-        del self.th1s[s]
-        del self.yields[s]
+      if self.yields[s] == 0 or s == "data": 
+        print("Process %s has 0 yields or is data, skipping..."%s)
+        if not s=="data": del self.th1s[s]
+        if not s=="data": del self.yields[s]
         toDelete.append(s)
         #del self.samples[s]
         continue
@@ -304,7 +313,7 @@ class datacardMaker(object):
           self.th1s["data_obs"].Add(self.th1s[s])
     for d in toDelete:
       del self.samples[d]
-
+    print(self.signals, self.backgr)
   def collectYieldsPerBin(self):
     print("Collecting shape histograms for channel %s..."%self.channel)
     self.isShape = True
@@ -316,11 +325,12 @@ class datacardMaker(object):
     self.nbins = -1
     # First the nominal yields
     for s in self.samples:
-      if not(self.samples[s]["isSig"]) and not(s == "data"): continue
+      if not(self.samples[s]["isSig"]) and not(s == "data") and not(options.MCABCD): continue
       if self.samples[s]["name"] == "data" and self.options.blind: continue
       if self.options.thispoint:
         if s != self.options.thispoint and not(self.samples[s]["name"] == "data" ): continue
-      newth1 = self.tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("[CHANNEL]", self.channel))
+      newth1 = self.tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("[CHANNEL]", self.channel) if not("total_background" in s) else "total_background")
+      print(self.systs["yields"]["match"].replace("$PROCESS", self.samples[s]["name"]).replace("[VAR]", self.options.var).replace("[CHANNEL]", self.channel) if not("total_background" in s) else "total_background")
       self.th1s[s]   = copy.deepcopy(newth1.Clone("data_obs") if s=="data" else newth1.Clone(s))
       self.nbins = self.th1s[s].GetNbinsX()
       if not( "isSig" in self.samples[s]):
@@ -331,7 +341,7 @@ class datacardMaker(object):
           continue
         else:
           self.backgr.append(s)
-    if self.options.ABCD:
+    if self.options.ABCD and not options.MCABCD:
       self.th1s["total_background"] = copy.deepcopy(self.tf.Get("total_background").Clone("total_background"))
       self.backgr.append("total_background")
     if self.options.blind: 
@@ -344,14 +354,25 @@ class datacardMaker(object):
       self.yields[ibin] = {} 
       self.th1s_perbin[ibin] = {}
       for s in self.signals + self.backgr + self.data:
-        factor = 1
-        if s in self.signals: factor = options.scaleS
-        self.yields[ibin][s]      = max(0.1 if s in self.backgr else 0.0001, self.th1s[s].GetBinContent(ibin))
-        self.th1s_perbin[ibin][s] = ROOT.TH1F("%s_%sbin%i"%(s, self.channel, ibin), "%s_%sbin%i"%(s, self.channel, ibin), 1, 0 , 1)
-        self.th1s_perbin[ibin][s].SetBinContent(1, self.yields[ibin][s]*(factor if self.yields[ibin][s] > 0.00011 else 1) if not s in self.backgr else 1.)
-        self.th1s_perbin[ibin][s].SetBinError(1, min(self.yields[ibin][s], max(0.,self.th1s[s].GetBinError(1) )))
-        if s in self.backgr:
-          self.th1s_perbin[ibin][s].SetBinError(1, 0.)
+        if options.MCABCD:
+          factor = 1
+          if s in self.signals: factor = options.scaleS
+          self.yields[ibin][s]      = self.th1s[s].GetBinContent(ibin)
+          self.th1s_perbin[ibin][s] = ROOT.TH1F("%s_%sbin%i"%(s, self.channel, ibin), "%s_%sbin%i"%(s, self.channel, ibin), 1, 0 , 1)
+          self.th1s_perbin[ibin][s].SetBinContent(1, max(0.0001,self.yields[ibin][s]*(factor if self.yields[ibin][s] > 0.00011 else 1)))
+          self.th1s_perbin[ibin][s].SetBinError(1, min(self.yields[ibin][s], max(0.,self.th1s[s].GetBinError(ibin) )))
+          #if s in self.backgr:
+          #  self.th1s_perbin[ibin][s].SetBinError(1, 0.)
+
+        else:
+          factor = 1
+          if s in self.signals: factor = options.scaleS
+          self.yields[ibin][s]      = max(0.1 if s in self.backgr else 0.0001, self.th1s[s].GetBinContent(ibin))
+          self.th1s_perbin[ibin][s] = ROOT.TH1F("%s_%sbin%i"%(s, self.channel, ibin), "%s_%sbin%i"%(s, self.channel, ibin), 1, 0 , 1)
+          self.th1s_perbin[ibin][s].SetBinContent(1, self.yields[ibin][s]*(factor if self.yields[ibin][s] > 0.00011 else 1) if not s in self.backgr else 1.)
+          self.th1s_perbin[ibin][s].SetBinError(1, min(self.yields[ibin][s], max(0.,self.th1s[s].GetBinError(1) )))
+          if s in self.backgr:
+            self.th1s_perbin[ibin][s].SetBinError(1, 0.)
 
 def combineDatacards(samples, options, output, nbins):
   # Get all ABCD cards, combine them and add the ABCD stuff
@@ -364,6 +385,7 @@ def combineDatacards(samples, options, output, nbins):
     os.system("rm %s"%("Combined" + options.region + "_"+ samples[s]["name"] + ".txt"))
     os.system("combineCards.py %s >> %s"%(" ".join(names), "Combined" + options.region + "_"+ samples[s]["name"] + ".txt"))
     newcard = open("Combined" + options.region +"_" + samples[s]["name"] + ".txt",'a')
+    if options.MCABCD: continue
     for ibin in range(1, nbins+1):
       newcard.write("r%s%s_%s rateParam %s %s %s %s\n"%(options.year,options.region, "SRbin%i"%ibin, "SR_SRbin%i"%ibin, "total_background", "(@0*@0*@2*@2*@5*@5*@6*@6)/(@1*@3*@7*@4*@4*@4*@4)", ",".join(["r%s%s_%s"%(options.year,options.region, "%sbin%i"%(chan,ibin if "B" in chan else 1)) for chan in ["B1","B2", "C1","C2", "D1","D2", "E1","E2"]])))
     if options.floatB:
@@ -384,6 +406,8 @@ if __name__ == "__main__":
   parser.add_option("--thispoint", dest="thispoint", default=None, help="Run only this point")
   parser.add_option("--doAll", dest="doAll", default=False, action="store_true", help="Run also signals for which doPlot is set to False in the samples file")
   parser.add_option("--scaleS", dest="scaleS", default=1, type=float, help="Scale signal by this prefactor for alternative x-section (or real cross section if you messed up the plotting) checks")
+  parser.add_option("--exclude", dest="exclude", default=[], action="append", help="Exclude samples matching this")
+  parser.add_option("--MCABCD", dest="MCABCD", default=False, action="store_true", help="Save MC predictions for ABCD regions as well")
   (options, args) = parser.parse_args()
   samplesFile   = imp.load_source("samples",args[0])
   systsFile     = imp.load_source("systematicsAndShapes", args[1])
@@ -395,6 +419,18 @@ if __name__ == "__main__":
     if "doPlot" in samplesFile.samples[s] and not(options.doAll):
       if not(samplesFile.samples[s]["doPlot"]):
         del samplesFile.samples[s]
+
+  if options.exclude != []:
+    newsamples = {}
+    for ss in samplesFile.samples.keys():
+      add = True
+      for s in options.exclude:
+        if re.match(s, ss):
+          print("Will exclude sample:", ss)
+          add = False
+      if add:
+        newsamples[ss] = samplesFile.samples[ss]
+    samplesFile.samples = newsamples
 
   if not (options.ABCD): #Build MC based cards, simple and direct
     dM = datacardMaker(samplesFile.samples, systsFile.systematicsAndShapes, outputFolder, options)
