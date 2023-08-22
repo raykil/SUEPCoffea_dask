@@ -19,6 +19,7 @@ from typing import List, Optional
 import correctionlib
 from workflows.CMS_corrections.jetmet_utils import apply_jecs
 import copy
+import json
 
 vector.register_awkward()
 
@@ -370,7 +371,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def clusterizeTracks(self, events, tracks):
         # anti-kt, dR=1.5 jets
-        nSmallEvents = 1000
+        nSmallEvents = 5000
         smallEvents = len(events) < nSmallEvents
         if not smallEvents:
           jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)        
@@ -683,7 +684,10 @@ class SUEP_cluster(processor.ProcessorABC):
                     if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
                     if debug: print("%i events pass clusterpt cuts. Doing more stuff..."%len(self.events))
                     outputs["SR"+var] = [self.doAllPlots("SR"+var, debug), self.events]
-
+                    #print(abs(self.leptons.eta[:,0] - self.leptons.eta[:,1]))
+                    #cutdEta3p5 = (abs(self.leptons.eta[:,0] - self.leptons.eta[:,1]) > 3.0) & (ak.num(self.muons) >= 2)
+                    #self.applyCutToAllCollections(cutdEta3p5)
+                    #print(self.events.run, self.events.luminosityBlock, self.events.event)
         # ------------------------------------------------------------------------------
         # -------------------------------- SAVING --------------------------------------
         # ------------------------------------------------------------------------------
@@ -1318,8 +1322,30 @@ class SUEP_cluster(processor.ProcessorABC):
                 out["genHpt"]  = self.genH.pt[:,0]
                 out["genHeta"] = self.genH.eta[:,0]
                 out["genHphi"] = self.genH.phi[:,0]
-
+        out["nPU"] = self.getNPU()[:]
         return out
+
+    def getNPU(self):
+        if self.isMC:
+            return self.events.Pileup.nTrueInt
+        else:
+            if self.era == 2015  or self.era == 2016:
+                lumifile = "/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/Lumi/16.json"
+            if self.era == 2017:
+                lumifile = "/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/Lumi/17.json"
+            if self.era == 2018:
+                lumifile = "/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/Lumi/18.json"
+            with open(lumifile, "r") as lf:
+                runsAndLumis = json.loads(lf.read())
+            PU = []
+            for iev in range(len(self.events.run)):
+                if not(str(self.events.run[iev])) in runsAndLumis:
+                    PU.append(-1); print(self.events.run[iev]); continue
+                if not(str(self.events.luminosityBlock[iev]) in runsAndLumis[str(self.events.run[iev])]):
+                    PU.append(-1); continue
+                PU.append(round(runsAndLumis[str(self.events.run[iev])][str(self.events.luminosityBlock[iev])]))
+            PU   = ak.Array(PU)
+            return PU 
 
     def postprocess(self, accumulator):
         return accumulator
