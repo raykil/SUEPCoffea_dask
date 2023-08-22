@@ -1330,11 +1330,11 @@ class SUEP_cluster(processor.ProcessorABC):
             return self.events.Pileup.nTrueInt
         else:
             if self.era == 2015  or self.era == 2016:
-                lumifile = "/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/Lumi/16.json"
+                lumifile = "data/Lumi/16.json"
             if self.era == 2017:
-                lumifile = "/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/Lumi/17.json"
+                lumifile = "data/Lumi/17.json"
             if self.era == 2018:
-                lumifile = "/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/data/Lumi/18.json"
+                lumifile = "data/Lumi/18.json"
             with open(lumifile, "r") as lf:
                 runsAndLumis = json.loads(lf.read())
             PU = []
