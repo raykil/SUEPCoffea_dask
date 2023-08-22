@@ -1,6 +1,7 @@
 *.coffea
 .ipynb_checkpoints/
 workflows/__pycache__/
+workflows/CMS_corrections/__pycache__/
 dask-report.html
 dask-worker-space/
 *.log
@@ -14,5 +15,10 @@ dask-worker-space/
 *.png
 *.pdf
 *.txt
-CMSSWi*
+CMSSW*
 *cc
+plotting/*root
+plotting/.gitignore
+.gitignore
+plotting/ABCD/
+.gitignore
