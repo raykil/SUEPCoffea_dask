@@ -19,7 +19,7 @@ samples = {
          "linecolor": ROOT.kBlue,
          "isSig"    : False,
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["TrigSF"]*SF(x,17),
-         "files"    : hdf5inpath("/eos/user/g/gdecastr/SUEPCoffea_dask/testWorkflow/SUEP_Signal_m2T2_UL17/"),
+         "files"    : hdf5inpath("/eos/user/g/gdecastr/SUEPCoffea_dask/test/2017_Analyzed/"),
   },
     "GenericSignal_SFs_UP": {
          "name"     : "GenericSignal_SFs_UP", #Here plain text
@@ -27,8 +27,8 @@ samples = {
          "xsec"     : 870 * 0.0336 * 2, # in fb
          "linecolor": ROOT.kGreen,
          "isSig"    : True,
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*(x["TrigSF"]+x["TrigSF_Up"])*SF(x,17),
-         "files"    : hdf5inpath("/eos/user/g/gdecastr/SUEPCoffea_dask/testWorkflow/SUEP_Signal_m2T2_UL17/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*(x["TrigSF"]+x["TrigSF_Up"]+x["METTrig_Up"])*SF(x,17),
+         "files"    : hdf5inpath("/eos/user/g/gdecastr/SUEPCoffea_dask/test/2017_Analyzed/"),
   },
       "GenericSignal_SFs_DOWN": {
          "name"     : "GenericSignal_SFs_DOWN", #Here plain text
@@ -36,8 +36,8 @@ samples = {
          "xsec"     : 870 * 0.0336 * 2, # in fb
          "linecolor": ROOT.kRed,
          "isSig"    : True,
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*(x["TrigSF"]-x["TrigSF_Dn"])*SF(x,17),
-         "files"    : hdf5inpath("/eos/user/g/gdecastr/SUEPCoffea_dask/testWorkflow/SUEP_Signal_m2T2_UL17/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*(x["TrigSF"]-x["TrigSF_Dn"]-x["METTrig_Dn"])*SF(x,17),
+         "files"    : hdf5inpath("/eos/user/g/gdecastr/SUEPCoffea_dask/test/2017_Analyzed/"),
   },
 }
 
@@ -66,14 +66,14 @@ for sample in samples:
            "name"            :   "TrigSFUp",
            "isSyst"          :       True,
            "replaceChannel"  :         {},
-           "extraWeights"    :   lambda x: (x["TrigSF"]+x["TrigSF_Up"])/(x["TrigSF"]), # Relative to central
+           "extraWeights"    :   lambda x: (x["TrigSF"]+x["TrigSF_Up"]+x["METTrig_Up"])/(x["TrigSF"]), # Relative to central
            "symmetrize"      :      False,
   },
   "TrigSFDn": {
            "name"            :   "TrigSFDn",
            "isSyst"          :       True,
            "replaceChannel"  :         {},
-           "extraWeights"    :   lambda x: (x["TrigSF"]-x["TrigSF_Dn"])/(x["TrigSF"]),
+           "extraWeights"    :   lambda x: (x["TrigSF"]-x["TrigSF_Dn"]-x["METTrig_Dn"])/(x["TrigSF"]),
            "symmetrize"      :      False,
   },
   "MuSFUp": {
