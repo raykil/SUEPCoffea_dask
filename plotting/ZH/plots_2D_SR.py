@@ -8,12 +8,12 @@ plots = {
 }
 
 var = {
-"S_C" : ["leadclusterSpher_C", "S^{SUEP}", 100, 0, 1.],
+#"S_C" : ["leadclusterSpher_C", "S^{SUEP}", 100, 0, 1.],
 "N_C" : ["leadcluster_ntracks", "N_{tracks}^{SUEP}", 100, 0, 100],
 "jet1pt":["leadjet_pt", "p_{T}^{jet1} [GeV]", 200, 0, 1000],
-"S_pt": ["leadcluster_pt", "p_{T}^{SUEP} [GeV]", 200, 0, 1000],
-"N" : ["ntracks", "N_{tracks}", 200, 0, 200],
-"MET_pt": ["MET_pt", "p_{T}^{miss} [GeV]", 200, 0, 200],
+#"S_pt": ["leadcluster_pt", "p_{T}^{SUEP} [GeV]", 200, 0, 1000],
+#"N" : ["ntracks", "N_{tracks}", 200, 0, 200],
+#"MET_pt": ["MET_pt", "p_{T}^{miss} [GeV]", 200, 0, 200],
 }
 
 for v1 in var:
@@ -35,6 +35,7 @@ for v1 in var:
     plots[name]["ylabel"]   = var[v2][1]
     plots[name]["vars"]     = [var[v1][0], var[v2][0]]
     plots[name]["mode"]     = "colz"
-
+    #plots[name]["maxZ"]     = -1
+    #plots[name]["minZ"]     = 1
 print(plots)
 

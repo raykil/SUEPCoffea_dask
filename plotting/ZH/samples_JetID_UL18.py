@@ -3,38 +3,44 @@ import ROOT
 from auxiliars import *
 import copy
 
-def hdf5inpath(path):
-  ret = []
-  for p in os.listdir(path):
+def hdf5inpath(path1, path2):
+  ret1 = []
+  for p in os.listdir(path1):
     if not ("SUEP" in p): continue
-    ppath = path + "/" + p
+    ppath = path1 + "/" + p
     for f in os.listdir(ppath):
       if "hdf5" in f: 
-        ret.append(ppath + "/" + f)
-  return ret
+        ret1.append(p)
+  ret2 = []
+  for p in os.listdir(path2):
+    if not ("SUEP" in p): continue
+    ppath = path2 + "/" + p
+    for f in os.listdir(ppath):
+      if "hdf5" in f and p in ret1:
+        ret2.append(ppath + "/" + f)
+  return ret2
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_withsysts/"
 samples = {
   "SUEP_generic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    : "No IP cuts", #Here we can use weird glyphs
+         "label"    : "With TightLepVeto jets", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
          "linecolor": ROOT.kBlue,
          "fillcolor": ROOT.kBlue,
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/MuonID/UL18/hdf5/"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testJetID18/","/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_ANv4/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T2.00_withIP": {
          "name"     : "SUEP_generic_mS125_mD2.00_T2.00_withIP", #Here plain text
-         "label"    : "With Muon IP cuts", #Here we can use weird glyphs
+         "label"    : "With Tight jets", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 2, # in fb
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/MuonID/UL18/hdf5/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"]*(abs(x["leadlep_dxy"])<0.02)*(abs(x["subleadlep_dxy"])<0.02)*(abs(x["leadlep_dxz"])<0.1)*(abs(x)["subleadlep_dxz"]<0.1),
+         "files"    : hdf5inpath("/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_ANv4/", "/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testJetID18/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
 }
 

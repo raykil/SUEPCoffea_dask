@@ -94,13 +94,13 @@ def apply_jecs(isMC, Sample, era, events, doStoc=False):
                 + jecdir
                 + "_L1FastJet_AK4PFchs.jec.txt",  # looks to be 0,
                 "* * " + jec_path + jecdir + "_L1RC_AK4PFchs.jec.txt",  # needs area
-                "* * " + jec_path + jecdir + "_L2L3Residual_AK4PFchs.jec.txt",
-                "* * " + jec_path + jecdir + "_L2Residual_AK4PFchs.jec.txt",
                 "* * " + jec_path + jecdir + "_L2Relative_AK4PFchs.jec.txt",
                 "* * "
                 + jec_path
                 + jecdir
                 + "_L3Absolute_AK4PFchs.jec.txt",  # looks to be 1, no change
+                "* * " + jec_path + jecdir + "_L2L3Residual_AK4PFchs.jec.txt",
+                "* * " + jec_path + jecdir + "_L2Residual_AK4PFchs.jec.txt",
                 #'* * ' + jec_path + jecdir +"_Uncertainty_AK4PFchs.junc.txt",
                 #'* * ' + jer_path + jerdir +"_PtResolution_AK4PFchs.jr.txt",
                 #'* * ' + jer_path + jerdir +"_SF_AK4PFchs.jersf.txt",
@@ -126,10 +126,11 @@ def apply_jecs(isMC, Sample, era, events, doStoc=False):
         jec_stack_names_ak4 = [
             jecdir + "_L1FastJet_AK4PFchs",
             jecdir + "_L1RC_AK4PFchs",
-            jecdir + "_L2L3Residual_AK4PFchs",
-            jecdir + "_L2Residual_AK4PFchs",
             jecdir + "_L2Relative_AK4PFchs",
             jecdir + "_L3Absolute_AK4PFchs",
+            jecdir + "_L2L3Residual_AK4PFchs",
+            jecdir + "_L2Residual_AK4PFchs",
+
             # jerdir + "_PtResolution_AK4PFchs",
             # jerdir + "_SF_AK4PFchs",
             # jecdir + "_Uncertainty_AK4PFchs",

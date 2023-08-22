@@ -22,7 +22,7 @@ doSRonly    = bool(int(sys.argv[10]))
 filt = None
 isDY = False
 resubmission = True
-#doSubmit = 0
+doSubmit = False
 if len(sys.argv) > 11:
   filt = sys.argv[11]
 if len(sys.argv) > 12:
@@ -93,7 +93,7 @@ while ifile < NumberOfJobs:
           fout.write("export HOME=\"/afs/cern.ch/user/g/gdecastr\"\n")
         for i in range(interval):
           if ifile == NumberOfJobs: continue # Last one will have less
-          fout.write("python condor_SUEP_WS.py  --isMC=%i --era=%s --dataset=DY --analyzer=%s --infile=%s --outputdir=%s %s %s\n"%(0 if isData else 1, era, analyzer, files[ifile], OutputDir, "--isDY" if isDY else "", "--SR" if doSRonly else "")) 
+          fout.write("python condor_SUEP_WS.py  --isMC=%i --era=%s --dataset=%s --analyzer=%s --infile=%s --outputdir=%s %s %s\n"%(0 if isData else 1, era, "ZH" if "SUEP_" in files[ifile] else "DY", analyzer, files[ifile], OutputDir, "--isDY" if isDY else "", "--SR" if doSRonly else "")) 
           ifile += 1
 
         fout.write("echo 'STOP---------------'\n")
