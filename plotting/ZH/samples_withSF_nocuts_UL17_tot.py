@@ -11,8 +11,8 @@ def hdf5inpath(path):
   return ret
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_ANv4/"#"/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5/"
-main_path_signal = "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_withJECs/"
+main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL17/hdf5_ANv4/"
+main_path_signal = "/eos/cms/store/group/phys_exotica/SUEPs/UL17/hdf5_withJECs/"
 samples = {
   "data": {
          "name" : "data",
@@ -25,295 +25,17 @@ samples = {
          "markerstyle": 20,
          "markersize" : 1,
   },
-  "DY_Pt0": {
-         "name"       : "DY_Pt0", #Here plain text
-         "label"      : "DY",# (p_{T} = 0 GeV)", #Here we can use weird glyphs
-         "xsec"       : 5804*1000., # in fb
-         "linecolor"  : ROOT.kBlack,
-         "fillcolor"  : 7, # White
-         "isSig"      : False,
-         "extraWeights": lambda x: 1*(x["genZpt"]==0.0)*x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"], 
-         "files"      : hdf5inpath(main_path + "DYToLL_M50/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DYToLL_M50/skims.root"
-  },      
-  "DY_Pt0To50": {
-         "name"     : "DY_Pt0To50", #Here plain text
-         "label"    : "DY",# (p_{T} < 50 GeV)", #Here we can use weird glyphs
-         "xsec"     : 1404.*1000, # in fb
+  "total_background": {
+         "name"     : "total_background", #Here plain text
+         "label"    : "total_background", #Here we can use weird glyphs
+         "xsec"     : 1000, # in fb
          "linecolor": ROOT.kBlack,
-         "fillcolor": 7, # Light blue
-         "isSig"    : False,
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt0To50/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DYToLL_M50_Pt0To50/skims.root"
-  },
-  "DY_Pt50To100": {
-         "name"     : "DY_Pt50To100", #Here plain text
-         "label"    : "DY",# (50 < p_{T} < 100 GeV)", #Here we can use weird glyphs
-         "xsec"     : 363.8*1000., # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 7, # Light blue
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt50To100/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DYToLL_M50_Pt50To100/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "DY_Pt100To250": {
-         "name"     : "DY_Pt100To250", #Here plain text
-         "label"    : "DY",# (100 < p_{T} < 250 GeV)", #Here we can use weird glyphs
-         "xsec"     : 84.0*1000., # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 7, # Light blue
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt100To250/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DYToLL_M50_Pt100To250/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "DY_Pt250To400": {
-         "name"     : "DY_Pt250To400", #Here plain text
-         "label"    : "DY",# (250 < p_{T} < 400 GeV)", #Here we can use weird glyphs
-         "xsec"     : 3.23*1000., # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 7, # Light blue
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt250To400/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DYToLL_M50_Pt250To400/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "DY_Pt400To650": {
-         "name"     : "DY_Pt400To650", #Here plain text
-         "label"    : "DY",# (400 < p_{T} < 650 GeV)", #Here we can use weird glyphs
-         "xsec"     : 0.436*1000., # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 7, # Light blue
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt400To650/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DYToLL_M50_Pt400To650/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "DY_Pt650ToInf": {
-         "name"     : "DY_Pt650ToInf", #Here plain text
-         "label"    : "DY",# (p_{T} > 650 GeV)", #Here we can use weird glyphs
-         "xsec"     : 0.041*1000., # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 7, # Light blue
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "DYToLL_M50_Pt650ToInf/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DYToLL_M50_Pt650ToInf/skims.root", 
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "ttto2l": {
-         "name"     : "ttto2l", #Here plain text
-         "label"    : "t#bar{t} (2l)", #Here we can use weird glyphs
-         "xsec"     : 831.76*((3*0.108)**2)*1000., # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 2, # Red
-         "isSig"    : False,
-         "files"    :  hdf5inpath(main_path + "TTTo2L2Nu/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/TTTo2L2Nu/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "tW": {
-         "name"     : "tW", #Here plain text
-         "label"    : "tW", #Here we can use weird glyphs
-         "xsec"     : 3.289*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kMagenta, # Red
+         "fillcolor": ROOT.kWhite, # Red
          "isSig"    : False,
          "files"    :  hdf5inpath(main_path + "tW/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/tW/skims.root",
+         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL17/skim_2l_20_10/tW/skims.root",
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "DY_lowmass": {
-         "name"     : "DY_lowmass", #Here plain text
-         "label"    : "DY (m_{ll} < 50 GeV)", #Here we can use weird glyphs
-         "xsec"     : 20590.0*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kAzure, # Red
-         "isSig"    : False,
-         "files"    :  hdf5inpath(main_path + "DY_lowmass/"),
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/DY_lowmass/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-
-  "ttto1l": {
-         "name"     : "ttto1l", #Here plain text
-         "label"    : "t#bar{t} (1l)", #Here we can use weird glyphs
-         "xsec"     : 831.76*(3*0.108)*(1-3*0.108)*1000., # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 5, # Yellow
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "TTTo1L1Nu2Q/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/TTTo1L1Nu/skims.root",
-  },
-#  "Wjets": {
-#         "name"     : "Wjets", #Here plain text
-#         "label"    : "W", #Here we can use weird glyphs
-#         "xsec"     : 20508.9*1000, # in fb
-#         "linecolor": ROOT.kBlack,
-#         "fillcolor": ROOT.kBlack, # Purple
-#         "isSig"    : False,
-#         "files"    : hdf5inpath(main_path + "WJets/"), 
-#         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/WJets/skims.root",
-#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-#  },
-
-  "WW": {
-         "name"     : "WW", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 10.481*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "WWTo2L2Nu/"),
-         "WW"       : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/WWTo2L2Nu/skims.root",
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "WZ2l2q": {
-         "name"     : "WZ2l2q", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 6.419*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "WZTo2L2Q/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/WZTo2L2Q/skims.root"
-  },
-  "WZ3lnu": {
-         "name"     : "WZ3lnu", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 4.664*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "WZTo3LNu/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/WZTo3LNu/skims.root"
-  },
-  "ZZ2l2q": {
-         "name"     : "ZZ2l2q", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 3.74*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "ZZTo2L2Q/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/ZZTo2L2Q/skims.root"
-  },
-  "ZZ2l2nu": {
-         "name"     : "ZZ2l2nu", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 0.8738*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "ZZTo2L2Nu/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/ZZTo2L2Nu/skims.root"
-  },
-
-  "ZZ4l": {
-         "name"     : "ZZ4l", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 1.325*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "ZZTo4L/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/ZZTo4L/skims.root"
-  },
-  "ZG": {
-         "name"     : "ZG", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 51.1*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "ZG/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/ZG/skims.root"
-  },
-  "WG": {
-         "name"     : "WG", #Here plain text
-         "label"    : "VV", #Here we can use weird glyphs
-         "xsec"     : 412.70*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 3, # Green
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "WG/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/WG/skims.root"
-  },
-  "ttZll": {
-         "name"     : "ttZll", #Here plain text
-         "label"    : "t#bar{t}X", #Here we can use weird glyphs
-         "xsec"     : 0.2439*1000, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 9, # Dark blue
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "TTZToLL/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/TTZToLL/skims.root"
-  },
-  "ttWlnu": {
-         "name"     : "ttWlnu", #Here plain text
-         "label"    : "t#bar{t}X", #Here we can use weird glyphs
-         "xsec"     : 0.2161*1000*0.4, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 9, # Dark blue
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "TTWToLNu/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/TTWToLNu/skims.root"
-  },
-  "ttWqq": {
-         "name"     : "ttWqq", #Here plain text
-         "label"    : "t#bar{t}X", #Here we can use weird glyphs
-         "xsec"     : 0.4377*1000*0.4, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": 9, # Dark blue
-         "isSig"    : False,
-         "files"    : hdf5inpath(main_path + "TTWToQQ/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "skim"     : "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/skim_2l_20_10/TTWToQQ/skims.root"
-  },
-#  "SUEP_ZH_generic_new": {
-#         "name"     : "SUEP_ZH_generic_new", #Here plain text
-#         "label"    : "ZS^{gen}, m_{S} = 125 GeV", #Here we can use weird glyphs
-#         "xsec"     : 870 * 0.0336 * 3, # in fb
-#         "linecolor": ROOT.kRed,
-#         "fillcolor": ROOT.kRed,
-#         "isSig"    : True,
-#         "doPlot"   : False,
-#         "files"    : hdf5inpath("/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_ANv4/SUEP_generic_new_mS125_mD2_T2/"),
-#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-#  },
-#  "SUEP_ZH_leptonic": {
-#         "name"     : "SUEP_ZH_leptonic", #Here plain text
-#         "label"    : "ZS^{lep}, m_{S} = 125 GeV", #Here we can use weird glyphs
-#         "xsec"     : 870 * 0.0336 * 3, # in fb
-#         "linecolor": ROOT.kBlue,
-#         "fillcolor": ROOT.kBlue,
-#         "isSig"    : True,
-#         "doPlot"   : False,
-#         "files"    : hdf5inpath("/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_ANv4/SUEP_leptonic_mS125_mD2_T2/"),
-#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-#  },
-#  "SUEP_ZH_hadronic": {
-#         "name"     : "SUEP_ZH_hadronic", #Here plain text
-#         "label"    : "ZS^{had}, m_{S} = 125 GeV", #Here we can use weird glyphs
-#         "xsec"     : 870 * 0.0336 * 3, # in fb
-#         "linecolor": ROOT.kGreen,
-#         "fillcolor": ROOT.kGreen,
-#         "isSig"    : True,
-#         "doPlot"   : False,
-#         "files"    : hdf5inpath("/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_ANv4/SUEP_hadronic_mS125_mD2_T2/"),
-#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-#  },
   "SUEP_generic_mS125_mD2.00_T0.50": {
          "name"     : "SUEP_generic_mS125_mD2.00_T0.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
@@ -525,7 +247,7 @@ samples = {
   },
   "SUEP_leptonic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    : "ZS, leptonic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
+         "label"    :  "ZS, leptonic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kBlue,
          "fillcolor": ROOT.kBlue,
@@ -1084,6 +806,17 @@ samples = {
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T32.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
+  "ttH_generic_mS125_mD2.00_T2.00" :{
+         "name"     : "ttH_generic_mS125_mD2.00_T2.00", #Here plain text
+         "label"    : "ttS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 498.7, # in fb
+         "linecolor": ROOT.kBlack,
+         "fillcolor": ROOT.kBlack,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : ["/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/test_ttH_unskimmed/out_1_1_1001.hdf5"], 
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  }
 }
 
 for sample in samples:
@@ -1091,18 +824,19 @@ for sample in samples:
   #if not(samples[sample]["isSig"]): 
   #  samples[sample]["variations"] = {}
   #  continue
+
   samples[sample]["variations"] = {
   "TrigSFUp": {
            "name"            :   "TrigSFUp",
-           "isSyst"          :       True, 
-           "replaceChannel"  :         {}, 
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
            "extraWeights"    :   lambda x: (x["TrigSF"]+x["TrigSF_Up"])/x["TrigSF"], # Relative to central
-           "symmetrize"      :      False,
+           "symmetrize"      :      False, 
   },
   "TrigSFDn": {
            "name"            :   "TrigSFDn",
-           "isSyst"          :       True, 
-           "replaceChannel"  :         {}, 
+           "isSyst"          :       True,
+           "replaceChannel"  :         {},
            "extraWeights"    :   lambda x: (x["TrigSF"]-x["TrigSF_Dn"])/x["TrigSF"], # Relative to central
            "symmetrize"      :      False,
   },

@@ -11,8 +11,8 @@ def hdf5inpath(path):
   return ret
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_ANv4/"#"/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5/"
-main_path_signal = "/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_withJECs/"
+main_path = "/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/plotting/ZH/../../hdf5_withnmu/UL16APV/"
+main_path_signal = "/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/plotting/ZH/../../hdf5_withnmu/UL16APV/"
 samples = {
   "data": {
          "name" : "data",

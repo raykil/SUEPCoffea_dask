@@ -6,14 +6,14 @@ import copy
 def hdf5inpath(path1, path2):
   ret1 = []
   for p in os.listdir(path1):
-    if not ("SUEP" in p): continue
+    if not("SUEP" in p) or not("generic" in p): continue
     ppath = path1 + "/" + p
     for f in os.listdir(ppath):
       if "hdf5" in f: 
         ret1.append(p)
   ret2 = []
   for p in os.listdir(path2):
-    if not ("SUEP" in p): continue
+    if not("SUEP" in p) or  not("generic" in p): continue
     ppath = path2 + "/" + p
     for f in os.listdir(ppath):
       if "hdf5" in f and p in ret1:
@@ -29,7 +29,7 @@ samples = {
          "linecolor": ROOT.kBlue,
          "fillcolor": ROOT.kBlue,
          "isSig"    : False,
-         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testJetID18/","/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_ANv4/"),
+         "files"    : hdf5inpath("/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testJetID16APV/","/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_ANv4/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD2.00_T2.00_withIP": {
@@ -39,7 +39,7 @@ samples = {
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "files"    : hdf5inpath("/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_ANv4/", "/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testJetID18/"),
+         "files"    : hdf5inpath("/eos/cms/store/group/phys_exotica/SUEPs/UL16APV/hdf5_ANv4/", "/eos/home-c/cericeci/SUEP/SUEPCoffea_dask/testJetID16APV/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
 }

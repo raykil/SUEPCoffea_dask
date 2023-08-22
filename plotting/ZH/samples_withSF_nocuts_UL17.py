@@ -284,7 +284,7 @@ samples = {
 #  "SUEP_ZH_generic_new": {
 #         "name"     : "SUEP_ZH_generic_new", #Here plain text
 #         "label"    : "ZS^{gen}, m_{S} = 125 GeV", #Here we can use weird glyphs
-#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "xsec"     : 870 * 0.0336 * 3, # in fb
 #         "linecolor": ROOT.kRed,
 #         "fillcolor": ROOT.kRed,
 #         "isSig"    : True,
@@ -295,7 +295,7 @@ samples = {
 #  "SUEP_ZH_leptonic": {
 #         "name"     : "SUEP_ZH_leptonic", #Here plain text
 #         "label"    : "ZS^{lep}, m_{S} = 125 GeV", #Here we can use weird glyphs
-#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "xsec"     : 870 * 0.0336 * 3, # in fb
 #         "linecolor": ROOT.kBlue,
 #         "fillcolor": ROOT.kBlue,
 #         "isSig"    : True,
@@ -306,7 +306,7 @@ samples = {
 #  "SUEP_ZH_hadronic": {
 #         "name"     : "SUEP_ZH_hadronic", #Here plain text
 #         "label"    : "ZS^{had}, m_{S} = 125 GeV", #Here we can use weird glyphs
-#         "xsec"     : 870 * 0.0336 * 2, # in fb
+#         "xsec"     : 870 * 0.0336 * 3, # in fb
 #         "linecolor": ROOT.kGreen,
 #         "fillcolor": ROOT.kGreen,
 #         "isSig"    : True,
@@ -317,7 +317,7 @@ samples = {
   "SUEP_generic_mS125_mD2.00_T0.50": {
          "name"     : "SUEP_generic_mS125_mD2.00_T0.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -328,7 +328,7 @@ samples = {
   "SUEP_leptonic_mS125_mD1.00_T0.25": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T0.25", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -339,7 +339,7 @@ samples = {
   "SUEP_hadronic_mS125_mD1.40_T0.35": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T0.35", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -350,18 +350,18 @@ samples = {
   "SUEP_generic_mS125_mD2.00_T1.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T1.00", #Here plain text
          "label"    : "ZS, generic, T=1, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kOrange,
          "fillcolor": ROOT.kOrange,
          "isSig"    : True,
-         "doPlot"   : True,
+         "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T0.50": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T0.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -372,7 +372,7 @@ samples = {
   "SUEP_hadronic_mS125_mD1.40_T0.70": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T0.70", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -383,18 +383,18 @@ samples = {
   "SUEP_generic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T2.00", #Here plain text
          "label"    :  "ZS, generic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kBlack,
          "fillcolor": ROOT.kBlack,
          "isSig"    : True,
-         "doPlot"   : True,
+         "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T1.00": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T1.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -405,7 +405,7 @@ samples = {
   "SUEP_hadronic_mS125_mD1.40_T1.40": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T1.40", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -416,18 +416,18 @@ samples = {
   "SUEP_generic_mS125_mD2.00_T4.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T4.00", #Here plain text
          "label"    : "ZS, generic, T=4, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kViolet,
          "fillcolor": ROOT.kViolet,
          "isSig"    : True,
-         "doPlot"   : True,
+         "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD1.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T2.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -438,7 +438,7 @@ samples = {
   "SUEP_hadronic_mS125_mD1.40_T2.80": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T2.80", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -449,7 +449,7 @@ samples = {
   "SUEP_generic_mS125_mD2.00_T8.00": {
          "name"     : "SUEP_generic_mS125_mD2.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -460,7 +460,7 @@ samples = {
   "SUEP_leptonic_mS125_mD1.00_T4.00": {
          "name"     : "SUEP_leptonic_mS125_mD1.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -471,7 +471,7 @@ samples = {
   "SUEP_hadronic_mS125_mD1.40_T5.60": {
          "name"     : "SUEP_hadronic_mS125_mD1.40_T5.60", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -482,7 +482,7 @@ samples = {
   "SUEP_leptonic_mS125_mD2.00_T0.50": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T0.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -493,7 +493,7 @@ samples = {
   "SUEP_hadronic_mS125_mD2.00_T0.50": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T0.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -504,7 +504,7 @@ samples = {
   "SUEP_leptonic_mS125_mD2.00_T1.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T1.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -515,7 +515,7 @@ samples = {
   "SUEP_hadronic_mS125_mD2.00_T1.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T1.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -526,29 +526,29 @@ samples = {
   "SUEP_leptonic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T2.00", #Here plain text
          "label"    :  "ZS, leptonic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kBlue,
          "fillcolor": ROOT.kBlue,
          "isSig"    : True,
-         "doPlot"   : True,
+         "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD2.00_T2.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T2.00", #Here plain text
          "label"    :  "ZS, hadronic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kRed,
          "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "doPlot"   : True,
+         "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD2.00_T4.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -559,7 +559,7 @@ samples = {
   "SUEP_hadronic_mS125_mD2.00_T4.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -570,7 +570,7 @@ samples = {
   "SUEP_leptonic_mS125_mD2.00_T8.00": {
          "name"     : "SUEP_leptonic_mS125_mD2.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -581,7 +581,7 @@ samples = {
   "SUEP_hadronic_mS125_mD2.00_T8.00": {
          "name"     : "SUEP_hadronic_mS125_mD2.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -592,7 +592,7 @@ samples = {
   "SUEP_generic_mS125_mD3.00_T0.75": {
          "name"     : "SUEP_generic_mS125_mD3.00_T0.75", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -603,7 +603,7 @@ samples = {
   "SUEP_leptonic_mS125_mD3.00_T0.75": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T0.75", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -614,7 +614,7 @@ samples = {
   "SUEP_hadronic_mS125_mD3.00_T0.75": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T0.75", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -625,7 +625,7 @@ samples = {
   "SUEP_generic_mS125_mD3.00_T1.50": {
          "name"     : "SUEP_generic_mS125_mD3.00_T1.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -636,7 +636,7 @@ samples = {
   "SUEP_leptonic_mS125_mD3.00_T1.50": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T1.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -646,63 +646,63 @@ samples = {
   },
   "SUEP_hadronic_mS125_mD3.00_T1.50": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T1.50", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "label"    : "ZS, hadronic, T=1.5, m_{\phi}=3 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "doPlot"   : False,
+         "doPlot"   : True,
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T1.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T3.00": {
          "name"     : "SUEP_generic_mS125_mD3.00_T3.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "label"    : "ZS, generic, T=3, m_{\phi}=3 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kBlack,
+         "fillcolor": ROOT.kBlack,
          "isSig"    : True,
-         "doPlot"   : False,
+         "doPlot"   : True,
          "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T3.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T3.00": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T3.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "label"    : "ZS, leptonic, T=3, m_{\phi}=3 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kRed,
+         "fillcolor": ROOT.kRed,
          "isSig"    : True,
-         "doPlot"   : False,
+         "doPlot"   : True,
          "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T3.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T3.00": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T3.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "label"    : "ZS, hadronic, T=3, m_{\phi}=3 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kBlue,
+         "fillcolor": ROOT.kBlue,
          "isSig"    : True,
-         "doPlot"   : False,
+         "doPlot"   : True,
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T3.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_generic_mS125_mD3.00_T6.00": {
          "name"     : "SUEP_generic_mS125_mD3.00_T6.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "doPlot"   : False,
+         "doPlot"   : True,
          "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T6.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD3.00_T6.00": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T6.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -713,7 +713,7 @@ samples = {
   "SUEP_hadronic_mS125_mD3.00_T6.00": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T6.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -724,7 +724,7 @@ samples = {
   "SUEP_generic_mS125_mD3.00_T12.00": {
          "name"     : "SUEP_generic_mS125_mD3.00_T12.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -735,7 +735,7 @@ samples = {
   "SUEP_leptonic_mS125_mD3.00_T12.00": {
          "name"     : "SUEP_leptonic_mS125_mD3.00_T12.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -746,7 +746,7 @@ samples = {
   "SUEP_hadronic_mS125_mD3.00_T12.00": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T12.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -757,7 +757,7 @@ samples = {
   "SUEP_generic_mS125_mD4.00_T1.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T1.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -768,7 +768,7 @@ samples = {
   "SUEP_leptonic_mS125_mD4.00_T1.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T1.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -779,7 +779,7 @@ samples = {
   "SUEP_hadronic_mS125_mD4.00_T1.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T1.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -790,18 +790,18 @@ samples = {
   "SUEP_generic_mS125_mD4.00_T2.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T2.00", #Here plain text
          "label"    : "ZS, generic, T=2, m_{\phi}=4 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "doPlot"   : True,
+         "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_leptonic_mS125_mD4.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T2.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -812,7 +812,7 @@ samples = {
   "SUEP_hadronic_mS125_mD4.00_T2.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T2.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -823,7 +823,7 @@ samples = {
   "SUEP_generic_mS125_mD4.00_T4.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -834,7 +834,7 @@ samples = {
   "SUEP_leptonic_mS125_mD4.00_T4.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -845,7 +845,7 @@ samples = {
   "SUEP_hadronic_mS125_mD4.00_T4.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -856,7 +856,7 @@ samples = {
   "SUEP_generic_mS125_mD4.00_T8.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -867,7 +867,7 @@ samples = {
   "SUEP_leptonic_mS125_mD4.00_T8.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -878,7 +878,7 @@ samples = {
   "SUEP_hadronic_mS125_mD4.00_T8.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -889,7 +889,7 @@ samples = {
   "SUEP_generic_mS125_mD4.00_T16.00": {
          "name"     : "SUEP_generic_mS125_mD4.00_T16.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -900,7 +900,7 @@ samples = {
   "SUEP_leptonic_mS125_mD4.00_T16.00": {
          "name"     : "SUEP_leptonic_mS125_mD4.00_T16.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -911,7 +911,7 @@ samples = {
   "SUEP_hadronic_mS125_mD4.00_T16.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T16.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -922,7 +922,7 @@ samples = {
   "SUEP_generic_mS125_mD8.00_T2.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T2.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -933,7 +933,7 @@ samples = {
   "SUEP_leptonic_mS125_mD8.00_T2.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T2.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -944,7 +944,7 @@ samples = {
   "SUEP_hadronic_mS125_mD8.00_T2.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T2.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -955,7 +955,7 @@ samples = {
   "SUEP_generic_mS125_mD8.00_T4.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -966,7 +966,7 @@ samples = {
   "SUEP_leptonic_mS125_mD8.00_T4.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -977,7 +977,7 @@ samples = {
   "SUEP_hadronic_mS125_mD8.00_T4.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -988,7 +988,7 @@ samples = {
   "SUEP_generic_mS125_mD8.00_T8.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -999,7 +999,7 @@ samples = {
   "SUEP_leptonic_mS125_mD8.00_T8.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -1010,7 +1010,7 @@ samples = {
   "SUEP_hadronic_mS125_mD8.00_T8.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -1021,7 +1021,7 @@ samples = {
   "SUEP_generic_mS125_mD8.00_T16.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T16.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -1032,7 +1032,7 @@ samples = {
   "SUEP_leptonic_mS125_mD8.00_T16.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T16.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -1043,7 +1043,7 @@ samples = {
   "SUEP_hadronic_mS125_mD8.00_T16.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T16.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -1054,7 +1054,7 @@ samples = {
   "SUEP_generic_mS125_mD8.00_T32.00": {
          "name"     : "SUEP_generic_mS125_mD8.00_T32.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -1065,7 +1065,7 @@ samples = {
   "SUEP_leptonic_mS125_mD8.00_T32.00": {
          "name"     : "SUEP_leptonic_mS125_mD8.00_T32.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -1076,7 +1076,7 @@ samples = {
   "SUEP_hadronic_mS125_mD8.00_T32.00": {
          "name"     : "SUEP_hadronic_mS125_mD8.00_T32.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 2, # in fb
+         "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
@@ -1255,7 +1255,7 @@ for sample in samples:
            "symmetrize"      :      True,
   },
 }
-
+"""
   if (samples[sample]["isSig"]): 
     samples[sample]["variations"]["JECUp"] = {
            "name"            : "JEC",
@@ -1285,4 +1285,4 @@ for sample in samples:
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
            "symmetrize"      :      False,
     }
-
+"""

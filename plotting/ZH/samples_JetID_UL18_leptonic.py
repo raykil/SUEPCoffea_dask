@@ -6,14 +6,14 @@ import copy
 def hdf5inpath(path1, path2):
   ret1 = []
   for p in os.listdir(path1):
-    if not ("SUEP" in p): continue
+    if not("SUEP" in p) or not("leptonic" in p): continue
     ppath = path1 + "/" + p
     for f in os.listdir(ppath):
       if "hdf5" in f: 
         ret1.append(p)
   ret2 = []
   for p in os.listdir(path2):
-    if not ("SUEP" in p): continue
+    if not("SUEP" in p) or  not("leptonic" in p): continue
     ppath = path2 + "/" + p
     for f in os.listdir(ppath):
       if "hdf5" in f and p in ret1:
