@@ -226,7 +226,7 @@ class SUEP_cluster(processor.ProcessorABC):
         #  Third, Sum of charge of muons should be 0. (because it originates from Z)
         cutHasTwoMuons = (ak.num(selMuons, axis=1)==2) & (ak.max(selMuons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selMuons.charge,axis=1) == 0)
         cutHasTwoElecs = (ak.num(selElectrons, axis=1)==2) & (ak.max(selElectrons.pt, axis=1, mask_identity=False) >= 25) & (ak.sum(selElectrons.charge,axis=1) == 0)
-        cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 4)
+        cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 3)
         cutHasTwoLeps  = ((cutHasTwoMuons) | (cutHasTwoElecs)) & cutTwoLeps
 
         ### Cut the events, also return the selected leptons for operation down the line
@@ -270,11 +270,13 @@ class SUEP_cluster(processor.ProcessorABC):
             "fromSUEP": False,
         }, with_name="Momentum4D")
 
-        cutPF = (events.PFCands.fromPV > 0) & \
-            (events.PFCands.trkPt >= 0.5) & \
-            (abs(events.PFCands.trkEta) <= 5) & \
-            (abs(events.PFCands.dz) < 10) & \
-            (events.PFCands.dzErr < 1.0)
+        cutPF = (events.PFCands.fromPV > 1) & \
+            (events.PFCands.trkPt >= 1) & \
+            (abs(events.PFCands.trkEta) <= 2.5) & \
+            (abs(events.PFCands.dz) < 0.05) & \
+            (abs(events.PFCands.d0) < 0.05) & \
+            (events.PFCands.puppiWeight > 0.1)
+            #(events.PFCands.dzErr < 0.05)
         Cleaned_cands = ak.packed(Cands[cutPF])
 
 	### LOST TRACKS ###
@@ -296,11 +298,13 @@ class SUEP_cluster(processor.ProcessorABC):
             "fromSUEP": False,
         }, with_name="Momentum4D")
 
-        cutLost = (events.lostTracks.fromPV > 0) & \
-            (events.lostTracks.pt >= 0.5) & \
-            (abs(events.lostTracks.eta) <= 5.0) \
-            & (abs(events.lostTracks.dz) < 10) & \
-            (events.lostTracks.dzErr < 1.0)
+        cutLost = (events.lostTracks.fromPV > 1) & \
+            (events.lostTracks.pt >= 1) & \
+            (abs(events.lostTracks.eta) <= 2.5) & \
+            (abs(events.lostTracks.dz) < 0.05) & \
+            (abs(events.lostTracks.d0) < 0.05) & \
+            (events.lostTracks.puppiWeight > 0.1)
+            #(events.lostTracks.dzErr < 0.05)
         Lost_Tracks_cands = ak.packed(LostTracks[cutLost])
 
         # dimensions of tracks = events x tracks in event x 4 momenta
@@ -497,33 +501,6 @@ class SUEP_cluster(processor.ProcessorABC):
         out = {}
         # Define outputs for plotting
         if debug: print("Saving reco variables for channel %s"%channel)
-
-        # Object: leptons
-        out["leadlep_pt"]    = self.leptons.pt[:,0]
-        out["subleadlep_pt"] = self.leptons.pt[:,1]
-        out["leadlep_eta"]   = self.leptons.eta[:,0]
-        out["subleadlep_eta"]= self.leptons.eta[:,1]
-        out["nleptons"]      = ak.num(self.leptons, axis=1)[:]
-
-
-        # Object: reconstructed Z
-        out["Z_pt"]  = self.Zcands.pt[:]
-        out["Z_eta"] = self.Zcands.eta[:]
-        out["Z_phi"] = self.Zcands.phi[:]
-        out["Z_m"]   = self.Zcands.mass[:]
-        
-        # Object: jets, a bit tricky as number varies per event!
-        out["njets"]          = ak.num(self.jets, axis=1)[:]
-        out["nBLoose"]        = ak.sum((self.jets.btag >= 0.0490), axis=1)[:]
-        out["nBMedium"]       = ak.sum((self.jets.btag >= 0.2783), axis=1)[:]
-        out["nBTight"]        = ak.sum((self.jets.btag >= 0.7100), axis=1)[:]
-
-        #### ALL JETS PROPERTIES ####
-        ##maxnjets = ak.max(ak.num(self.jets, axis=1)) # We need to know the maximum to do the proper padding
-        ##out["alljets_pt"]      = ak.fill_none(ak.pad_none(self.jets.pt,  maxnjets, axis=1, clip=True), 0.)
-        ##out["alljets_eta"]     = ak.fill_none(ak.pad_none(self.jets.eta,  maxnjets, axis=1, clip=True), -999.)
-        ##out["alljets_phi"]     = ak.fill_none(ak.pad_none(self.jets.phi,  maxnjets, axis=1, clip=True), -999.)
-
 
         if self.doTracks:
             maxntracks         = ak.max(ak.num(self.tracks, axis=1))

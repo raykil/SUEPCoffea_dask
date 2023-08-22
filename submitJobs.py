@@ -89,8 +89,8 @@ while ifile < NumberOfJobs:
         fout.write("cd "+str(path)+"\n")
         if not(doSingularity): # If you are not running on singularity, need to load the coffea environment
           fout.write("source %s\n\n"%conda_source)
-          fout.write("conda activate base\n")
-          fout.write("export HOME=\"/afs/cern.ch/user/c/cericeci\"\n")
+          fout.write("conda activate coffea\n")
+          fout.write("export HOME=\"/afs/cern.ch/user/g/gdecastr\"\n")
         for i in range(interval):
           if ifile == NumberOfJobs: continue # Last one will have less
           fout.write("python condor_SUEP_WS.py  --isMC=%i --era=%s --dataset=%s --analyzer=%s --infile=%s --outputdir=%s %s %s\n"%(0 if isData else 1, era, "ZH" if "SUEP_" in files[ifile] else "DY", analyzer, files[ifile], OutputDir, "--isDY" if isDY else "", "--SR" if doSRonly else "")) 

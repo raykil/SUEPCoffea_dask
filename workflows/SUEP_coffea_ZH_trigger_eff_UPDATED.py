@@ -169,32 +169,57 @@ class SUEP_cluster(processor.ProcessorABC):
         # The following is the collection of events and of jets
         return events, jets, [coll for coll in extraColls]
 
-    def selectByTrigger(self, events, extraColls = [], ):
+    def selectByTrigger(self, events, extraColls = []):
+
+        self.METElecTrig_a = [-1]*len(self.electrons)
+        self.METElecTrig_b = [-1]*len(self.electrons)
+        self.SingleElecTrig = [-1]*len(self.electrons)
+        self.DoubleElecTrig = [-1]*len(self.electrons)
+
+        self.METMuonTrig_a = [-1]*len(self.muons)
+        self.METMuonTrig_b = [-1]*len(self.muons)
+        self.SingleMuonTrig = [-1]*len(self.muons)
+        self.DoubleMuonTrig = [-1]*len(self.muons)
+
         ### Apply trigger selection
         if self.era == 2018:
-            cutAnyHLT = (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)|(events.HLT.Ele32_WPTight_Gsf)|(events.HLT.IsoMu24)|(events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)
-            #cutAnyHLT = (events.HLT.Ele32_WPTight_Gsf) | (events.HLT.IsoMu24)
-            cutSingleElec = (events.HLT.Ele32_WPTight_Gsf)
-            cutSingleMuon = (events.HLT.IsoMu24)
-            cutDoubleElec = (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
-            cutDoubleMuon = (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)
-            return events[cutAnyHLT], extraColls[0][cutAnyHLT], extraColls[1][cutAnyHLT], extraColls[0][cutSingleElec], extraColls[0][cutDoubleElec], extraColls[0], extraColls[1][cutSingleMuon], extraColls[1][cutDoubleMuon], extraColls[1]
+            self.METElecTrig_a = np.where(events.HLT.PFMETNoMu110_PFMHTNoMu110_IDTight, 1, 0)
+            self.METElecTrig_b = np.where(events.HLT.PFMETNoMu120_PFMHTNoMu120_IDTight, 1, 0)
+            self.SingleElecTrig = np.where(events.HLT.Ele32_WPTight_Gsf, 1, 0)
+            self.DoubleElecTrig = np.where(events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL, 1, 0)
+                        
+            self.METMuonTrig_a = np.where(events.HLT.PFMETNoMu110_PFMHTNoMu110_IDTight, 1, 0)
+            self.METMuonTrig_b = np.where(events.HLT.PFMETNoMu120_PFMHTNoMu120_IDTight, 1, 0)
+            self.SingleMuonTrig = np.where(events.HLT.IsoMu24, 1, 0)
+            self.DoubleMuonTrig = np.where(events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, 1, 0)
+
+            return events
+        
         if self.era == 2017:
-            cutAnyHLT = (events.HLT.IsoMu27) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8) | (events.HLT.Ele35_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
-            #cutAnyHLT = (events.HLT.Ele35_WPTight_Gsf) | (events.HLT.IsoMu27)
-            cutSingleElec = (events.HLT.Ele35_WPTight_Gsf)
-            cutSingleMuon = (events.HLT.IsoMu27)
-            cutDoubleElec = (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
-            cutDoubleMuon = (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8)
-            return events[cutAnyHLT], extraColls[0][cutAnyHLT], extraColls[1][cutAnyHLT], extraColls[0][cutSingleElec], extraColls[0][cutDoubleElec], extraColls[0], extraColls[1][cutSingleMuon], extraColls[1][cutDoubleMuon], extraColls[1]
+            self.METElecTrig_a = np.where(events.HLT.PFMETNoMu110_PFMHTNoMu110_IDTight, 1, 0)
+            self.METElecTrig_b = np.where(events.HLT.PFMETNoMu120_PFMHTNoMu120_IDTight, 1, 0)
+            self.SingleElecTrig = np.where(events.HLT.Ele35_WPTight_Gsf, 1, 0)
+            self.DoubleElecTrig = np.where(events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL, 1, 0)
+                        
+            self.METMuonTrig_a = np.where(events.HLT.PFMETNoMu110_PFMHTNoMu110_IDTight, 1, 0)
+            self.METMuonTrig_b = np.where(events.HLT.PFMETNoMu120_PFMHTNoMu120_IDTight, 1, 0)
+            self.SingleMuonTrig = np.where(events.HLT.IsoMu27, 1, 0)
+            self.DoubleMuonTrig = np.where(events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, 1, 0)
+
+            return events
+
         if self.era == 2016:
-            cutAnyHLT = (events.HLT.IsoMu24) | (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ) | (events.HLT.Ele27_WPTight_Gsf) | (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
-            #cutAnyHLT = (events.HLT.Ele27_WPTight_Gsf) | (events.HLT.IsoMu24)
-            cutSingleElec = (events.HLT.Ele27_WPTight_Gsf)
-            cutSingleMuon = (events.HLT.IsoMu24)
-            cutDoubleElec = (events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
-            cutDoubleMuon = (events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ)
-            return events[cutAnyHLT], extraColls[0][cutAnyHLT], extraColls[1][cutAnyHLT], extraColls[0][cutSingleElec], extraColls[0][cutDoubleElec], extraColls[0], extraColls[1][cutSingleMuon], extraColls[1][cutDoubleMuon], extraColls[1]
+            self.METElecTrig_a = np.where(events.HLT.PFMETNoMu90_PFMHTNoMu90_IDTight, 1, 0)
+            self.METElecTrig_b = np.where(events.HLT.PFHT300_PFMET110, 1, 0)
+            self.SingleElecTrig = np.where(events.HLT.Ele27_WPTight_Gsf, 1, 0)
+            self.DoubleElecTrig = np.where(events.HLT.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, 1, 0)
+                        
+            self.METMuonTrig_a = np.where(events.HLT.PFMETNoMu90_PFMHTNoMu90_IDTight, 1, 0)
+            self.METMuonTrig_b = np.where(events.HLT.PFHT300_PFMET110, 1, 0)
+            self.SingleMuonTrig = np.where(events.HLT.IsoMu24, 1, 0)
+            self.DoubleMuonTrig = np.where(events.HLT.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, 1, 0)
+
+            return events
         return events
 
     def selectByLeptons(self, events, extraColls = []):
@@ -229,17 +254,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         selMuons     = muons[cutMuons]
         selElectrons = electrons[cutElectrons]
-        '''
-        muoncount = 0
-        electroncount = 0
-        for i in range(len(selElectrons)):
-            if len(selMuons[i])!=0:
-                muoncount = muoncount + 1
-            if len(selElectrons[i]) != 0:
-                electroncount = electroncount + 1
-        print(muoncount)
-        print(electroncount)
-        '''
+
         ### Now global cuts to select events. Notice this means exactly two leptons with pT >= 10, and the leading one pT >= 25
 
         # cutHasTwoMuons imposes three conditions:
@@ -249,26 +264,15 @@ class SUEP_cluster(processor.ProcessorABC):
 
         cutHasTwoMuons = (ak.num(selMuons, axis=1)==2) & (ak.sum(selMuons.charge,axis=1) == 0) & (ak.max(selMuons.pt, axis=1, mask_identity=False) >= 25)
         cutHasTwoElecs = (ak.num(selElectrons, axis=1)==2) & (ak.sum(selElectrons.charge,axis=1) == 0) & (ak.max(selElectrons.pt, axis=1, mask_identity=False) >= 25)
-        cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 4)
+        cutTwoLeps     = ((ak.num(selElectrons, axis=1)+ak.num(selMuons, axis=1)) < 3)
         cutHasTwoLeps  = ((cutHasTwoMuons) | (cutHasTwoElecs)) & cutTwoLeps
         ### Cut the events, also return the selected leptons for operation down the line
         events = events[cutHasTwoLeps]
         selElectrons = selElectrons[cutHasTwoLeps]
         selMuons = selMuons[cutHasTwoLeps]
 
-        '''
-        muoncount = 0
-        electroncount = 0
-        for i in range(len(selElectrons)):
-            if len(selMuons[i])!=0:
-                muoncount = muoncount + 1
-            if len(selElectrons[i]) != 0:
-                electroncount = electroncount + 1
-        print(muoncount)
-        print(electroncount)
-        '''
-        return events, selElectrons, selMuons #, [coll[cutHasTwoLeps] for coll in extraColls]
-
+        return events, selElectrons, selMuons
+    
     def selectByTracks(self, events, leptons, extraColls = []):
         ### PARTICLE FLOW CANDIDATES ###
         # Every particle in particle flow (clean PFCand matched to tracks collection)
@@ -282,13 +286,13 @@ class SUEP_cluster(processor.ProcessorABC):
         cutPF = (events.PFCands.fromPV > 1) & \
             (events.PFCands.trkPt >= 1) & \
             (abs(events.PFCands.trkEta) <= 2.5) & \
-            (abs(events.PFCands.dz) < 10) & \
+            (abs(events.PFCands.dz) < 0.05) & \
             (abs(events.PFCands.d0) < 0.05) & \
             (events.PFCands.puppiWeight > 0.1)
             #(events.PFCands.dzErr < 0.05)
         Cleaned_cands = ak.packed(Cands[cutPF])
 
-        ### LOST TRACKS ###
+	### LOST TRACKS ###
         # Unidentified tracks, usually SUEP Particles
         LostTracks = ak.zip({
             "pt": events.lostTracks.pt,
@@ -299,8 +303,8 @@ class SUEP_cluster(processor.ProcessorABC):
 
         cutLost = (events.lostTracks.fromPV > 1) & \
             (events.lostTracks.pt >= 1) & \
-            (abs(events.lostTracks.eta) <= 2.5) \
-            & (abs(events.lostTracks.dz) < 0.05) & \
+            (abs(events.lostTracks.eta) <= 2.5) & \
+            (abs(events.lostTracks.dz) < 0.05) & \
             (abs(events.lostTracks.d0) < 0.05) & \
             (events.lostTracks.puppiWeight > 0.1)
             #(events.lostTracks.dzErr < 0.05)
@@ -316,13 +320,26 @@ class SUEP_cluster(processor.ProcessorABC):
 
     def clusterizeTracks(self, events, tracks):
         # anti-kt, dR=1.5 jets
-        jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)
-        cluster = fastjet.ClusterSequence(tracks, jetdef)
-        ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
-        ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
-
-        return events, ak15_jets, ak15_consts
-
+        nSmallEvents = 1000
+        smallEvents = len(events) < nSmallEvents
+        if not smallEvents:
+          jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)        
+          cluster = fastjet.ClusterSequence(tracks, jetdef)
+          ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
+          ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
+          return events, ak15_jets, ak15_consts
+        else: #With few events/file the thing crashes because of FastJet so we are going to create "fake" events
+          ncopies     = round(nSmallEvents/(len(events)))
+          oldtracks   = tracks
+          for i in range(ncopies):
+            tracks = ak.concatenate([tracks, oldtracks], axis=0) # I.e. duplicate our events until we are feeding 1000 events to the clusterizer
+          jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 1.5)
+          cluster = fastjet.ClusterSequence(tracks, jetdef)
+          ak15_jets   = ak.with_name(cluster.inclusive_jets(min_pt=0),"Momentum4D") # These are the ak15_jets
+          ak15_consts = ak.with_name(cluster.constituents(min_pt=0),"Momentum4D")   # And these are the collections of constituents of the ak15_jets
+          # But now we have to delete the repeated set of events
+          return events, ak15_jets[:len(oldtracks)], ak15_consts[:len(oldtracks)]
+        
     def shouldContinueAfterCut(self, events, out):
         #if debug: print("Conversion to pandas...")
         if True: # No need to filter it out
@@ -369,8 +386,6 @@ class SUEP_cluster(processor.ProcessorABC):
         # Each track is one selection level
         outputs = {
             "twoleptons"  :[{},[]],   # Has Two Leptons, pT and Trigger requirements
-            "onecluster"  :[{},[]],   # At least one cluster is found
-            "SR"          :[{},[]],   # Only the SR
         }
 
         # Data dependant stuff
@@ -387,64 +402,58 @@ class SUEP_cluster(processor.ProcessorABC):
 
         # Lepton selection
         self.events, self.electrons, self.muons = self.selectByLeptons(self.events)[:3]
-        if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator # If we have no events, we simply stop
-
-        #Imposing Baseline conditions - first make Z boson
         self.leptons = ak.concatenate([self.electrons, self.muons], axis=1)
         highpt_leptons = ak.argsort(self.leptons.pt, axis=1, ascending=False, stable=True)
         self.leptons = self.leptons[highpt_leptons]
-        self.Zcands = self.leptons[:,0] + self.leptons[:,1]
 
-        #Now make jets for btag
-        self.events, self.jets = self.selectByJets(self.events, self.leptons)[:2] # Leptons are needed to do jet-lepton cleaning
-        # Sorting jets by pt.
-        highpt_jets = ak.argsort(self.jets.pt, axis=1, ascending=False, stable=True)
-        self.jets   = self.jets[highpt_jets]
+        if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator # If we have no events, we simply stop
 
-        #Now do tracks and clustering for ak15
+        # Trigger selection
+        if debug: print("%i events pass lepton cuts. Applying trigger requirements...."%len(self.events))
+        self.events = self.selectByTrigger(self.events,[self.electrons, self.muons])
+
         self.events, self.tracks = self.selectByTracks(self.events, self.leptons)[:2] # Again, we need leptons to clean the tracks
+
         self.events, self.clusters, self.constituents  = self.clusterizeTracks(self.events, self.tracks)[:3]
+
         highpt_clusters = ak.argsort(self.clusters.pt, axis=1, ascending=False, stable=True)
-        self.clusters = self.clusters[highpt_clusters]
+        self.clusters   = self.clusters[highpt_clusters]
         self.constituents = self.constituents[highpt_clusters]
 
-        cutZm  = (abs(self.Zcands.mass - 90) < 30)
-        self.applyCutToAllCollections(cutZm)
-        if debug: print("%i events pass Zm cuts. Doing more stuff..."%len(self.events))
-
-        cutZpt = (self.Zcands.pt > 25)
-        self.applyCutToAllCollections(cutZpt)
-        if debug: print("%i events pass Zpt cuts. Doing more stuff..."%len(self.events))
-
-        cut0tag =  (ak.sum((self.jets.btag >= 0.0490), axis=1) == 0)
-        self.applyCutToAllCollections(cut0tag)
-        if debug: print("%i events pass 1tag cuts. Doing more stuff..."%len(self.events))
+        cutOneTrack = (ak.num(self.tracks) != 0)
+        self.applyCutToAllCollections(cutOneTrack)
 
         cutOneCluster = (ak.num(self.clusters) != 0)
         self.applyCutToAllCollections(cutOneCluster)
-        if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))
-        # Trigger selection
-        if debug: print("%i events pass lepton cuts. Applying trigger requirements...."%len(self.events))
-        self.events, self.electrons, self.muons, self.singleElectron, self.doubleElectron, self.electronControl, self.singleMuon, self.doubleMuon, self.muonControl = self.selectByTrigger(self.events,[self.electrons, self.muons])
-        print(len(self.electrons), len(self.muons))
 
-        # Here we join muons and electrons (cut by all triggers) into leptons and sort them by pT
-        self.leptons = ak.concatenate([self.electrons, self.muons], axis=1)
-        highpt_leptons = ak.argsort(self.leptons.pt, axis=1, ascending=False, stable=True)
-        self.leptons = self.leptons[highpt_leptons]
+        cutclusterpt60 = (self.clusters.pt[:,0] >= 60)
+        self.applyCutToAllCollections(cutclusterpt60)
 
-        #Repeat for no trigger selection
-        self.controlLeptons = ak.concatenate([self.electronControl, self.muonControl], axis=1)
-        control_highpt_leptons = ak.argsort(self.controlLeptons.pt, axis=1, ascending=False, stable=True)
-        self.controlLeptons = self.controlLeptons[control_highpt_leptons]
+        # Remove empty events from electrons, muons, and trigger arrays
+        selected_electrons_events = np.where(ak.num(self.electrons) != 0)
+        selected_muon_events = np.where(ak.num(self.muons) == 2)
+
+        self.electrons = self.electrons[selected_electrons_events]
+        self.muons = self.muons[selected_muon_events]
+        
+        self.METElecTrig_a = self.METElecTrig_a[selected_electrons_events]
+        self.METElecTrig_b = self.METElecTrig_b[selected_electrons_events]
+        self.SingleElecTrig = self.SingleElecTrig[selected_electrons_events]
+        self.DoubleElecTrig = self.DoubleElecTrig[selected_electrons_events]
+
+        self.METMuonTrig_a = self.METMuonTrig_a[selected_muon_events]
+        self.METMuonTrig_b = self.METMuonTrig_b[selected_muon_events]
+        self.SingleMuonTrig = self.SingleMuonTrig[selected_muon_events]
+        self.DoubleMuonTrig = self.DoubleMuonTrig[selected_muon_events]
+
+        # Sort Electrons and Muons by pT
+        highpt_electrons= ak.argsort(self.electrons.pt, axis=1, ascending=False, stable=True)
+        self.electrons = self.electrons[highpt_electrons]
+
+        highpt_muons = ak.argsort(self.muons.pt, axis=1, ascending=False, stable=True)
+        self.muons = self.muons[highpt_muons]
 
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
-        if debug: print("%i events pass trigger cuts..."%len(self.events))
-
-
-        # ------------------------------------------------------------------------------
-        # ------------------------------- SELECTION + PLOTTING -------------------------
-        # ------------------------------------------------------------------------------
         outputs["twoleptons"] = [self.doAllPlots("twoleptons", csvTag, debug), self.events]
         if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
         if debug: print("%i events pass twoleptons cuts. Doing more stuff..."%len(self.events))
@@ -453,6 +462,7 @@ class SUEP_cluster(processor.ProcessorABC):
         # -------------------------------- SAVING --------------------------------------
         # ------------------------------------------------------------------------------
         todel = []
+        self.SRonly = False
         if self.SRonly: # Lightweight, save only SR stuff
             for out in outputs:
                 if not("SR"==out):
@@ -479,10 +489,17 @@ class SUEP_cluster(processor.ProcessorABC):
         self.electrons = self.electrons[cut]
         self.muons     = self.muons[cut]
         self.leptons   = self.leptons[cut]
-        self.jets      = self.jets[cut]
-        self.Zcands    = self.Zcands[cut]
         self.tracks = self.tracks[cut]
         self.clusters = self.clusters[cut]
+        self.METElecTrig_a = self.METElecTrig_a[cut]
+        self.METElecTrig_b = self.METElecTrig_b[cut]
+        self.SingleElecTrig = self.SingleElecTrig[cut]
+        self.DoubleElecTrig = self.DoubleElecTrig[cut]
+
+        self.METMuonTrig_a = self.METMuonTrig_a[cut]
+        self.METMuonTrig_b = self.METMuonTrig_b[cut]
+        self.SingleMuonTrig = self.SingleMuonTrig[cut]
+        self.DoubleMuonTrig = self.DoubleMuonTrig[cut]
 
 
 
@@ -495,43 +512,20 @@ class SUEP_cluster(processor.ProcessorABC):
         if debug: print("Saving reco variables for channel %s"%channel)
 
         # Object: leptons
+        df_electrons = pd.DataFrame({"LeadingPt" : self.electrons.pt[:,0], "SubleadingPt" : self.electrons.pt[:,1], "LeadingEta" : self.electrons.eta[:,0], "METTrig_a" : self.METElecTrig_a[:], "METTrig_b" : self.METElecTrig_b[:], "SingleElecTrig" : self.SingleElecTrig[:], "DoubleElecTrig" : self.DoubleElecTrig[:]})
+        df_electrons.to_csv(self.output_location+"/"+csvTag+'_electrons.csv', index=False)
+
+        df_muons = pd.DataFrame({"LeadingPt" : self.muons.pt[:,0], "SubleadingPt" : self.muons.pt[:,1], "LeadingEta" : self.muons.eta[:,0], "METTrig_a" : self.METMuonTrig_a[:], "METTrig_b" : self.METMuonTrig_b[:], "SingleMuonTrig" : self.SingleMuonTrig[:], "DoubleMuonTrig" : self.DoubleMuonTrig[:]})
+        df_muons.to_csv(self.output_location+"/"+csvTag+'_muons.csv', index=False)
+
+        '''
         out["leadlep_pt"] = self.leptons.pt[:,0]
         out["subleadlep_pt"] = self.leptons.pt[:,1]
         out["leadlep_eta"] = self.leptons.eta[:,0]
         out["subleadlep_eta"] = self.leptons.eta[:,1]
         out["leadlep_phi"] = self.leptons.phi[:,0]
         out["subleadlep_phi"] = self.leptons.phi[:,1]
-
-	#Build Residual Dataframes
-        df_control = pd.DataFrame({"ctrl_leadlep_pt" : self.controlLeptons.pt[:,0], "ctrl_subleadlep_pt" : self.controlLeptons.pt[:,1], "ctrl_leadlep_eta" : self.controlLeptons.eta[:,0]})
-        df_control.to_csv(self.output_location+"/"+csvTag+'_ctrl.csv', index=False)
-
-        electronsOut = np.array([x for x in self.electrons.pt if len(x) == 2 ])
-        electronsControl = np.array([x for x in self.electronControl.pt if len(x) == 2])
-        muonsOut = np.array([x for x in self.muons.pt if len(x) == 2])
-        muonControl= np.array([x for x in self.muonControl.pt if len(x) == 2])
-
-        electronsOut_eta = np.array([x for x in self.electrons.eta if len(x) == 2])
-        electronsControl_eta = np.array([x for x in self.electronControl.eta if len(x) == 2])
-        muonsOut_eta = np.array([x for x in self.muons.eta if len(x) == 2])
-        muonControl_eta = np.array([x for x in self.muonControl.eta if len(x) == 2])
-
-        electronsOut_phi = np.array([x for x in self.electrons.phi if len(x) == 2])
-        electronsControl_phi = np.array([x for x in self.electronControl.phi if len(x) == 2])
-        muonsOut_phi = np.array([x for x in self.muons.phi if len(x) == 2])
-        muonControl_phi = np.array([x for x in self.muonControl.phi if len(x) == 2])
-
-        df_electrons = pd.DataFrame({"electron_leadpt" : electronsOut[:,0], "electron_subleadpt" : electronsOut[:,1], "electron_leadphi" : electronsOut_phi[:,0], "electron_leadeta" : electronsOut_eta[:,0]})
-        df_electrons.to_csv(self.output_location+"/"+csvTag+'_electrons.csv', index=False)
-
-        df_electrons_control = pd.DataFrame({"electrons_control_lead" : electronsControl[:,0], "electrons_control_sublead" : electronsControl[:,1], "electronsControl_leadphi" : electronsControl_phi[:,0], "electronsControl_leadeta" : electronsControl_eta[:,0]})
-        df_electrons_control.to_csv(self.output_location+"/"+csvTag+'_electrons_control.csv', index=False)
-
-        df_muons = pd.DataFrame({"muon_leadpt" : muonsOut[:,0], "muon_subleadpt" : muonsOut[:,1], "muon_leadphi" : muonsOut_phi[:,0], "muon_leadeta" : muonsOut_eta[:,0]})
-        df_muons.to_csv(self.output_location+"/"+csvTag+'_muons.csv', index=False)
-
-        df_muons_control = pd.DataFrame({"muon_control_lead" : muonControl[:,0], "muon_control_sublead" : muonControl[:,1], "muon_control_leadphi" : muonControl_phi[:,0], "muon_control_leadeta" : muonControl_eta[:,0]})
-        df_muons_control.to_csv(self.output_location+"/"+csvTag+'_muons_control.csv', index=False)
+        '''
 
         return out
 
