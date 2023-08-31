@@ -12,8 +12,8 @@ import awkward as ak
 import pandas as pd
 import numpy as np
 import fastjet
-from coffea import hist, processor, lookup_tools
-import pickle
+from coffea import processor, lookup_tools
+import pickle5 as pickle
 import vector
 from typing import List, Optional
 import correctionlib
@@ -612,6 +612,11 @@ class SUEP_cluster(processor.ProcessorABC):
         for var in self.varsToDo:
             self.var = var
             # Reset collections for syst variation
+            if len(self.varsToDo) == 1:
+                highpt_jets = ak.argsort(self.jets.pt, axis=1, ascending=False, stable=True)
+                self.jets = self.jets[highpt_jets]
+                self.jets = self.jets[(self.jets.pt >= 30)]
+
             if len(self.varsToDo) > 1: 
                 self.resetAllCollections()
                 self.jets = self.jetsVar[""]
@@ -694,7 +699,7 @@ class SUEP_cluster(processor.ProcessorABC):
         todel = []
         if self.SRonly: # Lightweight, save only SR stuff
             for out in outputs:
-                if not("SR"==out): 
+                if not("SR" in out): 
                     todel.append(out)
             for t in todel:
                 del outputs[t]
@@ -1322,12 +1327,15 @@ class SUEP_cluster(processor.ProcessorABC):
                 out["genHpt"]  = self.genH.pt[:,0]
                 out["genHeta"] = self.genH.eta[:,0]
                 out["genHphi"] = self.genH.phi[:,0]
-        out["nPU"] = self.getNPU()[:]
+        #out["nPU"] = self.getNPU()[:]
         return out
 
     def getNPU(self):
         if self.isMC:
-            return self.events.Pileup.nTrueInt
+            if hasattr(self.events, "Pileup"):
+              return self.events.Pileup.nTrueInt
+            else:
+              return ak.ones_like(self.events.genWeight)
         else:
             if self.era == 2015  or self.era == 2016:
                 lumifile = "data/Lumi/16.json"
