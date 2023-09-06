@@ -1,6 +1,7 @@
 import os
 import sys
 import pandas as pd
+import h5py
 
 fold = sys.argv[1]
 strict = len(sys.argv) > 2
@@ -26,16 +27,42 @@ for f in os.listdir(fold):
       if os.path.getsize(totfil) == 0:
         iBad += 1
         os.system("rm %s"%totfil)
-      elif strict:
-        try:
-          a = pd.HDFStore(totfil, "r")
-          if not(sys.argv[2] in a.keys()):
-            iBad += 1
-            a.close()
-            del a
-            os.system("rm %s"%totfil)
-        except:
-          iBad += 1
-          os.system("rm %s"%totfil)
+    try:
+      test = 0
+      with h5py.File(totfil, 'r') as h5file:
+        #print("File Structure:")
+        #print(h5file)
+        
+        #print("\nGroups:")
+        for group_name in h5file:
+            #print(group_name)
+            test = group_name
+        
+        #print("\nAttributes:")
+        for attr_name in h5file.attrs:
+            #print(f"{attr_name}: {h5file.attrs[attr_name]}")
+            test = attr_name
+
+        #print("\nDatasets:")
+        for group_name in h5file:
+            group = h5file[group_name]
+            for dataset_name in group:
+                dataset = group[dataset_name]
+                #print(f"{group_name}/{dataset_name}: {dataset.shape}, {dataset.dtype}")
+
+    except FileNotFoundError:
+        print("Error: The specified file was not found.")
+        iBad += 1
+        os.system("rm %s"%totfil)
+    except (IOError, OSError) as e:
+        print("Error: An HDF5-related error occurred.")
+        print(e)
+        iBad += 1
+        os.system("rm %s"%totfil)
+    except Exception as e:
+        print("An unexpected error occurred:")
+        print(e)   
+        iBad += 1
+        os.system("rm %s"%totfil)
 
   print("%i/%i files broken for process %s"%(iBad, iTot, f))
