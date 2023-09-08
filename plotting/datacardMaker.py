@@ -237,7 +237,10 @@ class datacardMaker(object):
             # Else we have to get the shapes and save them
 
             newup = self.tf.Get((self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst)) + self.systs[syst]["up"])
-            newdn = self.tf.Get((self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst)) + self.systs[syst]["down"])
+            if self.systs[syst]["down"] == "":
+              newdn = self.tf.Get(self.systs["yields"]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else "total_background")
+            else:
+              newdn = self.tf.Get((self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst)) + self.systs[syst]["down"])
             print((self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst )) + self.systs[syst]["up"], (self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) if not("total_background" in ss) else ("total_background" + "_" + syst)) + self.systs[syst]["down"])
             #newdn = self.tf.Get(self.systs[syst]["match"].replace("$PROCESS", self.samples[ss]["name"]).replace("[VAR]", self.options.var).replace("$SYSTEMATIC",syst).replace("[CHANNEL]", self.channel) + self.systs[syst]["down"]) #if self.systs[syst]["down"] != "" else self.th1s_perbin[ibin][s]
             print(ss, syst,  self.th1s_perbin[ibin][ss], newdn.Print("all"))
