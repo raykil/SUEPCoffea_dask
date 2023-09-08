@@ -6,6 +6,7 @@ fold = sys.argv[1]
 strict = len(sys.argv) > 2
 imin = -1
 imax = 1e99
+nnn = 0
 if len(sys.argv) > 4:
   imin = int(sys.argv[3])
   imax = int(sys.argv[4])
@@ -28,14 +29,16 @@ for f in os.listdir(fold):
         os.system("rm %s"%totfil)
       elif strict:
         try:
-          a = pd.HDFStore(totfil, "r")
-          if not(sys.argv[2] in a.keys()):
-            iBad += 1
-            a.close()
-            del a
-            os.system("rm %s"%totfil)
+          with pd.HDFStore(totfil, "r") as a:
+            if not(sys.argv[2] in a.keys()):
+              iBad += 1
+              a.close()
+              del a
+              os.system("rm %s"%totfil)
         except:
           iBad += 1
           os.system("rm %s"%totfil)
 
   print("%i/%i files broken for process %s"%(iBad, iTot, f))
+  nnn += iBad
+print(nnn, "broken in total")
