@@ -640,14 +640,14 @@ class SUEP_cluster(processor.ProcessorABC):
             self.isSpherable   = False # So we don't do sphericity plots until we have clusters
             self.isClusterable = False # So we don't try to compute sphericity if clusters are empty
             outputs["twoleptons"+var] = [self.doAllPlots("twoleptons"+var, debug), self.events]
-            if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+            if not(self.shouldContinueAfterCut(self.events, outputs)): continue
             if debug: print("%i events pass twoleptons cuts. Doing more stuff..."%len(self.events))
 
             if self.doTracks:
                 cutOneTrack = (ak.num(self.tracks) != 0)
                 self.applyCutToAllCollections(cutOneTrack)
                 self.isSpherable = True # So we do sphericity plots
-                if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                if not(self.shouldContinueAfterCut(self.events, outputs)): continue
                 if debug: print("%i events pass onetrack cuts. Doing more stuff..."%len(self.events))
                 if self.doClusters:
                     cutOneCluster = (ak.num(self.clusters) != 0)
@@ -670,23 +670,23 @@ class SUEP_cluster(processor.ProcessorABC):
                       print(self.constituents.pt, self.constituents.pdgId)
 
                     outputs["onecluster"+var] = [self.doAllPlots("onecluster"+var, debug), self.events]
-                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): continue
                     if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))
                     cutZm  = (abs(self.Zcands.mass - 90) < 30)
                     self.applyCutToAllCollections(cutZm)
-                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): continue
                     if debug: print("%i events pass Zm cuts. Doing more stuff..."%len(self.events))
                     cutZpt = (self.Zcands.pt > 25)
                     self.applyCutToAllCollections(cutZpt)
-                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): continue
                     if debug: print("%i events pass Zpt cuts. Doing more stuff..."%len(self.events))
                     cut0tag =  (ak.sum(self.jets.btag >= self.btagcuts("Loose", self.era), axis=1) == 0)
                     self.applyCutToAllCollections(cut0tag)
-                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): continue
                     if debug: print("%i events pass 1tag cuts. Doing more stuff..."%len(self.events))
                     cutclusterpt60 = (self.clusters.pt[:,0] >= 60)
                     self.applyCutToAllCollections(cutclusterpt60)
-                    if not(self.shouldContinueAfterCut(self.events, outputs)): return accumulator
+                    if not(self.shouldContinueAfterCut(self.events, outputs)): continue
                     if debug: print("%i events pass clusterpt cuts. Doing more stuff..."%len(self.events))
                     outputs["SR"+var] = [self.doAllPlots("SR"+var, debug), self.events]
                     #print(abs(self.leptons.eta[:,0] - self.leptons.eta[:,1]))
@@ -706,7 +706,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         for out in outputs:
             if out in todel: continue 
-            if self.isMC:
+            if self.isMC and hasattr(outputs[out][1], "genWeight"):
                 outputs[out][0]["genweight"] = outputs[out][1].genWeight[:]
             if debug: print("Conversion to pandas...")
             if not isinstance(outputs[out][0], pd.DataFrame):
@@ -928,6 +928,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         #Add flag indicating which Flavor was selected
         leps = ak.concatenate([electrons.pt, -muons.pt], axis = 1)
+        if self.doOF: return {"TrigSF": leps[:,0]*0.+1., "TrigSFUp": leps[:,0]*0.+1., "TrigSFDn": leps[:,0]*0.+1.}
         #Split into Leading and Subleading Lepton
         leps0temp, leps1temp= np.array(leps[:, 0]), np.array(leps[:, 1])
         #Convert out-of-bounds pTs to maximum bin's value
