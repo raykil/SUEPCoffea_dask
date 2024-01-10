@@ -11,8 +11,8 @@ def hdf5inpath(path):
   return ret
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_ANv4/"
-main_path_signal = "/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_withJECs/"
+main_path = "/eos/user/g/gdecastr/SUEPCoffea_dask/HDF5s/2018/"
+main_path_signal = "/eos/user/g/gdecastr/SUEPCoffea_dask/HDF5s/2018/"
 samples = {
   "data": {
          "name" : "data",
@@ -682,10 +682,10 @@ samples = {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T1.50", #Here plain text
          "label"    : "ZS, hadronic, T=1.5, m_{\phi}=3 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "linecolor": ROOT.kViolet,
+         "fillcolor": ROOT.kViolet,
          "isSig"    : True,
-         "doPlot"   : True,
+         "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T1.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
@@ -693,8 +693,8 @@ samples = {
          "name"     : "SUEP_generic_mS125_mD3.00_T3.00", #Here plain text
          "label"    : "ZS, generic, T=3, m_{\phi}=3 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kBlack,
+         "linecolor": ROOT.kViolet,
+         "fillcolor": ROOT.kViolet,
          "isSig"    : True,
          "doPlot"   : True,
          "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T3.00/"),
@@ -746,7 +746,7 @@ samples = {
   },
   "SUEP_hadronic_mS125_mD3.00_T6.00": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T6.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, hadronic, T=3, m_{\phi}=6 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
@@ -911,12 +911,12 @@ samples = {
   },
   "SUEP_hadronic_mS125_mD4.00_T8.00": {
          "name"     : "SUEP_hadronic_mS125_mD4.00_T8.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, hadronic, T=8, m_{\phi}=4 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "linecolor": ROOT.kBlack,
+         "fillcolor": ROOT.kBlack,
          "isSig"    : True,
-         "doPlot"   : False,
+         "doPlot"   : True,
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
@@ -1118,17 +1118,17 @@ samples = {
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T32.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "ttH_generic_mS125_mD2.00_T2.00" :{
-         "name"     : "ttH_generic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    : "ttS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 498.7, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kBlack,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : ["/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/test_ttH_unskimmed/out_1_1_1001.hdf5"], 
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  }
+#  "ttH_generic_mS125_mD2.00_T2.00" :{
+#         "name"     : "ttH_generic_mS125_mD2.00_T2.00", #Here plain text
+#         "label"    : "ttS, m_{S} = 125 GeV", #Here we can use weird glyphs
+#         "xsec"     : 498.7, # in fb
+#         "linecolor": ROOT.kBlack,
+#         "fillcolor": ROOT.kBlack,
+#         "isSig"    : True,
+#         "doPlot"   : False,
+#         "files"    : ["/eos/user/c/cericeci/SUEP/SUEPCoffea_dask/test_ttH_unskimmed/out_1_1_1001.hdf5"], 
+#         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+#  }
 }
 
 for sample in samples:
@@ -1299,18 +1299,18 @@ for sample in samples:
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
            "symmetrize"      :     True,
   },
-}
-"""
+  }
+
   if (samples[sample]["isSig"]): 
-    samples[sample]["variations"]["JECUp"] = {
-           "name"            : "JEC",
+    samples[sample]["variations"]["JESUp"] = {
+           "name"            : "JES",
            "isSyst"          :      True,
            "replaceChannel"  :  {"SR":"SR_JECUP", "onecluster":"onecluster_JECUP", "twoleptons":"twoleptons_JECUP"},
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
            "symmetrize"      :      False,
     }
-    samples[sample]["variations"]["JECDn"] = {
-           "name"            : "JEC",
+    samples[sample]["variations"]["JESDn"] = {
+           "name"            : "JES",
            "isSyst"          :      True,
            "replaceChannel"  :  {"SR":"SR_JECDOWN", "onecluster":"onecluster_JECDOWN", "twoleptons":"twoleptons_JECDOWN"},
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
@@ -1330,4 +1330,4 @@ for sample in samples:
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
            "symmetrize"      :      False,
     }
-"""
+

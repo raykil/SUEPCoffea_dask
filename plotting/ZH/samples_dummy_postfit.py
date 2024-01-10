@@ -11,7 +11,7 @@ def hdf5inpath(path):
   return ret
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL18/hdf5_ANv4/"
+main_path = "/eos/user/g/gdecastr/SUEPCoffea_dask/HDF5s/2018/"
 samples = {
   "data": {
          "name" : "data",
@@ -44,9 +44,9 @@ samples = {
          "fillcolor": ROOT.kBlue,
          "isSig"    : True,
          "doPlot"   : True,
-         "files"    : hdf5inpath(main_path + "SUEP_generic_mS125_mD3.00_T3.00/"), # Just whatever so it reads quickly, we are not using it anywhere
+         "files"    : hdf5inpath(main_path + "SUEP_hadronic_mS125_mD3.00_T3.00/"), # Just whatever so it reads quickly, we are not using it anywhere
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-         "th1": {"":"SUEP_generic_mS125_mD3.00_T3.00_fits","Up":"SUEP_generic_mS125_mD3.00_T3.00_fitsUp","Dn":"SUEP_generic_mS125_mD3.00_T3.00_fitsDn"},
+         "th1": {"":"SUEP_hadronic_mS125_mD3.00_T3.00_fits","Up":"SUEP_hadronic_mS125_mD3.00_T3.00_fitsUp","Dn":"SUEP_hadronic_mS125_mD3.00_T3.00_fitsDn"},
   }
 
 }

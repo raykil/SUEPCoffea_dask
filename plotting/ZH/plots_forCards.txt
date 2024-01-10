@@ -2,7 +2,7 @@ import ROOT
 
 
 def cut(x):
-  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["Z_pt"] >= 25) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] >= 60) 
+  return (x["njets"] >= 0) & (abs(x["Z_m"]-90) < 30) & (x["Z_pt"] >= 25) & (x["nBLoose"] == 0) & (x["leadcluster_pt"] >= 60)
 
 plots = {
   "leadjet_pt": {
@@ -35,8 +35,8 @@ plots = {
              "xlabel"   : "N_{tracks}^{SUEP}",
              "vars"     : ["leadcluster_ntracks"]
   },
- "leadclustertracks_SR": {
-             "name"     : "leadclustertracks_SR",
+ "leadclustertracks_onecluster": {
+             "name"     : "leadclustertracks_onecluster",
              "bins"     : ["uniform", 8, 20, 60],
              "channel"  : "onecluster",
              "value"    : lambda x, y : (x["leadcluster_ntracks"], y*cut(x)*(x["leadjet_pt"] < 100)*(x["leadcluster_ntracks"] >= 20)),
@@ -46,7 +46,7 @@ plots = {
              "minY"     : 1e0,
              "ratiomaxY": 2.,
              "ratiominY": 0.,
-             "plotname" : "leadclustertracks_SR",
+             "plotname" : "leadclustertracks_onecluster",
              "xlabel"   : "N_{tracks}^{SUEP}",
              "vars"     : ["leadcluster_ntracks"]
   },
