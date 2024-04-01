@@ -112,7 +112,7 @@ systematicsAndShapes = {
             "processes": [".*"],
             "match": "$PROCESS_$SYSTEMATIC",
             "up"  : "Up",
-            "down": "Up",
+            "down": "Dn",
             "corrs": {"RunII":["2016","2016APV","2017","2018"]},
  },
  "JES"  : {
