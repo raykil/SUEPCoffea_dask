@@ -237,7 +237,7 @@ class sample(object):
           elif self.noWeights: self.norms[plotName] = 1
           if not(self.dohadd):
             filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
-            print(filename, plotName)
+            #print(filename, plotName)
             self.histos[plotName]["total"].Add(self.histos[plotName][filename])
             del self.histos[plotName][filename]
             if self.doSyst:
@@ -273,11 +273,6 @@ class sample(object):
                 self.histos[plotName+ "_" + var + "Up"]["total"] = self.haddedTFile.Get(plotName + "_" + self.name +  "_" + var + "Up")
                 self.histos[plotName+ "_" + var + "Dn"]["total"] = self.haddedTFile.Get(plotName + "_" + self.name +  "_" + var + "Dn")
               else:
-                if 'PU' in var and 'E1' in plotName and not('SUEP' in plotName):
-                  if math.isnan(self.haddedTFile.Get(plotName + "_" + self.name +  "_" + var).GetBinContent(1)):
-                    print(plotName, var)
-                    print('Things are Broken!')
-                    meow
                 self.histos[plotName+ "_" + var]["total"] = self.haddedTFile.Get(plotName + "_" + self.name +  "_" + var)
         # Not needed, as the sumw2 structure exists already
         #self.histos[plotName]["total"].Sumw2() # To get proper stat. unc.

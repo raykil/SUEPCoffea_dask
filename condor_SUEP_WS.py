@@ -66,59 +66,14 @@ elif options.analyzer == "ntracksplit":
 elif options.analyzer == "checkJetID":
   from workflows.SUEP_coffea_ZH_checkJetID import *
   modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_4p0":
-  from workflows.SUEP_coffea_ZH_simple_4p0 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_2p0":
-  from workflows.SUEP_coffea_ZH_simple_2p0 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_1p2":
-  from workflows.SUEP_coffea_ZH_simple_1p2 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_p8":
-  from workflows.SUEP_coffea_ZH_simple_p8 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_p4":
-  from workflows.SUEP_coffea_ZH_simple_p4 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_NoSR":
-  from workflows.SUEP_coffea_ZH_simple_NoSR import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
 elif options.analyzer == "ZH_simple_withsyst_NewID":
   from workflows.SUEP_coffea_ZH_simple_NewID import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_Cambridge":
-  from workflows.SUEP_coffea_ZH_simple_Cambridge import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_Cambridge_4p0":
-  from workflows.SUEP_coffea_ZH_simple_Cambridge_4p0 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_Cambridge_2p0":
-  from workflows.SUEP_coffea_ZH_simple_Cambridge_2p0 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_Cambridge_1p2":
-  from workflows.SUEP_coffea_ZH_simple_Cambridge_1p2 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_Cambridge_p8":
-  from workflows.SUEP_coffea_ZH_simple_Cambridge_p8 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_Cambridge_p4":
-  from workflows.SUEP_coffea_ZH_simple_Cambridge_p4 import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_ThinZMass":
-  from workflows.SUEP_coffea_ZH_simple_ThinZMass import *
-  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-elif options.analyzer == "ZH_simple_withsyst_NewID_NoSR":
-  from workflows.SUEP_coffea_ZH_simple_NewID_NoSR import *
   modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
 elif options.analyzer == "ZH_simple_withsyst_SideBandA":
   from workflows.SUEP_coffea_ZH_simple_SideBandA import *
   modules_era.append(SUEP_cluster(isMC=False, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=False))
 elif options.analyzer == "ZH_simple_withsyst_SideBandB1":
   from workflows.SUEP_coffea_ZH_simple_SideBandB1 import *
-  modules_era.append(SUEP_cluster(isMC=False, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=False))
-elif options.analyzer == "ZH_simple_withsyst_MatchingJets":
-  from workflows.SUEP_coffea_ZH_MatchingJets import *
   modules_era.append(SUEP_cluster(isMC=False, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=False))
 for instance in modules_era:
     output = run_uproot_job(

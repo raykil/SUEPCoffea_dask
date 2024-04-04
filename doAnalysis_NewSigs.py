@@ -25,6 +25,7 @@ parser.add_option("--jetID", dest="jetID", action="store_true", default=False, h
 parser.add_option("--PU", dest="PU", action="store_true", default=False, help="To check PU splitting")
 parser.add_option("--btagEff", dest="btagEff", action="store_true", default=False, help="Activate bTag Efficiency commands")
 parser.add_option("--analyzer", dest="analyzer", type="string", default="ZH_simple_withsyst", help="Choose default analyzer")
+parser.add_option("--newSignals", dest="newSignals", action="store_true", default=False, help="Activate new signal scan commands")
 (options, args) = parser.parse_args()
 
 doWhat = args[0]
@@ -61,7 +62,10 @@ if doWhat == "all" or doWhat == "dataframes":
   if options.PU:
     analyzer = "ntracksplit"
   print("[DATAFRAMES] creation step...")
-  samples = open(os.getcwd() +  "/data/samples_%s_NewSigs.json"%options.year)
+  if options.newSignals:
+    samples = open(os.getcwd() +  "/data/samples_%s_NewSigs.json"%options.year)
+  else:
+    samples = open(os.getcwd() +  "/data/samples_%s.json"%options.year)
   samplesjson = json.loads(samples.read())
   for sample in samplesjson:
     if type(samplesjson[sample]["path"]) != type( [1,2]): #Convert into list

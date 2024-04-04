@@ -2,17 +2,22 @@ import ROOT
 import sys
 import ctypes
 
-inROOT  = ROOT.TFile(sys.argv[1],"READ")
+integrate_threshold = int(sys.argv[3])
+
+sample_name = sys.argv[4]
+
+inROOT  = ROOT.TFile(sys.argv[1], "READ")
 shapesS = "shapes_fit_s"
 shapesB = "shapes_fit_b"
 shapesP = "shapes_prefit"
 
-
 channels = ["E2", "E1","B2_B2bin1","B2_B2bin2","B2_B2bin3","B2_B2bin4","B2_B2bin5","B2_B2bin6","B2_B2bin7","B2_B2bin8","D2","D1","B1_B1bin1","B1_B1bin2","B1_B1bin3","B1_B1bin4","B1_B1bin5","B1_B1bin6","B1_B1bin7","B1_B1bin8","C2","C1","SR_SRbin1","SR_SRbin2","SR_SRbin3","SR_SRbin4","SR_SRbin5","SR_SRbin6","SR_SRbin7","SR_SRbin8"]
-nc = len(channels)
-processes = ["total_background","SUEP_hadronic_mS125_mD3.00_T3.00", "data"]
-years = ["UL16", "UL16APV", "UL17", "UL18"] if sys.argv[3] == "RunII" else ['']
-#years = ["SR"]
+
+channels = [channel for channel in channels if not any(f"_bin{Y}" in channel for Y in range(integrate_threshold + 1, 9))]
+
+processes = ["total_background", f"SUEP_hadronic_mS125_{sample_name}", "data"]
+
+years = ["UL16", "UL16APV", "UL17", "UL18"] if sys.argv[5] == "RunII" else ['']
 
 shapes_fit_s =  {}
 shapes_fit_b =  {}
