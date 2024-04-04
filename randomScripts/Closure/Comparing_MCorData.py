@@ -1,7 +1,11 @@
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
-with open('../ClosureSFs.txt', 'r') as file:
+use_data = bool(int(sys.argv[1])) if len(sys.argv) > 1 else True
+data_suffix = "_Data" if use_data else ""
+
+with open(f'../ClosureSFs{data_suffix}.txt', 'r') as file:
     lines = file.readlines()
 
 data = {}
@@ -17,9 +21,9 @@ for line in lines:
     if region not in data:
         data[region] = {}
     data[region][year] = ratios
-
 uncertainties = {}
-with open('../ClosureSFs_Uncs.txt', 'r') as file:
+
+with open(f'../ClosureSFs_Uncs{data_suffix}.txt', 'r') as file:
     lines = file.readlines()
 
 for line in lines:

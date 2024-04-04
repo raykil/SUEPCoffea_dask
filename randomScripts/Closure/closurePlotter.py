@@ -490,8 +490,8 @@ var = {
 
 inp = sys.argv[1]
 
-first_bin = int(sys.argv[8])
-second_bin = int(sys.argv[9])
+first_bin = int(sys.argv[4])
+second_bin = int(sys.argv[8])
 customBins = [first_bin]
 while first_bin < second_bin:
     first_bin += 5

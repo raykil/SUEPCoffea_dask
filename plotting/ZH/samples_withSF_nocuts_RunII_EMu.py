@@ -1,10 +1,10 @@
 import os
 import ROOT
 from auxiliars import *
-from ZH.samples_withSF_nocuts_UL18_dR_HighStats_EMu import samples as samplesUL18
-from ZH.samples_withSF_nocuts_UL17_dR_HighStats_EMu import samples as samplesUL17
-from ZH.samples_withSF_nocuts_UL16_dR_HighStats_EMu import samples as samplesUL16
-from ZH.samples_withSF_nocuts_UL16APV_dR_HighStats_EMu import samples as samplesUL16APV
+from ZH.samples_withSF_nocuts_UL18_HighStats_EMu import samples as samplesUL18
+from ZH.samples_withSF_nocuts_UL17_HighStats_EMu import samples as samplesUL17
+from ZH.samples_withSF_nocuts_UL16_HighStats_EMu import samples as samplesUL16
+from ZH.samples_withSF_nocuts_UL16APV_HighStats_EMu import samples as samplesUL16APV
 
 def hdf5inpath(path):
   ret = []
