@@ -706,7 +706,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         for out in outputs:
             if out in todel: continue 
-            if self.isMC:
+            if self.isMC and hasattr(outputs[out][1], "genWeight"):
                 outputs[out][0]["genweight"] = outputs[out][1].genWeight[:]
             if debug: print("Conversion to pandas...")
             if not isinstance(outputs[out][0], pd.DataFrame):
@@ -928,6 +928,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
         #Add flag indicating which Flavor was selected
         leps = ak.concatenate([electrons.pt, -muons.pt], axis = 1)
+        if self.doOF: return {"TrigSF": leps[:,0]*0.+1., "TrigSFUp": leps[:,0]*0.+1., "TrigSFDn": leps[:,0]*0.+1.}
         #Split into Leading and Subleading Lepton
         leps0temp, leps1temp= np.array(leps[:, 0]), np.array(leps[:, 1])
         #Convert out-of-bounds pTs to maximum bin's value
@@ -1330,7 +1331,7 @@ class SUEP_cluster(processor.ProcessorABC):
                 out["genHpt"]  = self.genH.pt[:,0]
                 out["genHeta"] = self.genH.eta[:,0]
                 out["genHphi"] = self.genH.phi[:,0]
-        out["nPU"] = self.getNPU()[:]
+        #out["nPU"] = self.getNPU()[:]
         return out
 
     def getNPU(self):
