@@ -2,6 +2,7 @@ import ROOT
 import imp
 import array 
 import os
+import random
 import pandas as pd
 import CMS_lumi
 from multiprocessing import Pool
@@ -181,7 +182,7 @@ class sample(object):
         self.histos[plotName]["total"] = ROOT.TH1F(plotName + "_" + self.name, plotName + "_" + self.name, p["bins"][1], p["bins"][2], p["bins"][3])
       elif p["bins"][0] == "limits":
         self.histos[plotName] = {}
-        self.histos[plotName]["total"] = ROOT.TH1F(plotName + "_" + self.name, plotName + "_" + self.name, array.array('f', p["bins"][1])) 
+        self.histos[plotName]["total"] = ROOT.TH1F(plotName + "_" + self.name, plotName + "_" + self.name, p["bins"][2], array.array('f', p["bins"][1])) 
       elif p["bins"][0] == "2Duniform": 
         self.histos[plotName] = {}
         self.histos[plotName]["total"] = ROOT.TH2F(plotName + "_" + self.name, plotName + "_" + self.name, p["bins"][1], p["bins"][2], p["bins"][3], p["bins"][4], p["bins"][5], p["bins"][6])
@@ -236,7 +237,7 @@ class sample(object):
           elif self.noWeights: self.norms[plotName] = 1
           if not(self.dohadd):
             filename = self.safefiles[iff].split("/")[-1].replace("out_","").replace(".hdf5","")
-            #print(filename, plotName, self.histos[plotName][filename].Integral())
+            #print(filename, plotName)
             self.histos[plotName]["total"].Add(self.histos[plotName][filename])
             del self.histos[plotName][filename]
             if self.doSyst:
@@ -302,7 +303,7 @@ class sample(object):
                 self.histos[plotName+ "_" + var + "Dn"]["total"].Scale(self.config["scale"])
             else:
               if not(self.noWeights):
-                print(var, plotName, self.name)
+                #print(var, plotName, self.name)
                 self.histos[plotName+ "_" + var]["total"].Scale((options.luminosity if not("partialLumi" in self.config) else self.config["partialLumi"])*self.config["xsec"]/max(0.0001,self.norms[plotName]))
               if "scale" in self.config:
                 self.histos[plotName+ "_" + var]["total"].Scale(self.config["scale"])
@@ -520,6 +521,7 @@ class sample(object):
 
   def setStyleOptions(self):
     for key in self.histos:
+      #print(key)
       if "linecolor" in self.config: 
         self.histos[key]["total"].SetLineColor(self.config["linecolor"])
       if "fillcolor" in self.config:
@@ -576,7 +578,7 @@ class plotter(object):
         jobfile = open("%s/exec/_%i.sh"%(options.jobname, iJob),"w")
         jobfile.write("#!/bin/bash\n")
         jobfile.write("source /afs/cern.ch/cms/cmsset_default.sh\n")
-        jobfile.write("cd /eos/user/c/cericeci/CMSSW_10_6_29/src/\n")
+        jobfile.write("cd /eos/user/g/gdecastr/SUEPCoffea_dask/CMSSW_10_6_29/src/\n")
         jobfile.write("cmsenv\n")
         jobfile.write("cd %s\n"%os.getcwd())
         jobfile.write(command + " --sample %s --files %s"%(sname, ",".join(s.safefiles)))
@@ -587,10 +589,10 @@ class plotter(object):
           jobfile = open("%s/exec/_%i.sh"%(options.jobname, iJob),"w")
           jobfile.write("#!/bin/bash\n")
           jobfile.write("source /afs/cern.ch/cms/cmsset_default.sh\n")
-          jobfile.write("cd /eos/user/c/cericeci/CMSSW_10_6_29/src/\n")
+          jobfile.write("cd /eos/user/g/gdecastr/SUEPCoffea_dask/CMSSW_10_6_29/src/\n")
           jobfile.write("cmsenv\n")
 
-          jobfile.write("cd /eos/home-c/cericeci/SUEP/SUEPCoffea_dask/plotting/\n")
+          jobfile.write("cd /eos/home-g/gdecastr/SUEPCoffea_dask/plotting/\n")
           jobfile.write(command + " --sample %s --files %s"%(sname, ",".join(s.safefiles[i*options.batchsize:(i+1)*options.batchsize])))
           iJob += 1
           jobfile.close()
@@ -598,7 +600,7 @@ class plotter(object):
         jobfile = open("%s/exec/_%i.sh"%(options.jobname, iJob),"w")
         jobfile.write("#!/bin/bash\n")
         jobfile.write("source /afs/cern.ch/cms/cmsset_default.sh\n")
-        jobfile.write("cd /eos/user/c/cericeci/CMSSW_10_6_29/src/\n")
+        jobfile.write("cd /eos/user/g/gdecastr/SUEPCoffea_dask/CMSSW_10_6_29/src/\n")
         jobfile.write("cmsenv\n")
         jobfile.write("cd %s\n"%os.getcwd())
         jobfile.write(command + " --sample %s --files %s"%(sname, ",".join(s.safefiles[(chunks-1)*options.batchsize:])))
@@ -680,10 +682,10 @@ class plotter(object):
     if "minZ" in p:
       histo.SetMaximum(p["minZ"])
 
-    for ibin in range(1, histo.GetNbinsX()+1):
-      for jbin in range(1, histo.GetNbinsY()+1):
-        if histo.GetBinContent(ibin, jbin) < 0:
-           histo.SetBinContent(ibin, jbin, 0)
+    #for ibin in range(1, histo.GetNbinsX()+1):
+    #  for jbin in range(1, histo.GetNbinsY()+1):
+    #    if histo.GetBinContent(ibin, jbin) < 0:
+    #       histo.SetBinContent(ibin, jbin, 0)
     histo.SetTitle("")
     histo.Draw("colz")
     histo.GetXaxis().SetLabelSize(0.03)
@@ -810,8 +812,14 @@ class plotter(object):
                     if test == altNameDn:
                       tmpDn = s.histos[pname+ "_" + var]["total"].Clone(altNameDn).Rebin(options.rebin) if options.rebin else s.histos[pname+ "_" + var]["total"].Clone(altNameDn)
               #print(altNameUp, tmpUp.GetName(), type(tmpUp))
-              histosToSave[altNameUp] = copy.deepcopy(tmpUp)
-              histosToSave[altNameDn] = copy.deepcopy(tmpDn)
+              if altNameUp in histosToSave: # Weird stuff for the Run II systematics
+                histosToSave[altNameUp].Add(tmpUp)  
+              else:
+                histosToSave[altNameUp] = copy.deepcopy(tmpUp)
+              if altNameDn in histosToSave:
+                histosToSave[altNameDn].Add(tmpDn)
+              else:
+                histosToSave[altNameDn] = copy.deepcopy(tmpDn)
             else:
               # In this case just read nominal
               tmpUp = s.histos[pname]["total"].Clone(altNameUp)
@@ -858,13 +866,21 @@ class plotter(object):
           if not(tmpUp) or not(tmpDn): # Catch: otherwise we wil be overwritten one histogram for each signal 
             pass
           else:
-            if tmpUp: histosToSave[altNameUp] = copy.deepcopy(tmpUp)
-            if tmpDn: histosToSave[altNameDn] = copy.deepcopy(tmpDn)
+            if tmpUp:
+              if altNameUp in histosToSave:
+                histosToSave[altNameUp].Add(tmpUp)
+              else:
+                histosToSave[altNameUp] = copy.deepcopy(tmpUp)
+            if tmpDn:
+              if altNameDn in histosToSave:
+                histosToSave[altNameDn].Add(tmpDn)
+              else:
+                histosToSave[altNameDn] = copy.deepcopy(tmpDn)
       theStacks["%sUp"%syst] = backUp
       theStacks["%sDn"%syst] = backDn
       histosToSave["%sUp"%syst] = backUp
       histosToSave["%sDn"%syst] = backDn
-    #print(histosToSave)
+    
     # Here we have all systs saved in theStacks, now we add systematics bin by bin
     nomHistoSyst = nomstack.Clone(nomstack.GetName() + "_Syst")
     for ibin in range(0,nomstack.GetNbinsX()+1):
@@ -924,9 +940,10 @@ class plotter(object):
     p1.cd()
     if debug: print("...Pads set")
     tl = ROOT.TLegend(p1.GetLeftMargin() ,0.55, 1-p1.GetRightMargin(), 1-p1.GetTopMargin())
-    tl.SetNColumns(2)
+    tl.SetNColumns(3)
     if "legendPosition" in p:
       tl = ROOT.TLegend(p["legendPosition"][0], p["legendPosition"][1], p["legendPosition"][2], p["legendPosition"][3])  
+      tl.SetNColumns(3)
     # Now get the histograms and build the stack
     theStack = ROOT.THStack(pname+"_stack", pname)
     theIndivs= []
@@ -1124,7 +1141,13 @@ class plotter(object):
         if not("Data" in num.GetName()):
           for ib in range(1, num.GetNbinsX()+1):
             num.SetBinContent(ib, num.GetBinContent(ib)+1)
-      num.Draw("same" + ("hist" if options.noratiostat else "")) if not("Data" in num.GetName()) else num.Draw("Psame")
+      if "Data" in num.GetName():
+        num.Draw("Psame")
+      elif options.AddBOnRatio:
+        num.SetFillColorAlpha(ROOT.kBlue, 0.35)
+        num.Draw("histsame")
+      else:
+        num.Draw("same" + ("hist" if options.noratiostat else ""))
       if "Data" in num.GetName(): 
         tlr.AddEntry(num, "Data", "pl")
       elif options.AddBOnRatio:
@@ -1168,8 +1191,14 @@ class plotter(object):
     tf = ROOT.TFile(options.plotdir + "/" + p["plotname"] + ".root", "RECREATE")
     tf.cd()
     if debug: print("File created", tf)
+    writableHistograms = {}
     for s in self.samples:
-      s.histos[pname]["total"].Write()
+      if s.histos[pname]["total"].GetName() in writableHistograms:
+        writableHistograms[ s.histos[pname]["total"].GetName()].Add( s.histos[pname]["total"])
+      else:
+        writableHistograms[ s.histos[pname]["total"].GetName()] = s.histos[pname]["total"]
+    for h in writableHistograms:
+      writableHistograms[h].Write()
     theStack.Write()
     back.Write()
     if self.doSyst:
@@ -1317,8 +1346,9 @@ if __name__ == "__main__":
       savecommand.write(command+ "\n")
       savecommand.close()
     nJobs = thePlotter.createJobs(options, command)
-    os.system("rm submit.sub")
-    subfile = open("submit.sub", "w")
+    random_integer = random.randint(1, 10000)
+    os.system("rm submit_"+str(random_integer)+".sub")
+    subfile = open("submit_"+str(random_integer)+".sub", "w")
     subfile.write("executable              = $(filename)\n")
     subfile.write("arguments               = $(ClusterId)$(ProcId)\n")
     subfile.write("output                  = %s/$(ClusterId).$(ProcId).out\n"%("%s/batchlogs"%options.jobname))
@@ -1328,7 +1358,7 @@ if __name__ == "__main__":
     subfile.write("+JobFlavour = \"%s\"\n"%(options.queue))
     subfile.write("queue filename matching (%s/exec/_*sh)\n"%("%s"%options.jobname))
     subfile.close()
-    if not(options.pretend): os.system("condor_submit -spool submit.sub")
+    if not(options.pretend): os.system("condor_submit -spool submit_"+str(random_integer)+".sub")
 
   else:
     thePlotter.doPlots(options)

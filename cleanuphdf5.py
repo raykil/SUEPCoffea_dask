@@ -7,6 +7,7 @@ fold = sys.argv[1]
 strict = len(sys.argv) > 2
 imin = -1
 imax = 1e99
+repeatedIndexFils = []
 if len(sys.argv) > 4:
   imin = int(sys.argv[3])
   imax = int(sys.argv[4])
@@ -49,6 +50,10 @@ for f in os.listdir(fold):
             for dataset_name in group:
                 dataset = group[dataset_name]
                 #print(f"{group_name}/{dataset_name}: {dataset.shape}, {dataset.dtype}")
+      df = pd.read_hdf(totfil, key='/onecluster')
+      if df.index.duplicated().any():
+          print(f"File {totfil} may be corrupted: Repeated indices found!")
+          repeatedIndexFils.append(totfil)
 
     except FileNotFoundError:
         print("Error: The specified file was not found.")
@@ -66,3 +71,4 @@ for f in os.listdir(fold):
         os.system("rm %s"%totfil)
 
   print("%i/%i files broken for process %s"%(iBad, iTot, f))
+  print(repeatedIndexFils)

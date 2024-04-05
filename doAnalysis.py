@@ -25,6 +25,7 @@ parser.add_option("--jetID", dest="jetID", action="store_true", default=False, h
 parser.add_option("--PU", dest="PU", action="store_true", default=False, help="To check PU splitting")
 parser.add_option("--btagEff", dest="btagEff", action="store_true", default=False, help="Activate bTag Efficiency commands")
 parser.add_option("--analyzer", dest="analyzer", type="string", default="ZH_simple_withsyst", help="Choose default analyzer")
+parser.add_option("--newSignals", dest="newSignals", action="store_true", default=False, help="Activate new signal scan commands")
 (options, args) = parser.parse_args()
 
 doWhat = args[0]
@@ -61,7 +62,10 @@ if doWhat == "all" or doWhat == "dataframes":
   if options.PU:
     analyzer = "ntracksplit"
   print("[DATAFRAMES] creation step...")
-  samples = open(os.getcwd() +  "/data/samples_%s.json"%options.year)
+  if options.newSignals:
+    samples = open(os.getcwd() +  "/data/samples_%s_NewSigs.json"%options.year)
+  else:
+    samples = open(os.getcwd() +  "/data/samples_%s.json"%options.year)
   samplesjson = json.loads(samples.read())
   for sample in samplesjson:
     if type(samplesjson[sample]["path"]) != type( [1,2]): #Convert into list
@@ -70,13 +74,16 @@ if doWhat == "all" or doWhat == "dataframes":
     if len(options.samples) == 0:
       for samplepath in samplesjson[sample]["path"]:
         print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+        #if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "", "1" if samplesjson[sample]["isDYinclusive"] == 1 else "")) # No filter
         if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+
     else:
       for filt in options.samples:
         if re.match(filt, sample):
           for samplepath in samplesjson[sample]["path"]:
             print("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
-            if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "" if samplesjson[sample]["filter"] == 0 else samplesjson[sample]["filter"], "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
+            #if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "", "1" if samplesjson[sample]["isDYinclusive"] == 1 else "")) # No filter
+            if options.submit: os.system("python submitJobs.py -1 %s %s/%s/ %s 1 %s %s %i %i %s %s %s"%(samplepath, options.output, sample, options.queue, analyzer, era, samplesjson[sample]["isData"], options.interval, "1" if options.SR else "0", "", "1" if samplesjson[sample]["isDYinclusive"] == 1 else ""))
   print("-------------------------------------------")
   print("-------------------------------------------")
   print("-------------------------------------------")

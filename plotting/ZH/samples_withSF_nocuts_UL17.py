@@ -11,8 +11,9 @@ def hdf5inpath(path):
   return ret
 
 # Main path where samples are stored
-main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL17/hdf5_ANv4/"
-main_path_signal = "/eos/cms/store/group/phys_exotica/SUEPs/UL17/hdf5_withJECs/"
+main_path = "/eos/cms/store/group/phys_exotica/SUEPs/UL17/hdf5_ANv8/"
+main_path_signal = "/eos/cms/store/user/gdecastr/HDF5s_NewSigs/2017/"
+
 samples = {
   "data": {
          "name" : "data",
@@ -314,303 +315,6 @@ samples = {
 #         "files"    : hdf5inpath(main_path + "SUEP_hadronic_mS125_mD2_T2/"),
 #         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
 #  },
-  "SUEP_generic_mS125_mD2.00_T0.50": {
-         "name"     : "SUEP_generic_mS125_mD2.00_T0.50", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T0.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD1.00_T0.25": {
-         "name"     : "SUEP_leptonic_mS125_mD1.00_T0.25", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T0.25/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD1.40_T0.35": {
-         "name"     : "SUEP_hadronic_mS125_mD1.40_T0.35", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T0.35/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD2.00_T1.00": {
-         "name"     : "SUEP_generic_mS125_mD2.00_T1.00", #Here plain text
-         "label"    : "ZS, generic, T=1, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kOrange,
-         "fillcolor": ROOT.kOrange,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD1.00_T0.50": {
-         "name"     : "SUEP_leptonic_mS125_mD1.00_T0.50", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T0.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD1.40_T0.70": {
-         "name"     : "SUEP_hadronic_mS125_mD1.40_T0.70", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T0.70/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD2.00_T2.00": {
-         "name"     : "SUEP_generic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    :  "ZS, generic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kBlack,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD1.00_T1.00": {
-         "name"     : "SUEP_leptonic_mS125_mD1.00_T1.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD1.40_T1.40": {
-         "name"     : "SUEP_hadronic_mS125_mD1.40_T1.40", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T1.40/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD2.00_T4.00": {
-         "name"     : "SUEP_generic_mS125_mD2.00_T4.00", #Here plain text
-         "label"    : "ZS, generic, T=4, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kViolet,
-         "fillcolor": ROOT.kViolet,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD1.00_T2.00": {
-         "name"     : "SUEP_leptonic_mS125_mD1.00_T2.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD1.40_T2.80": {
-         "name"     : "SUEP_hadronic_mS125_mD1.40_T2.80", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T2.80/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD2.00_T8.00": {
-         "name"     : "SUEP_generic_mS125_mD2.00_T8.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD2.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD1.00_T4.00": {
-         "name"     : "SUEP_leptonic_mS125_mD1.00_T4.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD1.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD1.40_T5.60": {
-         "name"     : "SUEP_hadronic_mS125_mD1.40_T5.60", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD1.40_T5.60/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD2.00_T0.50": {
-         "name"     : "SUEP_leptonic_mS125_mD2.00_T0.50", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T0.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD2.00_T0.50": {
-         "name"     : "SUEP_hadronic_mS125_mD2.00_T0.50", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T0.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD2.00_T1.00": {
-         "name"     : "SUEP_leptonic_mS125_mD2.00_T1.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD2.00_T1.00": {
-         "name"     : "SUEP_hadronic_mS125_mD2.00_T1.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T1.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD2.00_T2.00": {
-         "name"     : "SUEP_leptonic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    :  "ZS, leptonic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kBlue,
-         "fillcolor": ROOT.kBlue,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD2.00_T2.00": {
-         "name"     : "SUEP_hadronic_mS125_mD2.00_T2.00", #Here plain text
-         "label"    :  "ZS, hadronic, T=2, m_{\phi}=2 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kRed,
-         "fillcolor": ROOT.kRed,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD2.00_T4.00": {
-         "name"     : "SUEP_leptonic_mS125_mD2.00_T4.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD2.00_T4.00": {
-         "name"     : "SUEP_hadronic_mS125_mD2.00_T4.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD2.00_T8.00": {
-         "name"     : "SUEP_leptonic_mS125_mD2.00_T8.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD2.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD2.00_T8.00": {
-         "name"     : "SUEP_hadronic_mS125_mD2.00_T8.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD2.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD3.00_T0.75": {
-         "name"     : "SUEP_generic_mS125_mD3.00_T0.75", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T0.75/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD3.00_T0.75": {
-         "name"     : "SUEP_leptonic_mS125_mD3.00_T0.75", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T0.75/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
   "SUEP_hadronic_mS125_mD3.00_T0.75": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T0.75", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
@@ -622,125 +326,37 @@ samples = {
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T0.75/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD3.00_T1.50": {
-         "name"     : "SUEP_generic_mS125_mD3.00_T1.50", #Here plain text
+  "SUEP_hadronic_mS125_mD3.00_T0.99": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T0.99", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T1.50/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD3.00_T1.50": {
-         "name"     : "SUEP_leptonic_mS125_mD3.00_T1.50", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T1.50/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T0.99/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T1.50": {
          "name"     : "SUEP_hadronic_mS125_mD3.00_T1.50", #Here plain text
-         "label"    : "ZS, hadronic, T=1.5, m_{\phi}=3 GeV", #Here we can use weird glyphs
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "doPlot"   : True,
+         "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T1.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD3.00_T3.00": {
-         "name"     : "SUEP_generic_mS125_mD3.00_T3.00", #Here plain text
-         "label"    : "ZS, generic, T=3, m_{\phi}=3 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kBlack,
-         "fillcolor": ROOT.kBlack,
-         "isSig"    : True,
-         "doPlot"   : True,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T3.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD3.00_T3.00": {
-         "name"     : "SUEP_leptonic_mS125_mD3.00_T3.00", #Here plain text
-         "label"    : "ZS, leptonic, T=3, m_{\phi}=3 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kRed,
-         "fillcolor": ROOT.kRed,
-         "isSig"    : True,
-         "doPlot"   : True,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T3.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD3.00_T3.00": {
-         "name"     : "SUEP_hadronic_mS125_mD3.00_T3.00", #Here plain text
-         "label"    : "ZS, hadronic, T=3, m_{\phi}=3 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kBlue,
-         "fillcolor": ROOT.kBlue,
-         "isSig"    : True,
-         "doPlot"   : True,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T3.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD3.00_T6.00": {
-         "name"     : "SUEP_generic_mS125_mD3.00_T6.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : True,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T6.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD3.00_T6.00": {
-         "name"     : "SUEP_leptonic_mS125_mD3.00_T6.00", #Here plain text
+  "SUEP_hadronic_mS125_mD3.00_T1.98": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T1.98", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T6.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD3.00_T6.00": {
-         "name"     : "SUEP_hadronic_mS125_mD3.00_T6.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T6.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD3.00_T12.00": {
-         "name"     : "SUEP_generic_mS125_mD3.00_T12.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD3.00_T12.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD3.00_T12.00": {
-         "name"     : "SUEP_leptonic_mS125_mD3.00_T12.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD3.00_T12.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T1.98/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD3.00_T12.00": {
@@ -754,26 +370,48 @@ samples = {
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T12.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD4.00_T1.00": {
-         "name"     : "SUEP_generic_mS125_mD4.00_T1.00", #Here plain text
+  "SUEP_hadronic_mS125_mD3.00_T3.00": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T3.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T1.00/"),
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T3.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_leptonic_mS125_mD4.00_T1.00": {
-         "name"     : "SUEP_leptonic_mS125_mD4.00_T1.00", #Here plain text
+  "SUEP_hadronic_mS125_mD3.00_T4.50": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T4.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T1.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T4.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD3.00_T6.00": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T6.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T6.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD3.00_T9.00": {
+         "name"     : "SUEP_hadronic_mS125_mD3.00_T9.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD3.00_T9.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T1.00": {
@@ -787,125 +425,26 @@ samples = {
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T1.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD4.00_T2.00": {
-         "name"     : "SUEP_generic_mS125_mD4.00_T2.00", #Here plain text
-         "label"    : "ZS, generic, T=2, m_{\phi}=4 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD4.00_T2.00": {
-         "name"     : "SUEP_leptonic_mS125_mD4.00_T2.00", #Here plain text
+  "SUEP_hadronic_mS125_mD4.00_T1.32": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T1.32", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T1.32/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_hadronic_mS125_mD4.00_T2.00": {
-         "name"     : "SUEP_hadronic_mS125_mD4.00_T2.00", #Here plain text
+  "SUEP_hadronic_mS125_mD4.00_T12.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T12.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T2.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD4.00_T4.00": {
-         "name"     : "SUEP_generic_mS125_mD4.00_T4.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD4.00_T4.00": {
-         "name"     : "SUEP_leptonic_mS125_mD4.00_T4.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD4.00_T4.00": {
-         "name"     : "SUEP_hadronic_mS125_mD4.00_T4.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T4.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD4.00_T8.00": {
-         "name"     : "SUEP_generic_mS125_mD4.00_T8.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD4.00_T8.00": {
-         "name"     : "SUEP_leptonic_mS125_mD4.00_T8.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_hadronic_mS125_mD4.00_T8.00": {
-         "name"     : "SUEP_hadronic_mS125_mD4.00_T8.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T8.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_generic_mS125_mD4.00_T16.00": {
-         "name"     : "SUEP_generic_mS125_mD4.00_T16.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD4.00_T16.00/"),
-         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
-  },
-  "SUEP_leptonic_mS125_mD4.00_T16.00": {
-         "name"     : "SUEP_leptonic_mS125_mD4.00_T16.00", #Here plain text
-         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
-         "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
-         "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD4.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T12.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD4.00_T16.00": {
@@ -919,125 +458,367 @@ samples = {
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T16.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD8.00_T2.00": {
-         "name"     : "SUEP_generic_mS125_mD8.00_T2.00", #Here plain text
+  "SUEP_hadronic_mS125_mD4.00_T2.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T2.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_leptonic_mS125_mD8.00_T2.00": {
-         "name"     : "SUEP_leptonic_mS125_mD8.00_T2.00", #Here plain text
+  "SUEP_hadronic_mS125_mD4.00_T2.64": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T2.64", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T2.64/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_hadronic_mS125_mD8.00_T2.00": {
-         "name"     : "SUEP_hadronic_mS125_mD8.00_T2.00", #Here plain text
+  "SUEP_hadronic_mS125_mD4.00_T4.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T4.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T2.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T4.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD8.00_T4.00": {
-         "name"     : "SUEP_generic_mS125_mD8.00_T4.00", #Here plain text
+  "SUEP_hadronic_mS125_mD4.00_T6.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T6.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T6.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_leptonic_mS125_mD8.00_T4.00": {
-         "name"     : "SUEP_leptonic_mS125_mD8.00_T4.00", #Here plain text
+  "SUEP_hadronic_mS125_mD4.00_T8.00": {
+         "name"     : "SUEP_hadronic_mS125_mD4.00_T8.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
-         "linecolor": ROOT.kGreen,
-         "fillcolor": ROOT.kGreen,
+         "linecolor": ROOT.kBlack,
+         "fillcolor": ROOT.kBlack,
          "isSig"    : True,
-         "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T4.00/"),
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD4.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_hadronic_mS125_mD8.00_T4.00": {
-         "name"     : "SUEP_hadronic_mS125_mD8.00_T4.00", #Here plain text
+  "SUEP_hadronic_mS125_mD5.00_T1.25": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T1.25", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T4.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T1.25/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD8.00_T8.00": {
-         "name"     : "SUEP_generic_mS125_mD8.00_T8.00", #Here plain text
+  "SUEP_hadronic_mS125_mD5.00_T1.65": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T1.65", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T1.65/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_leptonic_mS125_mD8.00_T8.00": {
-         "name"     : "SUEP_leptonic_mS125_mD8.00_T8.00", #Here plain text
+  "SUEP_hadronic_mS125_mD5.00_T10.00": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T10.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T10.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_hadronic_mS125_mD8.00_T8.00": {
-         "name"     : "SUEP_hadronic_mS125_mD8.00_T8.00", #Here plain text
+  "SUEP_hadronic_mS125_mD5.00_T15.00": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T15.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T8.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T15.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD8.00_T16.00": {
-         "name"     : "SUEP_generic_mS125_mD8.00_T16.00", #Here plain text
+  "SUEP_hadronic_mS125_mD5.00_T2.50": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T2.50", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T2.50/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_leptonic_mS125_mD8.00_T16.00": {
-         "name"     : "SUEP_leptonic_mS125_mD8.00_T16.00", #Here plain text
+  "SUEP_hadronic_mS125_mD5.00_T20.00": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T20.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T16.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T20.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD5.00_T3.30": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T3.30", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T3.30/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD5.00_T5.00": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T5.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kRed,
+         "fillcolor": ROOT.kRed,
+         "isSig"    : True,
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T5.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD5.00_T7.50": {
+         "name"     : "SUEP_hadronic_mS125_mD5.00_T7.50", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD5.00_T7.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T1.50": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T1.50", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T1.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T1.98": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T1.98", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T1.98/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T12.00": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T12.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T12.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T18.00": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T18.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T18.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T24.00": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T24.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T24.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T3.00": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T3.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kBlue,
+         "fillcolor": ROOT.kBlue,
+         "isSig"    : True,
+         "doPlot"   : True,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T3.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T3.96": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T3.96", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T3.96/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T6.00": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T6.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T6.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD6.00_T9.00": {
+         "name"     : "SUEP_hadronic_mS125_mD6.00_T9.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD6.00_T9.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T1.75": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T1.75", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T1.75/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T10.50": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T10.50", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T10.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T14.00": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T14.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T14.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T2.31": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T2.31", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T2.31/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T21.00": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T21.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T21.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T28.00": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T28.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T28.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T3.50": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T3.50", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T3.50/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T4.62": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T4.62", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T4.62/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD7.00_T7.00": {
+         "name"     : "SUEP_hadronic_mS125_mD7.00_T7.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD7.00_T7.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD8.00_T12.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T12.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T12.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T16.00": {
@@ -1051,26 +832,37 @@ samples = {
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T16.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_generic_mS125_mD8.00_T32.00": {
-         "name"     : "SUEP_generic_mS125_mD8.00_T32.00", #Here plain text
+  "SUEP_hadronic_mS125_mD8.00_T2.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T2.00", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_generic_mS125_mD8.00_T32.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T2.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
-  "SUEP_leptonic_mS125_mD8.00_T32.00": {
-         "name"     : "SUEP_leptonic_mS125_mD8.00_T32.00", #Here plain text
+  "SUEP_hadronic_mS125_mD8.00_T2.64": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T2.64", #Here plain text
          "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
          "xsec"     : 870 * 0.0336 * 3, # in fb
          "linecolor": ROOT.kGreen,
          "fillcolor": ROOT.kGreen,
          "isSig"    : True,
          "doPlot"   : False,
-         "files"    : hdf5inpath(main_path_signal+"SUEP_leptonic_mS125_mD8.00_T32.00/"),
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T2.64/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD8.00_T24.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T24.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T24.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
   "SUEP_hadronic_mS125_mD8.00_T32.00": {
@@ -1082,6 +874,39 @@ samples = {
          "isSig"    : True,
          "doPlot"   : False,
          "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T32.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD8.00_T4.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T4.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T4.00/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD8.00_T5.28": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T5.28", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T5.28/"),
+         "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
+  },
+  "SUEP_hadronic_mS125_mD8.00_T8.00": {
+         "name"     : "SUEP_hadronic_mS125_mD8.00_T8.00", #Here plain text
+         "label"    : "ZS, m_{S} = 125 GeV", #Here we can use weird glyphs
+         "xsec"     : 870 * 0.0336 * 3, # in fb
+         "linecolor": ROOT.kGreen,
+         "fillcolor": ROOT.kGreen,
+         "isSig"    : True,
+         "doPlot"   : False,
+         "files"    : hdf5inpath(main_path_signal+"SUEP_hadronic_mS125_mD8.00_T8.00/"),
          "extraWeights": lambda x: x["PUWeight"]*x["L1prefireWeight"]*x["bTagWeight"]*x["TrigSF"]*x["LepSF"],
   },
 }
@@ -1254,18 +1079,18 @@ for sample in samples:
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
            "symmetrize"      :      True,
   },
-}
-"""
+  }
+
   if (samples[sample]["isSig"]): 
-    samples[sample]["variations"]["JECUp"] = {
-           "name"            : "JEC",
+    samples[sample]["variations"]["JESUp"] = {
+           "name"            : "JES",
            "isSyst"          :      True,
            "replaceChannel"  :  {"SR":"SR_JECUP", "onecluster":"onecluster_JECUP", "twoleptons":"twoleptons_JECUP"},
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
            "symmetrize"      :      False,
     }
-    samples[sample]["variations"]["JECDn"] = {
-           "name"            : "JEC",
+    samples[sample]["variations"]["JESDn"] = {
+           "name"            : "JES",
            "isSyst"          :      True,
            "replaceChannel"  :  {"SR":"SR_JECDOWN", "onecluster":"onecluster_JECDOWN", "twoleptons":"twoleptons_JECDOWN"},
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
@@ -1285,4 +1110,3 @@ for sample in samples:
            "extraWeights"    :  lambda x, sample=sample: samples[sample]["extraWeights"](x),
            "symmetrize"      :      False,
     }
-"""

@@ -303,7 +303,8 @@ class SUEP_cluster(processor.ProcessorABC):
               "mass": altJets.mass,
               "btag": altJets.btagDeepFlavB,
               "jetId": altJets.jetId,
-              "hadronFlavour": altJets.hadronFlavour
+              "hadronFlavour": altJets.hadronFlavour,
+              "QGL": altJets.qgl
             }, with_name="Momentum4D")
 
         else:
@@ -313,7 +314,8 @@ class SUEP_cluster(processor.ProcessorABC):
               "phi": altJets.phi,
               "mass": altJets.mass,
               "btag": altJets.btagDeepFlavB,
-              "jetId": altJets.jetId
+              "jetId": altJets.jetId,
+              "QGL": altJets.qgl
             }, with_name="Momentum4D")
  
         # Minimimum pT, eta requirements + jet-lepton recleaning. We set minimum pT at 20 here to allow for the syst variations later
@@ -462,7 +464,6 @@ class SUEP_cluster(processor.ProcessorABC):
         else: 
             return True
 
-
     def process(self, events):
         np.random.seed(max(0,min(events.event[0], 2**31))) # This ensures reproducibility of results (i.e. for the random track dropping), while also getting different random numbers per file to avoid biases (like always dropping the first track, etc.
         debug    = True  # If we want some prints in the middle
@@ -485,7 +486,7 @@ class SUEP_cluster(processor.ProcessorABC):
         accumulator    = self.accumulator.identity()
         # Each track is one selection level
         outputs = {
-            "twoleptons"  :[{},[]],   # Has Two Leptons, pT and Trigger requirements
+            #"twoleptons"  :[{},[]],   # Has Two Leptons, pT and Trigger requirements
             "onecluster"  :[{},[]],   # At least one cluster is found
             "SR"          :[{},[]],   # Only the SR
         }
@@ -607,6 +608,7 @@ class SUEP_cluster(processor.ProcessorABC):
         # ------------------------------- SELECTION + PLOTTING -------------------------
         # ------------------------------------------------------------------------------
         self.var = "" # To keep track of the systematic variation: "" == nominal
+
         if len(self.varsToDo) > 1:
             self.saveAllCollections()
         for var in self.varsToDo:
@@ -616,7 +618,6 @@ class SUEP_cluster(processor.ProcessorABC):
                 highpt_jets = ak.argsort(self.jets.pt, axis=1, ascending=False, stable=True)
                 self.jets = self.jets[highpt_jets]
                 self.jets = self.jets[(self.jets.pt >= 30)]
-
             if len(self.varsToDo) > 1: 
                 self.resetAllCollections()
                 self.jets = self.jetsVar[""]
@@ -639,7 +640,7 @@ class SUEP_cluster(processor.ProcessorABC):
 
             self.isSpherable   = False # So we don't do sphericity plots until we have clusters
             self.isClusterable = False # So we don't try to compute sphericity if clusters are empty
-            outputs["twoleptons"+var] = [self.doAllPlots("twoleptons"+var, debug), self.events]
+            #outputs["twoleptons"+var] = [self.doAllPlots("twoleptons"+var, debug), self.events]
             if not(self.shouldContinueAfterCut(self.events, outputs)): continue
             if debug: print("%i events pass twoleptons cuts. Doing more stuff..."%len(self.events))
 
@@ -668,7 +669,6 @@ class SUEP_cluster(processor.ProcessorABC):
                        "pdgId": ak.unflatten(self.tracks.pdgId[ak.flatten(clidx,axis=2)], ak.flatten(ak.num(self.constituents, axis=2)), axis=1),
                        }, with_name="Momentum4D")
                       print(self.constituents.pt, self.constituents.pdgId)
-
                     outputs["onecluster"+var] = [self.doAllPlots("onecluster"+var, debug), self.events]
                     if not(self.shouldContinueAfterCut(self.events, outputs)): continue
                     if debug: print("%i events pass onecluster cuts. Doing more stuff..."%len(self.events))
@@ -1236,12 +1236,15 @@ class SUEP_cluster(processor.ProcessorABC):
         out["leadjet_pt"]     = ak.fill_none(ak.pad_none(self.jets.pt,  1, axis=1, clip=True), 0.)[:,0] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
         out["leadjet_eta"]    = ak.fill_none(ak.pad_none(self.jets.eta, 1, axis=1, clip=True), -999)[:,0] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["leadjet_phi"]    = ak.fill_none(ak.pad_none(self.jets.phi, 1, axis=1, clip=True), -999)[:,0] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
+        out["leadjet_qgl"]    = ak.fill_none(ak.pad_none(self.jets.QGL,  1, axis=1, clip=True), -999)[:,0] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["subleadjet_pt"]  = ak.fill_none(ak.pad_none(self.jets.pt,  2, axis=1, clip=True), 0.)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
         out["subleadjet_eta"] = ak.fill_none(ak.pad_none(self.jets.eta, 2, axis=1, clip=True), -999)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["subleadjet_phi"] = ak.fill_none(ak.pad_none(self.jets.phi, 2, axis=1, clip=True), -999)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
+        out["subleadjet_qgl"] = ak.fill_none(ak.pad_none(self.jets.QGL,  2, axis=1, clip=True), -999)[:,1] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["trailjet_pt"]    = ak.fill_none(ak.pad_none(self.jets.pt,  3, axis=1, clip=True), 0.)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with 0
         out["trailjet_eta"]   = ak.fill_none(ak.pad_none(self.jets.eta, 3, axis=1, clip=True), -999)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["trailjet_phi"]   = ak.fill_none(ak.pad_none(self.jets.phi, 3, axis=1, clip=True), -999)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
+        out["trailjet_qgl"]   = ak.fill_none(ak.pad_none(self.jets.QGL,  3, axis=1, clip=True), -999.)[:,2] # So take all events, if there is no jet_pt fill it with none, then replace none with -999
         out["H_T"]            = ak.sum(self.jets.pt, axis=1)[:]
         out["L_T"]            = ak.sum(self.leptons.pt, axis=1)[:]
         out["MET_pt"]         = self.events.MET.pt[:] # Just in case
@@ -1334,9 +1337,9 @@ class SUEP_cluster(processor.ProcessorABC):
     def getNPU(self):
         if self.isMC:
             if hasattr(self.events, "Pileup"):
-              return self.events.Pileup.nTrueInt
+                return self.events.Pileup.nTrueInt
             else:
-              return ak.ones_like(self.events.genWeight)
+                return ak.ones_like(self.events.genWeight)
         else:
             if self.era == 2015  or self.era == 2016:
                 lumifile = "data/Lumi/16.json"

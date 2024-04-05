@@ -66,7 +66,15 @@ elif options.analyzer == "ntracksplit":
 elif options.analyzer == "checkJetID":
   from workflows.SUEP_coffea_ZH_checkJetID import *
   modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
-
+elif options.analyzer == "ZH_simple_withsyst_NewID":
+  from workflows.SUEP_coffea_ZH_simple_NewID import *
+  modules_era.append(SUEP_cluster(isMC=options.isMC, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=options.isDY))
+elif options.analyzer == "ZH_simple_withsyst_SideBandA":
+  from workflows.SUEP_coffea_ZH_simple_SideBandA import *
+  modules_era.append(SUEP_cluster(isMC=False, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=False))
+elif options.analyzer == "ZH_simple_withsyst_SideBandB1":
+  from workflows.SUEP_coffea_ZH_simple_SideBandB1 import *
+  modules_era.append(SUEP_cluster(isMC=False, era=int(options.era), do_syst=1,  syst_var='', sample=options.dataset, weight_syst='' , SRonly=options.SR, output_location=out_dir, doOF=False, isDY=False))
 for instance in modules_era:
     output = run_uproot_job(
         {instance.sample: [options.infile]},
